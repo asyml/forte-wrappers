@@ -18,7 +18,16 @@ community.
 
 This project is part of the [CASL Open Source](http://casl-project.ai/) family.
 
-### 3rd Party Libraries and Tools Supported
+### Get Started
+- First, install the library along with the desired tools. 
+  Let's take AllenNLP as an example:
+```shell
+git clone https://github.com/asyml/forte-wrappers.git
+cd forte-wrappers
+pip install ."[allennlp]"
+```
+
+### Libraries and Tools Supported
 - [NLTK](https://www.nltk.org/)
   - POS Tagger
   - Sentence Segmenter
