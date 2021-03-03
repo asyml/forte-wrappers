@@ -19,8 +19,10 @@ community.
 This project is part of the [CASL Open Source](http://casl-project.ai/) family.
 
 ### Get Started
-- First, install the library along with the desired tools. 
-  Let's take AllenNLP as an example:
+
+- First, install the library along with the desired tools. Let's take AllenNLP
+  as an example:
+
 ```shell
 git clone https://github.com/asyml/forte-wrappers.git
 cd forte-wrappers
@@ -28,28 +30,36 @@ pip install ."[allennlp]"
 ```
 
 ### Libraries and Tools Supported
-- [NLTK](https://www.nltk.org/)
-  - POS Tagger
-  - Sentence Segmenter
-  - Tokenizer
-  - Lemmatizer
-  - NER
-- [spaCy](https://spacy.io/)
-  - Tokenizer, Lemmatizer and POS Tagging
-  - NER
-- [AllenNLP](https://allennlp.org/)
-  - Tokenizer, POS Tagging
-  - Semantic Role Labeling
-  - Dependency Parsing
-- [Stanza](https://stanfordnlp.github.io/stanza/)
-  - Tokenization, POS Tagging, Leammatizer
-  - Dependency Parsing
-- [Vader Sentiment](https://github.com/cjhutto/vaderSentiment)
-  - Sentiment Analysis
-- [Elastic Search](https://www.elastic.co/)
-  - Elastic Search
-- [CliNER](https://github.com/text-machine-lab/CliNER)
-  - Clinical NER
+
+- [NLTK](https://www.nltk.org/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/nltk))
+    - POS Tagger
+    - Sentence Segmenter
+    - Tokenizer
+    - Lemmatizer
+    - NER
+- [spaCy](https://spacy.io/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/spacy))
+    - Tokenizer, Lemmatizer and POS Tagging
+    - NER
+- [AllenNLP](https://allennlp.org/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/allennlp))
+    - Tokenizer, POS Tagging
+    - Semantic Role Labeling
+    - Dependency Parsing
+- [Stanza](https://stanfordnlp.github.io/stanza/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/stanza))
+    - Tokenization, POS Tagging, Leammatizer
+    - Dependency Parsing
+- [HuggingFace Models](https://huggingface.co/)
+    - [BioBERT NER](https://github.com/dmis-lab/biobert-pytorch) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/huggingface/biobert_ner))
+- [Vader Sentiment](https://github.com/cjhutto/vaderSentiment) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/vader))
+    - Sentiment Analysis
+- [CliNER](https://github.com/text-machine-lab/CliNER) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/cliner))
+    - Clinical NER
+- [Elastic Search](https://www.elastic.co/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/elastic))
+    - Elastic Indexer
+    - Elastic Search
+- [Faiss](https://github.com/facebookresearch/faiss) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/faiss))
+    - Faiss Indexer
+- [GPT2](https://openai.com/blog/gpt-2-1-5b-release/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/gpt2))
+    - GPT2 Text Generation
 
 ### Contributing
 
