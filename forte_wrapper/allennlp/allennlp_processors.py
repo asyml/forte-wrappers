@@ -203,6 +203,7 @@ class AllenNLPProcessor(PackProcessor):
                                     tokens[pred_span.end].end)
             for arg_span, label in arguments:
                 arg = PredicateArgument(input_pack,
-                    tokens[arg_span.begin].begin, tokens[arg_span.end].end)
+                                        tokens[arg_span.begin].begin,
+                                        tokens[arg_span.end].end)
                 link = PredicateLink(input_pack, pred, arg)
                 link.arg_type = label
