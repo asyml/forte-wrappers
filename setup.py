@@ -23,6 +23,7 @@ setuptools.setup(
 
     install_requires=[
         'forte @ git+ssh://git@github.com/asyml/forte.git'
+        'more-itertools>=8.0.0'
     ],
     extras_require={
         'nltk': ['nltk==3.4.5'],

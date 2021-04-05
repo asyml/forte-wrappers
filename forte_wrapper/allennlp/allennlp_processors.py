@@ -14,7 +14,8 @@
 
 import itertools
 import logging
-from typing import List, Dict
+import more_itertools
+from typing import Dict, List
 
 from allennlp.predictors import Predictor
 
@@ -116,6 +117,8 @@ class AllenNLPProcessor(PackProcessor):
                 multiple models are loaded, cuda devices are assigned in a
                 round robin fashion. E.g. [0, -1] -> first model uses gpu 0
                 but second model uses cpu.
+            - infer_batch_size: batch size used for model inference.
+                A value <= 0 means no limit.
         """
         config = super().default_configs()
         config.update({
@@ -126,33 +129,41 @@ class AllenNLPProcessor(PackProcessor):
             'stanford_url': MODEL2URL['stanford'],
             'srl_url': MODEL2URL['srl'],
             'universal_url': MODEL2URL['universal'],
-            'cuda_devices': [-1]
+            'cuda_devices': [-1],
+            'infer_batch_size': 0
         })
         return config
 
     def _process(self, input_pack: DataPack):
         # handle existing entries
         self._process_existing_entries(input_pack)
-        sentences = [_ for _ in input_pack.get(Sentence)]
-        inputs = [{"sentence": s.text} for s in sentences]
-        results = {k: p.predict_batch_json(inputs)
-                   for k, p in self.predictor.items()}
-        for i in range(len(sentences)):
-            result = {}
-            for key in self.predictor.keys():
-                if key == 'srl':
-                    result.update(
-                        parse_allennlp_srl_results(results[key][i]["verbs"])
-                    )
-                else:
-                    result.update(results[key][i])
-            if "tokenize" in self.configs.processors:
-                # creating new tokens and dependencies
-                tokens = self._create_tokens(input_pack, sentences[i], result)
-                if "depparse" in self.configs.processors:
-                    self._create_dependencies(input_pack, tokens, result)
-                if 'srl' in self.configs.processors:
-                    self._create_srl(input_pack, tokens, result)
+
+        batch_size = self.configs['infer_batch_size']
+        if batch_size <= 0:
+            batches = [input_pack.get(Sentence)]
+        else:
+            batches = more_itertools.chunked(input_pack.get(Sentence),
+                                             batch_size, strict=False)
+        for sentences in batches:
+            inputs = [{"sentence": s.text} for s in sentences]
+            results = {k: p.predict_batch_json(inputs)
+                       for k, p in self.predictor.items()}
+            for i, sentence in enumerate(sentences):
+                result = {}
+                for key in self.predictor.keys():
+                    if key == 'srl':
+                        result.update(parse_allennlp_srl_results(
+                            results[key][i]["verbs"]
+                        ))
+                    else:
+                        result.update(results[key][i])
+                if "tokenize" in self.configs.processors:
+                    # creating new tokens and dependencies
+                    tokens = self._create_tokens(input_pack, sentence, result)
+                    if "depparse" in self.configs.processors:
+                        self._create_dependencies(input_pack, tokens, result)
+                    if 'srl' in self.configs.processors:
+                        self._create_srl(input_pack, tokens, result)
 
     def _process_existing_entries(self, input_pack):
         tokens_exist = any(True for _ in input_pack.get(Token))
