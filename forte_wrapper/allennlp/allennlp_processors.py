@@ -222,8 +222,9 @@ class AllenNLPProcessor(PackProcessor):
         :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
         the pipeline.
         """
-        expectation_dict: Dict[str, Set[str]] = dict()
-        expectation_dict["ft.onto.base_ontology.Sentence"] = set()
+        expectation_dict: Dict[str, Set[str]] = {
+             "ft.onto.base_ontology.Sentence": set()
+        }
         return expectation_dict
 
     def record(self, record_meta: Dict[str, Set[str]]):
