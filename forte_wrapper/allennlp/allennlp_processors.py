@@ -240,5 +240,3 @@ class AllenNLPProcessor(PackProcessor):
                 record_meta["ft.onto.base_ontology.Token"] = {"pos"}
             if "depparse" in self.configs.processors:
                 record_meta["ft.onto.base_ontology.Dependency"] = set()
-
-        record_meta["ft.onto.base_ontology.Sentence"] = set()
