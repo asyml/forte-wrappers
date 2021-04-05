@@ -50,7 +50,10 @@ class AllenNLPProcessor(PackProcessor):
     # pylint: disable=attribute-defined-outside-init,unused-argument
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
-
+        if "tokenize" not in self.configs.processors:
+            raise ProcessorConfigError('tokenize is necessary in '
+                                       'configs.processors for '
+                                       'tokenize, pos, depparse or srl')
         if configs.tag_formalism not in MODEL2URL:
             raise ProcessorConfigError('Incorrect value for tag_formalism')
         if configs.tag_formalism == 'stanford':
@@ -197,3 +200,20 @@ class AllenNLPProcessor(PackProcessor):
         expectation_dict: Dict[str, Set[str]] = dict()
         expectation_dict["ft.onto.base_ontology.Sentence"] = set()
         return expectation_dict
+
+    def record(self, record_meta: Dict[str, Set[str]]):
+        r"""Method to add output type record of current processor
+        to :attr:`forte.data.data_pack.Meta.record`.
+
+        Args:
+            record_meta: the field in the datapack for type record that need to
+                fill in for consistency checking.
+        """
+        if "tokenize" in self.configs.processors:
+            record_meta["ft.onto.base_ontology.Token"] = set()
+            if "pos" in self.configs.processors:
+                record_meta["ft.onto.base_ontology.Token"] = {"pos"}
+            if "depparse" in self.configs.processors:
+                record_meta["ft.onto.base_ontology.Dependency"] = set()
+
+        record_meta["ft.onto.base_ontology.Sentence"] = set()
