@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import itertools
 import logging
 from typing import List, Dict, Set
 
 from allennlp.predictors import Predictor
+
 from forte.common import ProcessorConfigError
 from forte.common.configuration import Config
 from forte.common.resources import Resources
@@ -36,13 +38,10 @@ __all__ = [
 # pylint: disable=line-too-long
 MODEL2URL = {
     'stanford': "https://storage.googleapis.com/allennlp-public-models/biaffine-dependency-parser-ptb-2020.04.06.tar.gz",
-    'srl': "https://storage.googleapis.com/allennlp-public-models/bert-base-srl-2020.11.19.tar.gz"
+    'srl': "https://storage.googleapis.com/allennlp-public-models/bert-base-srl-2020.11.19.tar.gz",
     # TODO: The UD model seems to be broken at this moment.
-    # 'universal': "https://storage.googleapis.com/allennlp-public-models/biaffine-dependency-parser-ud-2020.02.10.tar.gz",
+    'universal': "https://storage.googleapis.com/allennlp-public-models/biaffine-dependency-parser-ud-2020.02.10.tar.gz",
 }
-
-
-# pylint: enable=line-too-long
 
 
 class AllenNLPProcessor(PackProcessor):
@@ -54,23 +53,35 @@ class AllenNLPProcessor(PackProcessor):
             raise ProcessorConfigError('tokenize is necessary in '
                                        'configs.processors for '
                                        'tokenize, pos, depparse or srl')
+        cuda_devices = itertools.cycle(configs['cuda_devices'])
         if configs.tag_formalism not in MODEL2URL:
             raise ProcessorConfigError('Incorrect value for tag_formalism')
         if configs.tag_formalism == 'stanford':
             self.predictor = {
-                'stanford': Predictor.from_path(MODEL2URL['stanford'])}
+                'stanford': Predictor.from_path(
+                    configs['stanford_url'],
+                    cuda_device=next(cuda_devices)
+                )
+            }
         if 'srl' in configs.processors:
             self.predictor = {
-                'stanford': Predictor.from_path(MODEL2URL['stanford']),
-                'srl': Predictor.from_path(MODEL2URL['srl'])}
+                'stanford': Predictor.from_path(
+                    configs['stanford_url'],
+                    cuda_device=next(cuda_devices)
+                ),
+                'srl': Predictor.from_path(
+                    configs['srl_url'],
+                    cuda_device=next(cuda_devices)
+                )
+            }
 
         if configs.overwrite_entries:
             logger.warning("`overwrite_entries` is set to True, this means "
                            "that the entries of the same type as produced by "
                            "this processor will be overwritten if found.")
             if configs.allow_parallel_entries:
-                logger.warning('Both `overwrite_entries` (whether to overwrite '
-                               'the entries of the same type as produced by '
+                logger.warning('Both `overwrite_entries` (whether to overwrite'
+                               ' the entries of the same type as produced by '
                                'this processor) and '
                                '`allow_parallel_entries` (whether to allow '
                                'similar new entries when they already exist) '
@@ -78,8 +89,8 @@ class AllenNLPProcessor(PackProcessor):
                                'will be deleted.')
         else:
             if not configs.allow_parallel_entries:
-                logger.warning('Both `overwrite_entries` (whether to overwrite '
-                               'the entries of the same type as produced by '
+                logger.warning('Both `overwrite_entries` (whether to overwrite'
+                               ' the entries of the same type as produced by '
                                'this processor) and '
                                '`allow_parallel_entries` (whether to allow '
                                'similar new entries when they already exist) '
@@ -102,32 +113,46 @@ class AllenNLPProcessor(PackProcessor):
             - allow_parallel_entries: whether to allow similar new entries when
                 they already exist, e.g. allowing new tokens with same spans,
                 used only when `overwrite_entries` is False.
+            - <model>_url: url of the corresponding model, default urls for
+                "stanford", "srl" and "universal" can be found in `MODEL2URL`.
+            - cuda_devices: a list of integers indicating the available
+                cuda/gpu devices that can be used by this processor. When
+                multiple models are loaded, cuda devices are assigned in a
+                round robin fashion. E.g. [0, -1] -> first model uses gpu 0
+                but second model uses cpu.
         """
         config = super().default_configs()
         config.update({
             'processors': "tokenize,pos,depparse",
             'tag_formalism': "stanford",
             'overwrite_entries': False,
-            'allow_parallel_entries': True
+            'allow_parallel_entries': True,
+            'stanford_url': MODEL2URL['stanford'],
+            'srl_url': MODEL2URL['srl'],
+            'universal_url': MODEL2URL['universal'],
+            'cuda_devices': [-1]
         })
         return config
 
     def _process(self, input_pack: DataPack):
         # handle existing entries
         self._process_existing_entries(input_pack)
-
-        for sentence in input_pack.get(Sentence):
-            result: Dict[str, List[str]] = {}
-            for key in self.predictor:
-                predicted_result = self.predictor[key].predict(  # type: ignore
-                    sentence=sentence.text)
+        sentences = [_ for _ in input_pack.get(Sentence)]
+        inputs = [{"sentence": s.text} for s in sentences]
+        results = {k: p.predict_batch_json(inputs)
+                   for k, p in self.predictor.items()}
+        for i in range(len(sentences)):
+            result = {}
+            for key in self.predictor.keys():
                 if key == 'srl':
-                    predicted_result = parse_allennlp_srl_results(
-                        predicted_result['verbs'])
-                result.update(predicted_result)
+                    result.update(
+                        parse_allennlp_srl_results(results[key][i]["verbs"])
+                    )
+                else:
+                    result.update(results[key][i])
             if "tokenize" in self.configs.processors:
                 # creating new tokens and dependencies
-                tokens = self._create_tokens(input_pack, sentence, result)
+                tokens = self._create_tokens(input_pack, sentences[i], result)
                 if "depparse" in self.configs.processors:
                     self._create_dependencies(input_pack, tokens, result)
                 if 'srl' in self.configs.processors:
@@ -141,12 +166,12 @@ class AllenNLPProcessor(PackProcessor):
             if not self.configs.overwrite_entries:
                 if not self.configs.allow_parallel_entries:
                     raise ProcessorConfigError(
-                        "Found existing entries, either `overwrite_entries` or "
-                        "`allow_parallel_entries` should be True")
+                        "Found existing entries, either `overwrite_entries` or"
+                        " `allow_parallel_entries` should be True")
             else:
                 # delete existing tokens and dependencies
                 for entry_type in (Token, Dependency):
-                    for entry in input_pack.get(entry_type):
+                    for entry in list(input_pack.get(entry_type)):
                         input_pack.delete_entry(entry)
 
     def _create_tokens(self, input_pack, sentence, result):
