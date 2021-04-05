@@ -16,7 +16,7 @@ from typing import Optional, Dict, Set
 import spacy
 from spacy.language import Language
 from spacy.cli.download import download
-from forte.common import ProcessExecutionException
+from forte.common import ProcessExecutionException, ProcessorConfigError
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
@@ -48,6 +48,11 @@ class SpacyProcessor(PackProcessor):
 
     # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
+        if "pos" in configs.processors or "lemma" in configs.processors:
+            if "tokenize" not in configs.processors:
+                raise ProcessorConfigError('tokenize is necessary in '
+                                           'configs.processors for '
+                                           'pos or lemma')
         self.processors = configs.processors
         self.lang_model = configs.lang
         self.set_up()
@@ -135,3 +140,10 @@ class SpacyProcessor(PackProcessor):
                 fill in for consistency checking.
         """
         record_meta["ft.onto.base_ontology.Sentence"] = set()
+        record_meta["ft.onto.base_ontology.EntityMention"] = set()
+        if "tokenize" in self.processors:
+            record_meta["ft.onto.base_ontology.Token"] = set()
+            if "pos" in self.processors:
+                record_meta["ft.onto.base_ontology.Token"].add("pos")
+            if "lemma" in self.processors:
+                record_meta["ft.onto.base_ontology.Token"].add("lemma")

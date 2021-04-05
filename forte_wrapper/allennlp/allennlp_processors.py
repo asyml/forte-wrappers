@@ -238,6 +238,6 @@ class AllenNLPProcessor(PackProcessor):
         if "tokenize" in self.configs.processors:
             record_meta["ft.onto.base_ontology.Token"] = set()
             if "pos" in self.configs.processors:
-                record_meta["ft.onto.base_ontology.Token"] = {"pos"}
+                record_meta["ft.onto.base_ontology.Token"].add("pos")
             if "depparse" in self.configs.processors:
                 record_meta["ft.onto.base_ontology.Dependency"] = set()
