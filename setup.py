@@ -22,7 +22,7 @@ setuptools.setup(
     platforms='any',
 
     install_requires=[
-        'forte @ git+ssh://git@github.com/asyml/forte.git'
+        'forte @ git+https://git@github.com/asyml/forte.git'
     ],
     extras_require={
         'nltk': ['nltk==3.4.5'],
