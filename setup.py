@@ -22,7 +22,7 @@ setuptools.setup(
     platforms='any',
 
     install_requires=[
-        'forte @ git+ssh://git@github.com/asyml/forte.git'
+        'forte @ git+ssh://git@github.com/asyml/forte.git',
         'more-itertools>=8.0.0'
     ],
     extras_require={
