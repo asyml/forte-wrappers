@@ -67,10 +67,10 @@ class ElasticSearchProcessor(MultiPackProcessor):
 
         # ElasticSearchQueryCreator adds a Query entry to query pack. We now
         # fetch it as the first element.
-        first_query: Query = query_pack.get_single(Query)  # type: ignore
+        first_query: Query = query_pack.get_single(Query)
         # pylint: disable=isinstance-second-argument-not-valid-type
         # TODO: until fix: https://github.com/PyCQA/pylint/issues/3507
-        if not isinstance(first_query, Dict):
+        if not isinstance(first_query.value, Dict):
             raise ValueError(
                 "The query to the elastic indexer need to be a dictionary.")
         results = self.index.search(first_query.value)

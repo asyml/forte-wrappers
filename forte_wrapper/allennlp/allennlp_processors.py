@@ -152,7 +152,7 @@ class AllenNLPProcessor(PackProcessor):
                 k: p.predict_batch_json(inputs)
                 for k, p in self.predictor.items()
             }
-            for i, sentence in enumerate(sentences):
+            for i, sent in enumerate(sentences):
                 result: Dict[str, List[str]] = {}
                 for key in self.predictor.keys():
                     if key == 'srl':
@@ -163,7 +163,7 @@ class AllenNLPProcessor(PackProcessor):
                         result.update(results[key][i])
                 if "tokenize" in self.configs.processors:
                     # creating new tokens and dependencies
-                    tokens = self._create_tokens(input_pack, sentence, result)
+                    tokens = self._create_tokens(input_pack, sent, result)
                     if "depparse" in self.configs.processors:
                         self._create_dependencies(input_pack, tokens, result)
                     if 'srl' in self.configs.processors:
