@@ -133,13 +133,13 @@ class AllenNLPProcessor(PackProcessor):
     def _process(self, input_pack: DataPack):
         # handle existing entries
         self._process_existing_entries(input_pack)
-        sentences = [_ for _ in input_pack.get(Sentence)]
+        sentences = input_pack.get(Sentence)
         inputs = [{"sentence": s.text} for s in sentences]
         results = {k: p.predict_batch_json(inputs)
                    for k, p in self.predictor.items()}
-        for i in range(len(sentences)):
+        for i, sent in enumerate(sentences):
             result = {}
-            for key in self.predictor.keys():
+            for key in self.predictor:
                 if key == 'srl':
                     result.update(
                         parse_allennlp_srl_results(results[key][i]["verbs"])
@@ -148,7 +148,7 @@ class AllenNLPProcessor(PackProcessor):
                     result.update(results[key][i])
             if "tokenize" in self.configs.processors:
                 # creating new tokens and dependencies
-                tokens = self._create_tokens(input_pack, sentences[i], result)
+                tokens = self._create_tokens(input_pack, sent, result)
                 if "depparse" in self.configs.processors:
                     self._create_dependencies(input_pack, tokens, result)
                 if 'srl' in self.configs.processors:
