@@ -117,8 +117,8 @@ class AllenNLPProcessor(PackProcessor):
                 multiple models are loaded, cuda devices are assigned in a
                 round robin fashion. E.g. [0, -1] -> first model uses gpu 0
                 but second model uses cpu.
-            - infer_batch_size: batch size used for model inference.
-                A value <= 0 means no limit.
+            - infer_batch_size: maximum number of sentences passed in as a
+                batch to model's predict function. A value <= 0 means no limit.
         """
         config = super().default_configs()
         config.update({
