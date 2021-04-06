@@ -49,10 +49,12 @@ class AllenNLPProcessor(PackProcessor):
     # pylint: disable=attribute-defined-outside-init,unused-argument
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
-        if "tokenize" not in self.configs.processors:
-            raise ProcessorConfigError('tokenize is necessary in '
-                                       'configs.processors for '
-                                       'tokenize, pos, depparse or srl')
+        if ("pos" in configs.processors or "depparse" in configs.processors
+                or "depparse" in configs.processors):
+            if "tokenize" not in self.configs.processors:
+                raise ProcessorConfigError('tokenize is necessary in '
+                                           'configs.processors for '
+                                           'pos, depparse or srl')
         cuda_devices = itertools.cycle(configs['cuda_devices'])
         if configs.tag_formalism not in MODEL2URL:
             raise ProcessorConfigError('Incorrect value for tag_formalism')
@@ -240,4 +242,7 @@ class AllenNLPProcessor(PackProcessor):
             if "pos" in self.configs.processors:
                 record_meta["ft.onto.base_ontology.Token"].add("pos")
             if "depparse" in self.configs.processors:
-                record_meta["ft.onto.base_ontology.Dependency"] = set()
+                record_meta["ft.onto.base_ontology.Dependency"] = {"rel_type"}
+            if "srl" in self.configs.processors:
+                record_meta["ft.onto.base_ontology.PredicateArgument"] = set()
+                record_meta["ft.onto.base_ontology.PredicateMention"] = set()
