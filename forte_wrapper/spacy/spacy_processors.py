@@ -126,7 +126,8 @@ class SpacyProcessor(PackProcessor):
         result = self.nlp(doc)
 
         # Record NER results.
-        self._process_ner(result, input_pack)
+        if "ner" in self.processors:
+            self._process_ner(result, input_pack)
 
         # Process sentence parses.
         self._process_parser(result.sents, input_pack)
@@ -140,7 +141,8 @@ class SpacyProcessor(PackProcessor):
                 fill in for consistency checking.
         """
         record_meta["ft.onto.base_ontology.Sentence"] = set()
-        record_meta["ft.onto.base_ontology.EntityMention"] = set()
+        if "ner" in self.processors:
+            record_meta["ft.onto.base_ontology.EntityMention"] = set()
         if "tokenize" in self.processors:
             record_meta["ft.onto.base_ontology.Token"] = set()
             if "pos" in self.processors:
