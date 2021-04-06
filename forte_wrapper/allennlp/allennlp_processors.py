@@ -15,7 +15,7 @@
 import itertools
 import logging
 import more_itertools
-from typing import Dict, List
+from typing import Any, Dict, Iterable, Iterator, List
 
 from allennlp.predictors import Predictor
 
@@ -138,18 +138,22 @@ class AllenNLPProcessor(PackProcessor):
         # handle existing entries
         self._process_existing_entries(input_pack)
 
-        batch_size = self.configs['infer_batch_size']
+        batch_size: int = self.configs['infer_batch_size']
+        batches: Iterator[Iterable[Sentence]]
         if batch_size <= 0:
-            batches = [input_pack.get(Sentence)]
+            batches = iter([input_pack.get(Sentence)])
         else:
-            batches = more_itertools.chunked(input_pack.get(Sentence),
-                                             batch_size, strict=False)
+            batches = more_itertools.chunked(
+                input_pack.get(Sentence), batch_size)
         for sentences in batches:
-            inputs = [{"sentence": s.text} for s in sentences]
-            results = {k: p.predict_batch_json(inputs)
-                       for k, p in self.predictor.items()}
+            inputs: List[Dict[str, str]] = [{"sentence": s.text}
+                                            for s in sentences]
+            results: Dict[str, List[Dict[str, Any]]] = {
+                k: p.predict_batch_json(inputs)
+                for k, p in self.predictor.items()
+            }
             for i, sentence in enumerate(sentences):
-                result = {}
+                result: Dict[str, List[str]] = {}
                 for key in self.predictor.keys():
                     if key == 'srl':
                         result.update(parse_allennlp_srl_results(
