@@ -14,8 +14,8 @@
 
 import itertools
 import logging
-import more_itertools
 from typing import Any, Dict, Iterable, Iterator, List
+import more_itertools
 
 from allennlp.predictors import Predictor
 
@@ -154,7 +154,7 @@ class AllenNLPProcessor(PackProcessor):
             }
             for i, sent in enumerate(sentences):
                 result: Dict[str, List[str]] = {}
-                for key in self.predictor.keys():
+                for key in self.predictor:
                     if key == 'srl':
                         result.update(parse_allennlp_srl_results(
                             results[key][i]["verbs"]
