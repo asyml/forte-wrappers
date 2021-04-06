@@ -207,11 +207,11 @@ class BioBERTNERPredictor(FixedSizeBatchProcessor):
             entity_groups = self._compose_entities(entities, data_pack, tids)
             # Add NER tags and create EntityMention ontologies.
             for first_idx, last_idx in entity_groups:
-                first_token: Subword = data_pack.get_entry(  # type: ignore
+                first_token: Subword = data_pack.get_entry(
                     tids[first_idx])
                 begin = first_token.span.begin
 
-                last_token: Subword = data_pack.get_entry(  # type: ignore
+                last_token: Subword = data_pack.get_entry(
                     tids[last_idx])
                 end = last_token.span.end
 
