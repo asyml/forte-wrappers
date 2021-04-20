@@ -43,7 +43,7 @@ class ElasticSearchProcessor(MultiPackProcessor):
 
     @classmethod
     def default_configs(cls) -> Dict[str, Any]:
-        """
+        r"""
         This defines a basic config structure for ElasticSearchProcessor.
         :return: A dictionary with the default config for this processor.
         Following are the keys for this dictionary:
