@@ -48,7 +48,8 @@ class ElasticSearchProcessor(MultiPackProcessor):
             "query_pack_name": "query",
             "index_config": ElasticSearchIndexer.default_configs(),
             "field": "content",
-            "response_pack_name_prefix": "passage"
+            "response_pack_name_prefix": "passage",
+            "only_pass_content": True
         })
         return config
 
@@ -80,12 +81,19 @@ class ElasticSearchProcessor(MultiPackProcessor):
             document = hit["_source"]
             first_query.add_result(document["doc_id"], hit["_score"])
 
-            pack: DataPack = input_pack.add_pack(
-                f"{self.configs.response_pack_name_prefix}_{idx}"
-            )
-            pack.pack_name = document["doc_id"]
+            if self.configs.only_pass_content:
+                pack: DataPack = input_pack.add_pack(
+                    f"{self.configs.response_pack_name_prefix}_{idx}"
+                )
+                pack.pack_name = document["doc_id"]
 
-            content = document[self.configs.field]
-            pack.set_text(content)
+                content = document[self.configs.field]
+                pack.set_text(content)
 
-            Document(pack=pack, begin=0, end=len(content))
+                Document(pack=pack, begin=0, end=len(content))
+
+            else:
+                pack = DataPack.deserialize(document['pack_info'])
+                input_pack.add_pack_(
+                    pack, f"{self.configs.response_pack_name_prefix}_{idx}")
+                pack.pack_name = document["doc_id"]
