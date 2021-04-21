@@ -53,10 +53,13 @@ class ElasticSearchProcessor(MultiPackProcessor):
             datapack.
             - response_pack_name_prefix: the pack name prefix to be used
             in response datapacks.
-            - only_pass_content: boolean, defines if only the content field
-            of the datapack should be passed to the multipack, default
-            is True. If set False, the original datapack will be passed
-            to the multipack.
+            - indexed_text_only: boolean, defines whether the returned
+            value from the field (as specified by the field configuration)
+             will be considered as plain text. If True, a new data pack
+             will be created and the value will be used as the text for
+             the data pack. Otherwise, the returned value will be
+             considered as serialized data pack, and the returned data
+             pack will be created by deserialization. Default is True.
         """
         config = super().default_configs()
         config.update({
@@ -64,7 +67,7 @@ class ElasticSearchProcessor(MultiPackProcessor):
             "index_config": ElasticSearchIndexer.default_configs(),
             "field": "content",
             "response_pack_name_prefix": "passage",
-            "only_pass_content": True
+            "indexed_text_only": True
         })
         return config
 
@@ -96,7 +99,7 @@ class ElasticSearchProcessor(MultiPackProcessor):
             document = hit["_source"]
             first_query.add_result(document["doc_id"], hit["_score"])
 
-            if self.configs.only_pass_content:
+            if self.configs.indexed_text_only:
                 pack: DataPack = input_pack.add_pack(
                     f"{self.configs.response_pack_name_prefix}_{idx}"
                 )
