@@ -44,7 +44,6 @@ class ElasticSearchProcessor(MultiPackProcessor):
     @classmethod
     def default_configs(cls) -> Dict[str, Any]:
         """This defines a basic config structure for ElasticSearchProcessor
-        
         Returns:
             A dictionary with the default config for this processor.
             query_pack_name (str): The query pack's name, default is "query".
