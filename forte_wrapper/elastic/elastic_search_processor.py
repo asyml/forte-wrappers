@@ -43,17 +43,17 @@ class ElasticSearchProcessor(MultiPackProcessor):
 
     @classmethod
     def default_configs(cls) -> Dict[str, Any]:
-        """
-        This defines a basic config structure for ElasticSearchProcessor.
-        :return: A dictionary with the default config for this processor.
-        Following are the keys for this dictionary:
-            - query_pack_name: the query pack's name.
-            - index_config: the ElasticSearchIndexer's config.
-            - field: Field name that will be used when creating the new
+        """This defines a basic config structure for ElasticSearchProcessor
+        
+        Returns:
+            A dictionary with the default config for this processor.
+            query_pack_name (str): The query pack's name, default is "query".
+            index_config (dict): The ElasticSearchIndexer's config.
+            field (str): Field name that will be used when creating the new
                 datapack.
-            - response_pack_name_prefix: the pack name prefix to be used
+            response_pack_name_prefix (str): the pack name prefix to be used
                 in response datapacks.
-            - indexed_text_only: boolean, defines whether the returned
+            indexed_text_only (bool): defines whether the returned
                 value from the field (as specified by the field
                 configuration) will be considered as plain text. If True,
                 a new data pack will be created and the value will be
