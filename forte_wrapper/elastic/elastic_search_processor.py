@@ -50,16 +50,17 @@ class ElasticSearchProcessor(MultiPackProcessor):
             - query_pack_name: the query pack's name.
             - index_config: the ElasticSearchIndexer's config.
             - field: Field name that will be used when creating the new
-            datapack.
+                datapack.
             - response_pack_name_prefix: the pack name prefix to be used
-            in response datapacks.
+                in response datapacks.
             - indexed_text_only: boolean, defines whether the returned
-            value from the field (as specified by the field configuration)
-             will be considered as plain text. If True, a new data pack
-             will be created and the value will be used as the text for
-             the data pack. Otherwise, the returned value will be
-             considered as serialized data pack, and the returned data
-             pack will be created by deserialization. Default is True.
+                value from the field (as specified by the field
+                configuration) will be considered as plain text. If True,
+                a new data pack will be created and the value will be 
+                used as the text for the data pack. Otherwise, the returned
+                value will be considered as serialized data pack, and the
+                returned data pack will be created by deserialization.
+                Default is True.
         """
         config = super().default_configs()
         config.update({
