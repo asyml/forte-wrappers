@@ -43,12 +43,31 @@ class ElasticSearchProcessor(MultiPackProcessor):
 
     @classmethod
     def default_configs(cls) -> Dict[str, Any]:
+        """This defines a basic config structure for ElasticSearchProcessor
+        Returns:
+            A dictionary with the default config for this processor.
+            query_pack_name (str): The query pack's name, default is "query".
+            index_config (dict): The ElasticSearchIndexer's config.
+            field (str): Field name that will be used when creating the new
+                datapack.
+            response_pack_name_prefix (str): the pack name prefix to be used
+                in response datapacks.
+            indexed_text_only (bool): defines whether the returned
+                value from the field (as specified by the field
+                configuration) will be considered as plain text. If True,
+                a new data pack will be created and the value will be
+                used as the text for the data pack. Otherwise, the returned
+                value will be considered as serialized data pack, and the
+                returned data pack will be created by deserialization.
+                Default is True.
+        """
         config = super().default_configs()
         config.update({
             "query_pack_name": "query",
             "index_config": ElasticSearchIndexer.default_configs(),
             "field": "content",
-            "response_pack_name_prefix": "passage"
+            "response_pack_name_prefix": "passage",
+            "indexed_text_only": True
         })
         return config
 
@@ -80,12 +99,19 @@ class ElasticSearchProcessor(MultiPackProcessor):
             document = hit["_source"]
             first_query.add_result(document["doc_id"], hit["_score"])
 
-            pack: DataPack = input_pack.add_pack(
-                f"{self.configs.response_pack_name_prefix}_{idx}"
-            )
-            pack.pack_name = document["doc_id"]
+            if self.configs.indexed_text_only:
+                pack: DataPack = input_pack.add_pack(
+                    f"{self.configs.response_pack_name_prefix}_{idx}"
+                )
+                pack.pack_name = document["doc_id"]
 
-            content = document[self.configs.field]
-            pack.set_text(content)
+                content = document[self.configs.field]
+                pack.set_text(content)
 
-            Document(pack=pack, begin=0, end=len(content))
+                Document(pack=pack, begin=0, end=len(content))
+
+            else:
+                pack = DataPack.deserialize(document['pack_info'])
+                input_pack.add_pack_(
+                    pack, f"{self.configs.response_pack_name_prefix}_{idx}")
+                pack.pack_name = document["doc_id"]
