@@ -56,7 +56,7 @@ class ElasticSearchProcessor(MultiPackProcessor):
             - indexed_text_only: boolean, defines whether the returned
                 value from the field (as specified by the field
                 configuration) will be considered as plain text. If True,
-                a new data pack will be created and the value will be 
+                a new data pack will be created and the value will be
                 used as the text for the data pack. Otherwise, the returned
                 value will be considered as serialized data pack, and the
                 returned data pack will be created by deserialization.
