@@ -69,4 +69,4 @@ jobs:
           coverage run -m pytest
       - name: Test doctest
         run: |
-          pytest --doctest-modules forte
+          pytest --doctest-modules forte_wrapper
