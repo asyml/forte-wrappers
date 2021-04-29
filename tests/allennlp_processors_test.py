@@ -5,7 +5,7 @@ from typing import List
 from ddt import ddt, data, unpack
 
 from allennlp.predictors import Predictor
-from utils.utils_processor import parse_allennlp_srl_tags, \
+from forte_wrapper.utils.utils_processor import parse_allennlp_srl_tags, \
     parse_allennlp_srl_results
 
 from forte.data.data_pack import DataPack
