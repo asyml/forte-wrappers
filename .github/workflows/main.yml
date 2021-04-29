@@ -51,7 +51,7 @@ jobs:
           rm -rf texar-pytorch
       - name: Install the project
         run: |
-          pip install --progress-bar off .          
+          pip install --progress-bar off .[nltk,varder,stanza,elastic,faiss,spacy,allennlp,cliner]
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
@@ -64,3 +64,9 @@ jobs:
       - name: Lint with mypy
         run: |
           mypy .
+      - name: Test with pytest and run coverage
+        run: |
+          coverage run -m pytest
+      - name: Test doctest
+        run: |
+          pytest --doctest-modules forte
