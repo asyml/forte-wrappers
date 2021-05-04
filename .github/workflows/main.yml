@@ -76,3 +76,4 @@ jobs:
           token: ${{ secrets.REPO_DISPATCH_PAT_HECTOR }}
           repository: petuum/composing_information_system
           event-type: trigger-composable-workflow
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
