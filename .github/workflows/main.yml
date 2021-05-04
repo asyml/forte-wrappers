@@ -66,5 +66,5 @@ jobs:
           mypy .
       - name: Test with pytest and run coverage
         run: |
-          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          export PYTHONPATH=`pwd`
           coverage run -m pytest
