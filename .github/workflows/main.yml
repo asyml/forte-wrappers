@@ -67,6 +67,3 @@ jobs:
       - name: Test with pytest and run coverage
         run: |
           coverage run -m pytest
-      - name: Test doctest
-        run: |
-          pytest --doctest-modules forte_wrapper/  --ignore-glob=*/cliner/*

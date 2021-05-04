@@ -9,7 +9,7 @@
 import os
 import re
 
-from examples.Cliner.CliNER.code.tools import clean_text, normalize_tokens
+from forte_wrapper.cliner.CliNER.code.tools import clean_text, normalize_tokens
 
 labels = {
     'O': 0,

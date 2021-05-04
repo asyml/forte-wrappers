@@ -17,7 +17,7 @@ The clinical ner processor
 import os
 from typing import Dict, Any
 
-from examples.Cliner.CliNER.code.predict import CliNERPredict
+from forte_wrapper.cliner.CliNER.code.predict import CliNERPredict
 from forte.common import Resources
 from forte.common.configuration import Config
 from forte.data.data_pack import DataPack

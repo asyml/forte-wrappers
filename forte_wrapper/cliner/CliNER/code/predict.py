@@ -11,9 +11,9 @@ import os
 import pickle
 import sys
 
-from examples.Cliner.CliNER.code import helper_dataset
-from examples.Cliner.CliNER.code import tools
-from examples.Cliner.CliNER.code.notes.documents import Document
+from forte_wrapper.cliner.CliNER.code import helper_dataset
+from forte_wrapper.cliner.CliNER.code import tools
+from forte_wrapper.cliner.CliNER.code.notes.documents import Document
 
 
 class CliNERPredict():
