@@ -71,8 +71,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Repository Dispatch
-      uses: peter-evans/repository-dispatch@v1
-      with:
-        token: ${{ secrets.REPO_DISPATCH_PAT_HECTOR }}
-        repository: petuum/composing_information_system
-        event-type: trigger-composable-workflow
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.REPO_DISPATCH_PAT_HECTOR }}
+          repository: petuum/composing_information_system
+          event-type: trigger-composable-workflow
