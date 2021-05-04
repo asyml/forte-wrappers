@@ -241,3 +241,7 @@ class TestAllenNLPProcessor(unittest.TestCase):
                     ' '.join([token.text for token in
                               tokens[arg_span.begin: arg_span.end + 1]]))
                 index += 1
+
+
+if __name__ == '__main__':
+    unittest.main()
