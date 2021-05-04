@@ -54,5 +54,5 @@ jobs:
           pip install --progress-bar off .[nltk,varder,stanza,elastic,faiss,spacy,allennlp,cliner]
       - name: Test with pytest and run coverage
         run: |
-          echo $PYTHONPATH
+          echo "::set-env name=PYTHONPATH::/home/runner/work/forte-wrappers"
           coverage run -m pytest
