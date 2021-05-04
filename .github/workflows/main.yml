@@ -52,7 +52,27 @@ jobs:
       - name: Install the project
         run: |
           pip install --progress-bar off .[nltk,varder,stanza,elastic,faiss,spacy,allennlp,cliner]
-      - name: Test with pytest and run coverage
+      - name: Lint with flake8
         run: |
-          echo "::set-env name=PYTHONPATH::/home/runner/work/forte-wrappers"
-          coverage run -m pytest
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 forte_wrapper/ --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=*/cliner/*
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 forte_wrapper/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude=*/cliner/*
+      - name: Lint with pylint
+        run: |
+          pylint forte_wrapper/
+      - name: Lint with mypy
+        run: |
+          mypy .
+
+
+  dispatch:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.REPO_DISPATCH_PAT_HECTOR }}
+        repository: petuum/composing_information_system
+        event-type: trigger-composable-workflow
