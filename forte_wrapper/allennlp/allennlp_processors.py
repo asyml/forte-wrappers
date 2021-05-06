@@ -27,7 +27,7 @@ from forte.processors.base import PackProcessor
 from ft.onto.base_ontology import Token, Sentence, Dependency, \
     PredicateLink, PredicateArgument, PredicateMention
 
-from forte_wrapper.utils.utils_processor import parse_allennlp_srl_tags, \
+from forte_wrapper.allennlp.utils_processor import parse_allennlp_srl_tags, \
     parse_allennlp_srl_results
 
 logger = logging.getLogger(__name__)
