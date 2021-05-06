@@ -71,6 +71,7 @@ jobs:
   dispatch:
     needs: build
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v1
@@ -78,4 +79,3 @@ jobs:
           token: ${{ secrets.REPO_DISPATCH_PAT_HECTOR }}
           repository: petuum/composing_information_system
           event-type: trigger-composable-workflow
-          client-payload: '{"ref": "main"}'
