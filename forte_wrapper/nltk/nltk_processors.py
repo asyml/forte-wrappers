@@ -13,6 +13,7 @@
 # limitations under the License.
 from typing import List
 
+import nltk
 from nltk import pos_tag, ne_chunk, PunktSentenceTokenizer
 from nltk.chunk import RegexpParser
 from nltk.stem import WordNetLemmatizer
@@ -50,6 +51,8 @@ class NLTKWordTokenizer(PackProcessor):
 class NLTKPOSTagger(PackProcessor):
     r"""A wrapper of NLTK pos tagger.
     """
+    def initialize(self, resources: Resources, configs: Config):
+        nltk.download('averaged_perceptron_tagger')
 
     def __init__(self):
         super().__init__()
@@ -67,6 +70,9 @@ class NLTKPOSTagger(PackProcessor):
 class NLTKLemmatizer(PackProcessor):
     r"""A wrapper of NLTK lemmatizer.
     """
+
+    def initialize(self, resources: Resources, configs: Config):
+        nltk.download('wordnet')
 
     def __init__(self):
         super().__init__()
@@ -111,6 +117,7 @@ class NLTKChunker(PackProcessor):
     # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
+        nltk.download('maxent_ne_chunker')
         self.chunker = RegexpParser(configs.pattern)
 
     @classmethod
@@ -156,6 +163,9 @@ class NLTKSentenceSegmenter(PackProcessor):
     r"""A wrapper of NLTK sentence tokenizer.
     """
 
+    def initialize(self, resources: Resources, configs: Config):
+        nltk.download('punkt')
+
     def __init__(self):
         super().__init__()
         self.sent_splitter = PunktSentenceTokenizer()
@@ -168,6 +178,10 @@ class NLTKSentenceSegmenter(PackProcessor):
 class NLTKNER(PackProcessor):
     r"""A wrapper of NLTK NER.
     """
+
+    def initialize(self, resources: Resources, configs: Config):
+        nltk.download('maxent_ne_chunker')
+        nltk.download('words')
 
     def __init__(self):
         super().__init__()
