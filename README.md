@@ -4,11 +4,11 @@
 
 -----------------
 
-[comment]: <> ([![Build Status]&#40;https://travis-ci.org/asyml/forte.svg?branch=master&#41;]&#40;https://travis-ci.org/asyml/forte&#41;)
-
 [comment]: <> ([![codecov]&#40;https://codecov.io/gh/asyml/forte/branch/master/graph/badge.svg&#41;]&#40;https://codecov.io/gh/asyml/forte&#41;)
 
 [comment]: <> ([![Documentation Status]&#40;https://readthedocs.org/projects/asyml-forte/badge/?version=latest&#41;]&#40;https://asyml-forte.readthedocs.io/en/latest/?badge=latest&#41;)
+
+[![Python Build](https://github.com/asyml/forte-wrappers/actions/workflows/main.yml/badge.svg)](https://github.com/asyml/forte-wrappers/actions/workflows/main.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/asyml/forte/blob/master/LICENSE)
 [![Chat](http://img.shields.io/badge/gitter.im-asyml/forte-blue.svg)](https://gitter.im/asyml/community)
 

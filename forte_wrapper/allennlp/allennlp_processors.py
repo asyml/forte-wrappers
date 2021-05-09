@@ -14,7 +14,7 @@
 
 import itertools
 import logging
-from typing import Any, Dict, Iterable, Iterator, List, Set
+from typing import Any, Dict, Iterator, List, Set
 import more_itertools
 
 from allennlp.predictors import Predictor
@@ -27,7 +27,7 @@ from forte.processors.base import PackProcessor
 from ft.onto.base_ontology import Token, Sentence, Dependency, \
     PredicateLink, PredicateArgument, PredicateMention
 
-from forte_wrapper.utils.utils_processor import parse_allennlp_srl_tags, \
+from forte_wrapper.allennlp.utils_processor import parse_allennlp_srl_tags, \
     parse_allennlp_srl_results
 
 logger = logging.getLogger(__name__)
@@ -145,20 +145,30 @@ class AllenNLPProcessor(PackProcessor):
         self._process_existing_entries(input_pack)
 
         batch_size: int = self.configs['infer_batch_size']
-        batches: Iterator[Iterable[Sentence]]
+        batches: Iterator[Iterator[Sentence]]
+        # Need a copy of the one-pass iterators to support a second loop on
+        # them. All other ways around it like using `itertools.tee` and `list`
+        # would require extra storage conflicting with the idea of using
+        # iterators in the first place. `more_itertools.ichunked` uses
+        # `itertools.tee` under the hood but our usage (reading iterators
+        # in order) does not cause memory issues.
+        batches_copy: Iterator[Iterator[Sentence]]
         if batch_size <= 0:
             batches = iter([input_pack.get(Sentence)])
+            batches_copy = iter([input_pack.get(Sentence)])
         else:
-            batches = more_itertools.chunked(
+            batches = more_itertools.ichunked(
                 input_pack.get(Sentence), batch_size)
-        for sentences in batches:
+            batches_copy = more_itertools.ichunked(
+                input_pack.get(Sentence), batch_size)
+        for sentences, sentences_copy in zip(batches, batches_copy):
             inputs: List[Dict[str, str]] = [{"sentence": s.text}
                                             for s in sentences]
             results: Dict[str, List[Dict[str, Any]]] = {
                 k: p.predict_batch_json(inputs)
                 for k, p in self.predictor.items()
             }
-            for i, sent in enumerate(sentences):
+            for i, sent in enumerate(sentences_copy):
                 result: Dict[str, List[str]] = {}
                 for key in self.predictor:
                     if key == 'srl':
