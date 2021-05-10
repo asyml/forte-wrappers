@@ -11,12 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Optional
+from typing import Optional, Dict, Set
 
 import spacy
 from spacy.language import Language
 from spacy.cli.download import download
-from forte.common import ProcessExecutionException
+from forte.common import ProcessExecutionException, ProcessorConfigError
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
@@ -48,6 +48,11 @@ class SpacyProcessor(PackProcessor):
 
     # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
+        if "pos" in configs.processors or "lemma" in configs.processors:
+            if "tokenize" not in configs.processors:
+                raise ProcessorConfigError('tokenize is necessary in '
+                                           'configs.processors for '
+                                           'pos or lemma')
         self.processors = configs.processors
         self.lang_model = configs.lang
         self.set_up()
@@ -121,7 +126,26 @@ class SpacyProcessor(PackProcessor):
         result = self.nlp(doc)
 
         # Record NER results.
-        self._process_ner(result, input_pack)
+        if "ner" in self.processors:
+            self._process_ner(result, input_pack)
 
         # Process sentence parses.
         self._process_parser(result.sents, input_pack)
+
+    def record(self, record_meta: Dict[str, Set[str]]):
+        r"""Method to add output type record of current processor
+        to :attr:`forte.data.data_pack.Meta.record`.
+
+        Args:
+            record_meta: the field in the datapack for type record that need to
+                fill in for consistency checking.
+        """
+        record_meta["ft.onto.base_ontology.Sentence"] = set()
+        if "ner" in self.processors:
+            record_meta["ft.onto.base_ontology.EntityMention"] = set()
+        if "tokenize" in self.processors:
+            record_meta["ft.onto.base_ontology.Token"] = set()
+            if "pos" in self.processors:
+                record_meta["ft.onto.base_ontology.Token"].add("pos")
+            if "lemma" in self.processors:
+                record_meta["ft.onto.base_ontology.Token"].add("lemma")

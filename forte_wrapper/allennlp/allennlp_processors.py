@@ -14,7 +14,7 @@
 
 import itertools
 import logging
-from typing import Any, Dict, Iterator, List
+from typing import Any, Dict, Iterator, List, Set
 import more_itertools
 
 from allennlp.predictors import Predictor
@@ -50,6 +50,12 @@ class AllenNLPProcessor(PackProcessor):
     # pylint: disable=attribute-defined-outside-init,unused-argument
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
+        if ("pos" in configs.processors or "depparse" in configs.processors
+                or "depparse" in configs.processors):
+            if "tokenize" not in self.configs.processors:
+                raise ProcessorConfigError('tokenize is necessary in '
+                                           'configs.processors for '
+                                           'pos, depparse or srl')
         cuda_devices = itertools.cycle(configs['cuda_devices'])
         if configs.tag_formalism not in MODEL2URL:
             raise ProcessorConfigError('Incorrect value for tag_formalism')
@@ -235,3 +241,33 @@ class AllenNLPProcessor(PackProcessor):
                                         tokens[arg_span.end].end)
                 link = PredicateLink(input_pack, pred, arg)
                 link.arg_type = label
+
+    @classmethod
+    def expected_types_and_attributes(cls) -> Dict[str, Set[str]]:
+        r"""Method to add expected type for current processor input which
+        would be checked before running the processor if
+        :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
+        the pipeline.
+        """
+        expectation_dict: Dict[str, Set[str]] = {
+             "ft.onto.base_ontology.Sentence": set()
+        }
+        return expectation_dict
+
+    def record(self, record_meta: Dict[str, Set[str]]):
+        r"""Method to add output type record of current processor
+        to :attr:`forte.data.data_pack.Meta.record`.
+
+        Args:
+            record_meta: the field in the datapack for type record that need to
+                fill in for consistency checking.
+        """
+        if "tokenize" in self.configs.processors:
+            record_meta["ft.onto.base_ontology.Token"] = set()
+            if "pos" in self.configs.processors:
+                record_meta["ft.onto.base_ontology.Token"].add("pos")
+            if "depparse" in self.configs.processors:
+                record_meta["ft.onto.base_ontology.Dependency"] = {"rel_type"}
+            if "srl" in self.configs.processors:
+                record_meta["ft.onto.base_ontology.PredicateArgument"] = set()
+                record_meta["ft.onto.base_ontology.PredicateMention"] = set()
