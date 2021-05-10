@@ -148,7 +148,7 @@ class NLTKLemmatizer(PackProcessor):
         :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
         the pipeline.
         """
-        return {"ft.onto.base_ontology.Token": "pos"}
+        return {"ft.onto.base_ontology.Token": {"pos"}}
 
 
 def penn2morphy(penntag: str) -> str:
@@ -318,4 +318,4 @@ class NLTKNER(PackProcessor):
         the pipeline.
         """
         return {"ft.onto.base_ontology.Sentence": set(),
-                "ft.onto.base_ontology.Token": "pos"}
+                "ft.onto.base_ontology.Token": {"pos"}}
