@@ -31,7 +31,7 @@ setuptools.setup(
         'stanza': ['stanza==1.0.1'],
         'elastic': ['elasticsearch==7.5.1'],
         'faiss': ['faiss-cpu>=1.6.1'],
-        'spacy': ['spacy==2.3.0', 'scispacy==0.3.0'],
+        'spacy': ['spacy>=2.3.0, <2.4.0', 'scispacy==0.3.0'],
         'allennlp': ['allennlp==1.2.0', 'allennlp-models==1.2.0',
                      'torch>=1.5.0'],
         'cliner': ['python-crfsuite==0.9.7'],
