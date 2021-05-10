@@ -46,6 +46,12 @@ class SpacyProcessor(PackProcessor):
             download(self.lang_model)
             self.nlp = spacy.load(self.lang_model)
 
+        if 'ent_link' in self.processors:
+            from scispacy.linking import EntityLinker
+            linker = EntityLinker(resolve_abbreviations=True, name="umls")
+
+            self.nlp.add_pipe(linker)
+
     # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
         self.processors = configs.processors
@@ -57,11 +63,17 @@ class SpacyProcessor(PackProcessor):
         """
         This defines a basic config structure for spaCy.
         Returns:
-
+            dictionary with the default config for this processor.
+        Following are the keys for this dictionary:
+            - processors: defines what operations to be done on the sentence,
+                default value is "tokenize,pos,lemma" which performs all the
+                three operations.
+            - lang: language model, default value is 'en_core_web_sm'.
+            - use_gpu: use gpu or not, default value is False.
         """
         config = super().default_configs()
         config.update({
-            'processors': 'tokenize, pos, lemma',
+            'processors': 'tokenize, pos, lemma, sent_segment, ent_link',
             'lang': 'en_core_web_sm',
             # Language code for the language to build the Pipeline
             'use_gpu': False,
@@ -110,6 +122,45 @@ class SpacyProcessor(PackProcessor):
                                    item.end_char)
             entity.ner_type = item.label_
 
+    def _process_entity_linking(self, result, input_pack):
+        """
+        Do entity linking task, and store medical entity mentions
+        :param result:
+        :param input_pack:
+        :return:
+        """
+        from onto.medical import MedicalEntityMention, UMLSConceptLink
+
+        # if "sent_segment" in self.processors:
+        #     for sentence in result.sents:
+        #         Sentence(input_pack, sentence.start_char, sentence.end_char)
+
+        medical_entities = result.ents
+        # linker = self.nlp.get_pipe("scispacy_linker")
+        linker = self.nlp.get_pipe('EntityLinker')
+
+        # get medical entity mentions and UMLS concepts
+        for item in medical_entities:
+            entity = MedicalEntityMention(input_pack, item.start_char,
+                                   item.end_char)
+            entity.ner_type = item.label_
+
+            for umls_ent in item._.kb_ents:
+                cui = umls_ent[0]
+                score = str(umls_ent[1])
+
+                cui_entity = linker.kb.cui_to_entity[cui]
+
+                umls = UMLSConceptLink(input_pack)
+                umls.cui = cui
+                umls.score = score
+                umls.name = cui_entity.canonical_name
+                umls.definition = cui_entity.definition
+                umls.tuis = cui_entity.types
+                umls.aliases = cui_entity.aliases
+
+                entity.umls_entities.append(umls)
+
     def _process(self, input_pack: DataPack):
         doc = input_pack.text
 
@@ -124,4 +175,9 @@ class SpacyProcessor(PackProcessor):
         self._process_ner(result, input_pack)
 
         # Process sentence parses.
-        self._process_parser(result.sents, input_pack)
+        if 'sent_segment' in self.processors:
+            self._process_parser(result.sents, input_pack)
+
+        # Record entity linking results.
+        if 'ent_link' in self.processors:
+            self._process_entity_linking(result, input_pack)
