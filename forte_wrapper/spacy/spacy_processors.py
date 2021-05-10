@@ -80,14 +80,14 @@ class SpacyProcessor(PackProcessor):
             dictionary with the default config for this processor.
         Following are the keys for this dictionary:
             - processors: defines what operations to be done on the sentence,
-                default value is "tokenize,pos,lemma" which performs all the
-                three operations.
+                default value is "tokenize,pos,lemma,sent_parse" which performs
+                all the basic operations.
             - lang: language model, default value is 'en_core_web_sm'.
             - use_gpu: use gpu or not, default value is False.
         """
         config = super().default_configs()
         config.update({
-            'processors': 'tokenize, pos, lemma, sent_parse, ent_link',
+            'processors': 'sent_parse, tokenize, pos, lemma',
             'lang': 'en_core_web_sm',
             # Language code for the language to build the Pipeline
             'use_gpu': False,
@@ -138,7 +138,7 @@ class SpacyProcessor(PackProcessor):
 
     def _process_entity_linking(self, result, input_pack):
         """
-        Do entity linking task, and store medical entity mentions
+        Do medical entity linking task, and store medical entity mentions
         :param result:
         :param input_pack:
         :return:
@@ -188,7 +188,7 @@ class SpacyProcessor(PackProcessor):
         if 'sent_parse' in self.processors:
             self._process_parser(result.sents, input_pack)
 
-        # Record entity linking results.
+        # Record medical entity linking results.
         if 'ent_link' in self.processors:
             self._process_entity_linking(result, input_pack)
 

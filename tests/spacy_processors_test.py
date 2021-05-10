@@ -36,7 +36,7 @@ class TestSpacyProcessor(unittest.TestCase):
         self.spacy.set_reader(StringReader())
 
         config = {
-            "processors": "tokenize",
+            "processors": "sent_parse, tokenize",
             "lang": "en_core_web_sm",
             # Language code for the language to build the Pipeline
             "use_gpu": False
@@ -63,12 +63,12 @@ class TestSpacyProcessor(unittest.TestCase):
         self.assertEqual(tokens, document.split())
 
     @data(
-        "tokenize",
-        "tokenize, pos",
-        "tokenize, pos, lemma",
-        "tokenize, lemma",
-        "lemma",
-        "ner, tokenize, lemma, pos",
+        "sent_parse, tokenize",
+        "sent_parse, tokenize, pos",
+        "sent_parse, tokenize, pos, lemma",
+        "sent_parse, tokenize, lemma",
+        "sent_parse, lemma",
+        "sent_parse, ner, tokenize, lemma, pos",
         "ner",
 
     )
