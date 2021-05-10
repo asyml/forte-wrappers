@@ -48,7 +48,8 @@ class NLTKWordTokenizer(PackProcessor):
             Token(input_pack, begin, end)
 
     def record(self, record_meta: Dict[str, Set[str]]):
-        r"""Method to add output type record of current processor
+        r"""Method to add output type record of `NLTKWordTokenizer`, which is
+        `ft.onto.base_ontology.Token`,
         to :attr:`forte.data.data_pack.Meta.record`.
 
         Args:
@@ -79,19 +80,20 @@ class NLTKPOSTagger(PackProcessor):
             token.pos = tag[1]
 
     def record(self, record_meta: Dict[str, Set[str]]):
-        r"""Method to add output type record of current processor
+        r"""Method to add output type record of `NLTKPOSTagger`, which adds
+        attribute `pos` to `ft.onto.base_ontology.Token`
         to :attr:`forte.data.data_pack.Meta.record`.
 
         Args:
             record_meta: the field in the datapack for type record that need to
                 fill in for consistency checking.
         """
-        record_meta["ft.onto.base_ontology.Token"] = {"pos"}
+        record_meta["ft.onto.base_ontology.Token"].add("pos")
 
     @classmethod
     def expected_types_and_attributes(cls):
-        r"""Method to add expected type for current processor input which
-        would be checked before running the processor if
+        r"""Method to add expected type `ft.onto.base_ontology.Token` for input
+        which would be checked before running the processor if
         the pipeline is initialized with
         `enforce_consistency=True` or
         :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
@@ -130,7 +132,8 @@ class NLTKLemmatizer(PackProcessor):
             token.lemma = lemma
 
     def record(self, record_meta: Dict[str, Set[str]]):
-        r"""Method to add output type record of current processor
+        r"""Method to add output type record of `NLTKLemmatizer` which adds
+        attribute `lemma` to `ft.onto.base_ontology.Token`
         to :attr:`forte.data.data_pack.Meta.record`.
 
         Args:
@@ -141,7 +144,8 @@ class NLTKLemmatizer(PackProcessor):
 
     @classmethod
     def expected_types_and_attributes(cls):
-        r"""Method to add expected type for current processor input which
+        r"""Method to add expected type `ft.onto.base_ontology.Token` with
+        attribute `pos` which
         would be checked before running the processor if
         the pipeline is initialized with
         `enforce_consistency=True` or
@@ -213,7 +217,8 @@ class NLTKChunker(PackProcessor):
                     index += 1
 
     def record(self, record_meta: Dict[str, Set[str]]):
-        r"""Method to add output type record of current processor
+        r"""Method to add output type record of `NLTKChunker` which adds
+        `ft.onto.base_ontology.Phrase` with attribute `phrase_type`
         to :attr:`forte.data.data_pack.Meta.record`.
 
         Args:
@@ -224,7 +229,8 @@ class NLTKChunker(PackProcessor):
 
     @classmethod
     def expected_types_and_attributes(cls):
-        r"""Method to add expected type for current processor input which
+        r"""Method to add expected type ft.onto.base_ontology.Token` with
+        attribute `pos` and `ft.onto.base_ontology.Sentence` which
         would be checked before running the processor if
         the pipeline is initialized with
         `enforce_consistency=True` or
@@ -252,7 +258,8 @@ class NLTKSentenceSegmenter(PackProcessor):
             Sentence(input_pack, begin, end)
 
     def record(self, record_meta: Dict[str, Set[str]]):
-        r"""Method to add output type record of current processor
+        r"""Method to add output type record of `NLTKSentenceSegmenter`, which
+        is `ft.onto.base_ontology.Sentence`
         to :attr:`forte.data.data_pack.Meta.record`.
 
         Args:
@@ -299,7 +306,8 @@ class NLTKNER(PackProcessor):
                     index += 1
 
     def record(self, record_meta: Dict[str, Set[str]]):
-        r"""Method to add output type record of current processor
+        r"""Method to add output type record of `NLTKNER` which is
+        `ft.onto.base_ontology.EntityMention` with attribute `phrase_type`
         to :attr:`forte.data.data_pack.Meta.record`.
 
         Args:
@@ -310,7 +318,8 @@ class NLTKNER(PackProcessor):
 
     @classmethod
     def expected_types_and_attributes(cls):
-        r"""Method to add expected type for current processor input which
+        r"""Method to add expected type ft.onto.base_ontology.Token` with
+        attribute `pos` and `ft.onto.base_ontology.Sentence` which
         would be checked before running the processor if
         the pipeline is initialized with
         `enforce_consistency=True` or
