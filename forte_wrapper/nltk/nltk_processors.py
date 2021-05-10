@@ -51,6 +51,8 @@ class NLTKWordTokenizer(PackProcessor):
 class NLTKPOSTagger(PackProcessor):
     r"""A wrapper of NLTK pos tagger.
     """
+
+    # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
         nltk.download('averaged_perceptron_tagger')
 
@@ -71,6 +73,7 @@ class NLTKLemmatizer(PackProcessor):
     r"""A wrapper of NLTK lemmatizer.
     """
 
+    # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
         nltk.download('wordnet')
 
@@ -163,6 +166,7 @@ class NLTKSentenceSegmenter(PackProcessor):
     r"""A wrapper of NLTK sentence tokenizer.
     """
 
+    # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
         nltk.download('punkt')
 
@@ -179,6 +183,7 @@ class NLTKNER(PackProcessor):
     r"""A wrapper of NLTK NER.
     """
 
+    # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
         nltk.download('maxent_ne_chunker')
         nltk.download('words')
