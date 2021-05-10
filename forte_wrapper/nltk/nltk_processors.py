@@ -52,8 +52,8 @@ class NLTKPOSTagger(PackProcessor):
     r"""A wrapper of NLTK pos tagger.
     """
 
-    # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
+        super().initialize(resources, configs)
         nltk.download('averaged_perceptron_tagger')
 
     def __init__(self):
@@ -73,8 +73,8 @@ class NLTKLemmatizer(PackProcessor):
     r"""A wrapper of NLTK lemmatizer.
     """
 
-    # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
+        super().initialize(resources, configs)
         nltk.download('wordnet')
 
     def __init__(self):
@@ -117,7 +117,6 @@ class NLTKChunker(PackProcessor):
         super().__init__()
         self.chunker = None
 
-    # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
         nltk.download('maxent_ne_chunker')
@@ -166,8 +165,8 @@ class NLTKSentenceSegmenter(PackProcessor):
     r"""A wrapper of NLTK sentence tokenizer.
     """
 
-    # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
+        super().initialize(resources, configs)
         nltk.download('punkt')
 
     def __init__(self):
@@ -183,8 +182,8 @@ class NLTKNER(PackProcessor):
     r"""A wrapper of NLTK NER.
     """
 
-    # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
+        super().initialize(resources, configs)
         nltk.download('maxent_ne_chunker')
         nltk.download('words')
 
