@@ -47,6 +47,7 @@ class SpacyProcessor(PackProcessor):
             download(self.lang_model)
             self.nlp = spacy.load(self.lang_model)
 
+        # pylint: disable=import-outside-toplevel
         if 'ent_link' in self.processors:
             from scispacy.linking import EntityLinker
             linker = EntityLinker(resolve_abbreviations=True, name="umls")
@@ -190,7 +191,6 @@ class SpacyProcessor(PackProcessor):
         # Record entity linking results.
         if 'ent_link' in self.processors:
             self._process_entity_linking(result, input_pack)
-
 
     def record(self, record_meta: Dict[str, Set[str]]):
         r"""Method to add output type record of current processor
