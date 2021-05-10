@@ -22,6 +22,7 @@ from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
 from ft.onto.base_ontology import EntityMention, Sentence, Token
+from onto.medical import MedicalEntityMention, UMLSConceptLink
 
 __all__ = [
     "SpacyProcessor",
@@ -54,11 +55,18 @@ class SpacyProcessor(PackProcessor):
 
     # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
+        if "pos" in configs.processors or "lemma" in configs.processors \
+                or "tokenize" in configs.processors:
+            if "sent_parse" not in configs.processors:
+                raise ProcessorConfigError('sent_parse is necessary in '
+                                           'configs.processors for '
+                                           'tokenize or pos or lemma')
         if "pos" in configs.processors or "lemma" in configs.processors:
             if "tokenize" not in configs.processors:
                 raise ProcessorConfigError('tokenize is necessary in '
                                            'configs.processors for '
                                            'pos or lemma')
+
         self.processors = configs.processors
         self.lang_model = configs.lang
         self.set_up()
@@ -78,7 +86,7 @@ class SpacyProcessor(PackProcessor):
         """
         config = super().default_configs()
         config.update({
-            'processors': 'tokenize, pos, lemma, sent_segment, ent_link',
+            'processors': 'tokenize, pos, lemma, sent_parse, ent_link',
             'lang': 'en_core_web_sm',
             # Language code for the language to build the Pipeline
             'use_gpu': False,
@@ -134,11 +142,6 @@ class SpacyProcessor(PackProcessor):
         :param input_pack:
         :return:
         """
-        from onto.medical import MedicalEntityMention, UMLSConceptLink
-
-        # if "sent_segment" in self.processors:
-        #     for sentence in result.sents:
-        #         Sentence(input_pack, sentence.start_char, sentence.end_char)
 
         medical_entities = result.ents
         # linker = self.nlp.get_pipe("scispacy_linker")
@@ -181,14 +184,13 @@ class SpacyProcessor(PackProcessor):
             self._process_ner(result, input_pack)
 
         # Process sentence parses.
-        if 'sent_segment' in self.processors:
+        if 'sent_parse' in self.processors:
             self._process_parser(result.sents, input_pack)
 
         # Record entity linking results.
         if 'ent_link' in self.processors:
             self._process_entity_linking(result, input_pack)
 
-        self._process_parser(result.sents, input_pack)
 
     def record(self, record_meta: Dict[str, Set[str]]):
         r"""Method to add output type record of current processor
@@ -198,13 +200,17 @@ class SpacyProcessor(PackProcessor):
             record_meta: the field in the datapack for type record that need to
                 fill in for consistency checking.
         """
-        record_meta["ft.onto.base_ontology.Sentence"] = set()
+        if "sent_parse" in self.processors:
+            record_meta["ft.onto.base_ontology.Sentence"] = set()
+            if "tokenize" in self.processors:
+                record_meta["ft.onto.base_ontology.Token"] = set()
+                if "pos" in self.processors:
+                    record_meta["ft.onto.base_ontology.Token"].add("pos")
+                if "lemma" in self.processors:
+                    record_meta["ft.onto.base_ontology.Token"].add("lemma")
         if "ner" in self.processors:
             record_meta["ft.onto.base_ontology.EntityMention"] = set()
-        if "tokenize" in self.processors:
-            record_meta["ft.onto.base_ontology.Token"] = set()
-            if "pos" in self.processors:
-                record_meta["ft.onto.base_ontology.Token"].add("pos")
-            if "lemma" in self.processors:
-                record_meta["ft.onto.base_ontology.Token"].add("lemma")
 
+        if "ent_link" in self.processors:
+            record_meta["onto.medical.MedicalEntityMention"] = set()
+            record_meta["onto.medical.UMLSConceptLink"] = set()
