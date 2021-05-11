@@ -29,11 +29,23 @@ __all__ = [
 ]
 
 
+SCISPACYMODEL_URL = {
+    "en_core_sci_sm": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_core_sci_sm-0.3.0.tar.gz",
+    "en_core_sci_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_core_sci_md-0.3.0.tar.gz",
+    "en_core_sci_lg": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_core_sci_lg-0.3.0.tar.gz",
+    "en_ner_craft_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_ner_craft_md-0.3.0.tar.gz",
+    "en_ner_jnlpba_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_ner_jnlpba_md-0.3.0.tar.gz",
+    "en_ner_bc5cdr_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_ner_bc5cdr_md-0.3.0.tar.gz",
+    "en_ner_bionlp13cg_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_ner_bionlp13cg_md-0.3.0.tar.gz"
+}
+
+
 class SpacyProcessor(PackProcessor):
     """
-    A wrapper for spaCy processors
+    This provide a wrapper for spaCy and ScispaCy processors.
+    spaCy github page: https://github.com/explosion/spaCy/tree/v2.3.1
+    ScispaCy github page: https://github.com/allenai/scispacy/tree/v0.3.0
     """
-
     def __init__(self):
         super().__init__()
         self.processors: str = ""
@@ -41,18 +53,33 @@ class SpacyProcessor(PackProcessor):
         self.lang_model: str = ''
 
     def set_up(self):
-        try:
-            self.nlp = spacy.load(self.lang_model)
-        except OSError:
-            download(self.lang_model)
-            self.nlp = spacy.load(self.lang_model)
-
         # pylint: disable=import-outside-toplevel
         if 'umls_link' in self.processors:
-            from scispacy.linking import EntityLinker
-            linker = EntityLinker(resolve_abbreviations=True, name="umls")
+            if self.lang_model not in SCISPACYMODEL_URL:
+                raise ProcessorConfigError('SciSpacy model is necessary in '
+                                           'configs.processors for '
+                                           'UMLS entity linking, '
+                                           'Please provide a valid model name, '
+                                           'refer to \'default_configs\' for '
+                                           'more information.')
 
+            import subprocess
+            import sys
+            from scispacy.linking import EntityLinker
+
+            model = SCISPACYMODEL_URL[self.lang_model]
+            subprocess.check_call(
+                [sys.executable, "-m", "pip", "install", model])
+            self.nlp = spacy.load(self.lang_model)
+
+            linker = EntityLinker(resolve_abbreviations=True, name="umls")
             self.nlp.add_pipe(linker)
+        else:
+            try:
+                self.nlp = spacy.load(self.lang_model)
+            except OSError:
+                download(self.lang_model)
+                self.nlp = spacy.load(self.lang_model)
 
     # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
@@ -83,7 +110,12 @@ class SpacyProcessor(PackProcessor):
             - processors: defines what operations to be done on the sentence,
                 default value is "sentence, tokenize,pos,lemma" which performs
                 all the basic operations.
-            - lang: language model, default value is 'en_core_web_sm'.
+            - lang: language model, default is spaCy 'en_core_web_sm' model.
+                The pipeline support spaCy and ScispaCy models.
+                spaCy models could be found at https://spacy.io/models.
+                For UMLS entity linking task, ScispaCy model is required.
+                ScispaCy models supported could be found at
+                https://github.com/allenai/scispacy/tree/v0.3.0.
             - use_gpu: use gpu or not, default value is False.
         """
         config = super().default_configs()
@@ -139,8 +171,8 @@ class SpacyProcessor(PackProcessor):
 
     def _process_umls_entity_linking(self, result, input_pack: DataPack):
         """
-        Do UMLS medical entity linking with scispacy, and store medical entity
-        mentions and UMLS concepts.
+        Do UMLS medical entity linking with EntityLinker, and store medical
+        entity mentions and UMLS concepts.
         Args:
             result: SpaCy results
             input_pack: Input datapack
