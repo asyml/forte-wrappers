@@ -147,7 +147,7 @@ class SpacyProcessor(PackProcessor):
         Returns:
         """
         medical_entities = result.ents
-        linker = self.nlp.get_pipe('EntityLinker')
+        linker = self.nlp.get_pipe('EntityLinker')  # type: ignore
 
         # get medical entity mentions and UMLS concepts
         for item in medical_entities:
