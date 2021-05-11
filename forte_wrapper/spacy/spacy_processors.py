@@ -74,6 +74,7 @@ class SpacyProcessor(PackProcessor):
 
             import os
             os.system('pip install {}'.format(model))
+            download(self.lang_model)
             self.nlp = spacy.load(self.lang_model)
 
             linker = EntityLinker(resolve_abbreviations=True, name="umls")
