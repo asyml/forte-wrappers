@@ -28,7 +28,7 @@ __all__ = [
     "SpacyProcessor",
 ]
 
-
+# pylint: disable=line-too-long
 SCISPACYMODEL_URL = {
     "en_core_sci_sm": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_core_sci_sm-0.3.0.tar.gz",
     "en_core_sci_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_core_sci_md-0.3.0.tar.gz",
