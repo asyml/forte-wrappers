@@ -55,10 +55,9 @@ class SpacyProcessor(PackProcessor):
     def set_up(self):
         # pylint: disable=import-outside-toplevel
         self.load_lang_model()
-        if 'umls_link' in self.processors:
+        if 'umls_link' in self.processors:  # add UMLS entity linking component
             from scispacy.linking import EntityLinker
             linker = EntityLinker(resolve_abbreviations=True, name="umls")
-
             self.nlp.add_pipe(linker)
 
     def load_lang_model(self):
@@ -69,11 +68,11 @@ class SpacyProcessor(PackProcessor):
             import sys
             import os
             import importlib
-            from scispacy.linking import EntityLinker
 
             download_url = SCISPACYMODEL_URL[self.lang_model]
             command = [sys.executable, "-m", "pip", "install"] + [download_url]
-            subprocess.run(command, env=os.environ.copy(), encoding="utf8")
+            subprocess.run(command, env=os.environ.copy(), encoding="utf8",
+                           check=False)
 
             cls = importlib.import_module(self.lang_model)
             self.nlp = cls.load()
@@ -117,8 +116,8 @@ class SpacyProcessor(PackProcessor):
             - lang: language model, default is spaCy 'en_core_web_sm' model.
                 The pipeline support spaCy and ScispaCy models.
                 spaCy models could be found at https://spacy.io/models.
-                For UMLS entity linking task, ScispaCy model is required.
-                ScispaCy models supported could be found at
+                For UMLS entity linking task, ScispaCy model trained on
+                biomedical dataset is preferred. Models could be found at
                 https://github.com/allenai/scispacy/tree/v0.3.0.
             - use_gpu: use gpu or not, default value is False.
         """
