@@ -142,7 +142,7 @@ class SpacyProcessor(PackProcessor):
         """
         record_meta["ft.onto.base_ontology.Sentence"] = set()
         if "ner" in self.processors:
-            record_meta["ft.onto.base_ontology.EntityMention"] = set()
+            record_meta["ft.onto.base_ontology.EntityMention"] = {"ner_type"}
         if "tokenize" in self.processors:
             record_meta["ft.onto.base_ontology.Token"] = set()
             if "pos" in self.processors:

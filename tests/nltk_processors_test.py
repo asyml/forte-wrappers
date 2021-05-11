@@ -28,7 +28,7 @@ from ft.onto.base_ontology import Token, Sentence, Phrase, EntityMention
 class TestNLTKSentenceSegmenter(unittest.TestCase):
 
     def setUp(self):
-        self.nltk = Pipeline[DataPack]()
+        self.nltk = Pipeline[DataPack](enforce_consistency=True)
         self.nltk.set_reader(StringReader())
         self.nltk.add(NLTKSentenceSegmenter())
         self.nltk.initialize()
@@ -47,7 +47,7 @@ class TestNLTKSentenceSegmenter(unittest.TestCase):
 class TestNLTKWordTokenizer(unittest.TestCase):
 
     def setUp(self):
-        self.nltk = Pipeline[DataPack]()
+        self.nltk = Pipeline[DataPack](enforce_consistency=True)
         self.nltk.set_reader(StringReader())
         self.nltk.add(NLTKSentenceSegmenter())
         self.nltk.add(NLTKWordTokenizer())
@@ -74,7 +74,7 @@ class TestNLTKWordTokenizer(unittest.TestCase):
 class TestNLTKPOSTagger(unittest.TestCase):
 
     def setUp(self):
-        self.nltk = Pipeline[DataPack]()
+        self.nltk = Pipeline[DataPack](enforce_consistency=True)
         self.nltk.set_reader(StringReader())
         self.nltk.add(NLTKSentenceSegmenter())
         self.nltk.add(NLTKWordTokenizer())
@@ -101,7 +101,7 @@ class TestNLTKPOSTagger(unittest.TestCase):
 class TestNLTKLemmatizer(unittest.TestCase):
 
     def setUp(self):
-        self.nltk = Pipeline[DataPack]()
+        self.nltk = Pipeline[DataPack](enforce_consistency=True)
         self.nltk.set_reader(StringReader())
         self.nltk.add(NLTKSentenceSegmenter())
         self.nltk.add(NLTKWordTokenizer())
@@ -130,7 +130,7 @@ class TestNLTKLemmatizer(unittest.TestCase):
 class TestNLTKChunker(unittest.TestCase):
 
     def setUp(self):
-        self.nltk = Pipeline[DataPack]()
+        self.nltk = Pipeline[DataPack](enforce_consistency=True)
         self.nltk.set_reader(StringReader())
         self.nltk.add(NLTKSentenceSegmenter())
         self.nltk.add(NLTKWordTokenizer())
@@ -160,7 +160,7 @@ class TestNLTKChunker(unittest.TestCase):
 class TestNLTKNER(unittest.TestCase):
 
     def setUp(self):
-        self.nltk = Pipeline[DataPack]()
+        self.nltk = Pipeline[DataPack](enforce_consistency=True)
         self.nltk.set_reader(StringReader())
         self.nltk.add(NLTKSentenceSegmenter())
         self.nltk.add(NLTKWordTokenizer())

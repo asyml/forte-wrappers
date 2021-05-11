@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import List
+from typing import List, Dict, Set
 
 import nltk
 from nltk import pos_tag, ne_chunk, PunktSentenceTokenizer
@@ -47,6 +47,17 @@ class NLTKWordTokenizer(PackProcessor):
         for begin, end in self.tokenizer.span_tokenize(input_pack.text):
             Token(input_pack, begin, end)
 
+    def record(self, record_meta: Dict[str, Set[str]]):
+        r"""Method to add output type record of `NLTKWordTokenizer`, which is
+        `ft.onto.base_ontology.Token`,
+        to :attr:`forte.data.data_pack.Meta.record`.
+
+        Args:
+            record_meta: the field in the datapack for type record that need to
+                fill in for consistency checking.
+        """
+        record_meta["ft.onto.base_ontology.Token"] = set()
+
 
 class NLTKPOSTagger(PackProcessor):
     r"""A wrapper of NLTK pos tagger.
@@ -67,6 +78,28 @@ class NLTKPOSTagger(PackProcessor):
         taggings = pos_tag(token_texts)
         for token, tag in zip(token_entries, taggings):
             token.pos = tag[1]
+
+    def record(self, record_meta: Dict[str, Set[str]]):
+        r"""Method to add output type record of `NLTKPOSTagger`, which adds
+        attribute `pos` to `ft.onto.base_ontology.Token`
+        to :attr:`forte.data.data_pack.Meta.record`.
+
+        Args:
+            record_meta: the field in the datapack for type record that need to
+                fill in for consistency checking.
+        """
+        record_meta["ft.onto.base_ontology.Token"].add("pos")
+
+    @classmethod
+    def expected_types_and_attributes(cls):
+        r"""Method to add expected type `ft.onto.base_ontology.Token` for input
+        which would be checked before running the processor if
+        the pipeline is initialized with
+        `enforce_consistency=True` or
+        :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
+        the pipeline.
+        """
+        return {"ft.onto.base_ontology.Token": set()}
 
 
 class NLTKLemmatizer(PackProcessor):
@@ -97,6 +130,29 @@ class NLTKLemmatizer(PackProcessor):
                   for i in range(len(token_texts))]
         for token, lemma in zip(token_entries, lemmas):
             token.lemma = lemma
+
+    def record(self, record_meta: Dict[str, Set[str]]):
+        r"""Method to add output type record of `NLTKLemmatizer` which adds
+        attribute `lemma` to `ft.onto.base_ontology.Token`
+        to :attr:`forte.data.data_pack.Meta.record`.
+
+        Args:
+            record_meta: the field in the datapack for type record that need to
+                fill in for consistency checking.
+        """
+        record_meta["ft.onto.base_ontology.Token"].add("lemma")
+
+    @classmethod
+    def expected_types_and_attributes(cls):
+        r"""Method to add expected type `ft.onto.base_ontology.Token` with
+        attribute `pos` which
+        would be checked before running the processor if
+        the pipeline is initialized with
+        `enforce_consistency=True` or
+        :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
+        the pipeline.
+        """
+        return {"ft.onto.base_ontology.Token": {"pos"}}
 
 
 def penn2morphy(penntag: str) -> str:
@@ -160,6 +216,30 @@ class NLTKChunker(PackProcessor):
                     # chunk: ('is', 'VBZ')
                     index += 1
 
+    def record(self, record_meta: Dict[str, Set[str]]):
+        r"""Method to add output type record of `NLTKChunker` which adds
+        `ft.onto.base_ontology.Phrase` with attribute `phrase_type`
+        to :attr:`forte.data.data_pack.Meta.record`.
+
+        Args:
+            record_meta: the field in the datapack for type record that need to
+                fill in for consistency checking.
+        """
+        record_meta["ft.onto.base_ontology.Phrase"] = {"phrase_type"}
+
+    @classmethod
+    def expected_types_and_attributes(cls):
+        r"""Method to add expected type ft.onto.base_ontology.Token` with
+        attribute `pos` and `ft.onto.base_ontology.Sentence` which
+        would be checked before running the processor if
+        the pipeline is initialized with
+        `enforce_consistency=True` or
+        :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
+        the pipeline.
+        """
+        return {"ft.onto.base_ontology.Sentence": set(),
+                "ft.onto.base_ontology.Token": {"pos"}}
+
 
 class NLTKSentenceSegmenter(PackProcessor):
     r"""A wrapper of NLTK sentence tokenizer.
@@ -176,6 +256,17 @@ class NLTKSentenceSegmenter(PackProcessor):
     def _process(self, input_pack: DataPack):
         for begin, end in self.sent_splitter.span_tokenize(input_pack.text):
             Sentence(input_pack, begin, end)
+
+    def record(self, record_meta: Dict[str, Set[str]]):
+        r"""Method to add output type record of `NLTKSentenceSegmenter`, which
+        is `ft.onto.base_ontology.Sentence`
+        to :attr:`forte.data.data_pack.Meta.record`.
+
+        Args:
+            record_meta: the field in the datapack for type record that need to
+                fill in for consistency checking.
+        """
+        record_meta["ft.onto.base_ontology.Sentence"] = set()
 
 
 class NLTKNER(PackProcessor):
@@ -213,3 +304,27 @@ class NLTKNER(PackProcessor):
                     # For example:
                     # chunk: ('This', 'DT')
                     index += 1
+
+    def record(self, record_meta: Dict[str, Set[str]]):
+        r"""Method to add output type record of `NLTKNER` which is
+        `ft.onto.base_ontology.EntityMention` with attribute `phrase_type`
+        to :attr:`forte.data.data_pack.Meta.record`.
+
+        Args:
+            record_meta: the field in the datapack for type record that need to
+                fill in for consistency checking.
+        """
+        record_meta["ft.onto.base_ontology.EntityMention"] = {"ner_type"}
+
+    @classmethod
+    def expected_types_and_attributes(cls):
+        r"""Method to add expected type ft.onto.base_ontology.Token` with
+        attribute `pos` and `ft.onto.base_ontology.Sentence` which
+        would be checked before running the processor if
+        the pipeline is initialized with
+        `enforce_consistency=True` or
+        :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
+        the pipeline.
+        """
+        return {"ft.onto.base_ontology.Sentence": set(),
+                "ft.onto.base_ontology.Token": {"pos"}}
