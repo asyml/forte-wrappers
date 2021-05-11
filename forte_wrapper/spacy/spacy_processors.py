@@ -53,91 +53,44 @@ class SpacyProcessor(PackProcessor):
         self.lang_model: str = ''
 
     def set_up(self):
-        # pylint: disable=import-outside-toplevel
-        if 'umls_link' in self.processors:
-            if self.lang_model not in SCISPACYMODEL_URL:
-                raise ProcessorConfigError('SciSpacy model is necessary in '
-                                           'configs.processors for '
-                                           'UMLS entity linking, '
-                                           'Please provide a valid model name, '
-                                           'refer to \'default_configs\' for '
-                                           'more information.')
-
-            import subprocess
-            import sys
-            import os
-            import importlib
-            from scispacy.linking import EntityLinker
-
-            download_url = SCISPACYMODEL_URL[self.lang_model]
-            command = [sys.executable, "-m", "pip", "install"] + [download_url]
-            subprocess.run(command, env=os.environ.copy(), encoding="utf8")
-
-            cls = importlib.import_module(self.lang_model)
-            self.nlp = cls.load()
-
-            linker = EntityLinker(resolve_abbreviations=True, name="umls")
-            self.nlp.add_pipe(linker)
-        else:
-            try:
-                self.nlp = spacy.load(self.lang_model)
-            except OSError:
-                download(self.lang_model)
-                self.nlp = spacy.load(self.lang_model)
-
-    def run_command(
-            command,
-            *,
-            stdin = None,
-            capture: bool = False,
-    ):
-        """Run a command on the command line as a subprocess. If the subprocess
-        returns a non-zero exit code, a system exit is performed.
-        command (str / List[str]): The command. If provided as a string, the
-            string will be split using shlex.split.
-        stdin (Optional[Any]): stdin to read from or None.
-        capture (bool): Whether to capture the output and errors. If False,
-            the stdout and stderr will not be redirected, and if there's an error,
-            sys.exit will be called with the return code. You should use capture=False
-            when you want to turn over execution to the command, and capture=True
-            when you want to run the command more like a function.
-        RETURNS (Optional[CompletedProcess]): The process object.
-        """
-        if isinstance(command, str):
-            cmd_list = split_command(command)
-            cmd_str = command
-        else:
-            cmd_list = command
-            cmd_str = " ".join(command)
+        # # pylint: disable=import-outside-toplevel
+        # if 'umls_link' in self.processors:
+        #     if self.lang_model not in SCISPACYMODEL_URL:
+        #         raise ProcessorConfigError('SciSpacy model is necessary in '
+        #                                    'configs.processors for '
+        #                                    'UMLS entity linking, '
+        #                                    'Please provide a valid model name, '
+        #                                    'refer to \'default_configs\' for '
+        #                                    'more information.')
+        #
+        #     import subprocess
+        #     import sys
+        #     import os
+        #     import importlib
+        #     from scispacy.linking import EntityLinker
+        #
+        #     download_url = SCISPACYMODEL_URL[self.lang_model]
+        #     command = [sys.executable, "-m", "pip", "install"] + [download_url]
+        #     subprocess.run(command, env=os.environ.copy(), encoding="utf8")
+        #
+        #     cls = importlib.import_module(self.lang_model)
+        #     self.nlp = cls.load()
+        #
+        #     linker = EntityLinker(resolve_abbreviations=True, name="umls")
+        #     self.nlp.add_pipe(linker)
+        # else:
         try:
-            ret = subprocess.run(
-                cmd_list,
-                env=os.environ.copy(),
-                input=stdin,
-                encoding="utf8",
-                check=False,
-                stdout=subprocess.PIPE if capture else None,
-                stderr=subprocess.STDOUT if capture else None,
-            )
-        except FileNotFoundError:
-            # Indicates the *command* wasn't found, it's an error before the command
-            # is run.
-            raise FileNotFoundError(
-                Errors.E970.format(str_command=cmd_str, tool=cmd_list[0])
-            ) from None
-        if ret.returncode != 0 and capture:
-            message = f"Error running command:\n\n{cmd_str}\n\n"
-            message += f"Subprocess exited with status {ret.returncode}"
-            if ret.stdout is not None:
-                message += f"\n\nProcess log (stdout and stderr):\n\n"
-                message += ret.stdout
-            error = subprocess.SubprocessError(message)
-            error.ret = ret
-            error.command = cmd_str
-            raise error
-        elif ret.returncode != 0:
-            sys.exit(ret.returncode)
-        return ret
+            self.nlp = spacy.load(self.lang_model)
+        except OSError:
+            download(self.lang_model)
+            self.nlp = spacy.load(self.lang_model)
+
+
+        if 'umls_link' in self.processors:
+            from scispacy.linking import EntityLinker
+            linker = EntityLinker(resolve_abbreviations=True, name="umls")
+
+            self.nlp.add_pipe(linker)
 
     # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
