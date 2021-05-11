@@ -53,44 +53,37 @@ class SpacyProcessor(PackProcessor):
         self.lang_model: str = ''
 
     def set_up(self):
-        # # pylint: disable=import-outside-toplevel
-        # if 'umls_link' in self.processors:
-        #     if self.lang_model not in SCISPACYMODEL_URL:
-        #         raise ProcessorConfigError('SciSpacy model is necessary in '
-        #                                    'configs.processors for '
-        #                                    'UMLS entity linking, '
-        #                                    'Please provide a valid model name, '
-        #                                    'refer to \'default_configs\' for '
-        #                                    'more information.')
-        #
-        #     import subprocess
-        #     import sys
-        #     import os
-        #     import importlib
-        #     from scispacy.linking import EntityLinker
-        #
-        #     download_url = SCISPACYMODEL_URL[self.lang_model]
-        #     command = [sys.executable, "-m", "pip", "install"] + [download_url]
-        #     subprocess.run(command, env=os.environ.copy(), encoding="utf8")
-        #
-        #     cls = importlib.import_module(self.lang_model)
-        #     self.nlp = cls.load()
-        #
-        #     linker = EntityLinker(resolve_abbreviations=True, name="umls")
-        #     self.nlp.add_pipe(linker)
-        # else:
-        try:
-            self.nlp = spacy.load(self.lang_model)
-        except OSError:
-            download(self.lang_model)
-            self.nlp = spacy.load(self.lang_model)
-
-
+        # pylint: disable=import-outside-toplevel
+        self.load_lang_model()
         if 'umls_link' in self.processors:
             from scispacy.linking import EntityLinker
             linker = EntityLinker(resolve_abbreviations=True, name="umls")
 
             self.nlp.add_pipe(linker)
+
+    def load_lang_model(self):
+        # pylint: disable=import-outside-toplevel
+        # download ScispaCy model using URL
+        if self.lang_model in SCISPACYMODEL_URL:
+            import subprocess
+            import sys
+            import os
+            import importlib
+            from scispacy.linking import EntityLinker
+
+            download_url = SCISPACYMODEL_URL[self.lang_model]
+            command = [sys.executable, "-m", "pip", "install"] + [download_url]
+            subprocess.run(command, env=os.environ.copy(), encoding="utf8")
+
+            cls = importlib.import_module(self.lang_model)
+            self.nlp = cls.load()
+
+        else:  # use spaCy download
+            try:
+                self.nlp = spacy.load(self.lang_model)
+            except OSError:
+                download(self.lang_model)
+                self.nlp = spacy.load(self.lang_model)
 
     # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
