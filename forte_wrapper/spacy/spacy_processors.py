@@ -48,7 +48,7 @@ class SpacyProcessor(PackProcessor):
             self.nlp = spacy.load(self.lang_model)
 
         # pylint: disable=import-outside-toplevel
-        if 'ent_link' in self.processors:
+        if 'umls_link' in self.processors:
             from scispacy.linking import EntityLinker
             linker = EntityLinker(resolve_abbreviations=True, name="umls")
 
@@ -189,7 +189,7 @@ class SpacyProcessor(PackProcessor):
             self._process_parser(result.sents, input_pack)
 
         # Record medical entity linking results.
-        if 'ent_link' in self.processors:
+        if 'umls_link' in self.processors:
             self._process_entity_linking(result, input_pack)
 
     def record(self, record_meta: Dict[str, Set[str]]):
@@ -211,6 +211,6 @@ class SpacyProcessor(PackProcessor):
         if "ner" in self.processors:
             record_meta["ft.onto.base_ontology.EntityMention"] = set()
 
-        if "ent_link" in self.processors:
+        if "umls_link" in self.processors:
             record_meta["onto.medical.MedicalEntityMention"] = set()
             record_meta["onto.medical.UMLSConceptLink"] = set()
