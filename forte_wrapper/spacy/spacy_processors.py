@@ -210,8 +210,9 @@ class SpacyProcessor(PackProcessor):
                 if "lemma" in self.processors:
                     record_meta["ft.onto.base_ontology.Token"].add("lemma")
         if "ner" in self.processors:
-            record_meta["ft.onto.base_ontology.EntityMention"] = set()
-
+            record_meta["ft.onto.base_ontology.EntityMention"] = {"ner_type"}
         if "umls_link" in self.processors:
-            record_meta["onto.medical.MedicalEntityMention"] = set()
-            record_meta["onto.medical.UMLSConceptLink"] = set()
+            record_meta["onto.medical.MedicalEntityMention"] = {"ner_type"}
+            record_meta["onto.medical.UMLSConceptLink"] = {"cui", "score",
+                                                           "name", "definition",
+                                                           "tuis", "aliases"}
