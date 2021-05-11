@@ -40,6 +40,7 @@ stanza==1.2
 
 # AllenNLP
 allennlp==1.2.0
+more-itertools==8.7.0
 
 # Spacy
 spacy==2.1.8
