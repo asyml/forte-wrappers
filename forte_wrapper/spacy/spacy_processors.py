@@ -180,8 +180,6 @@ class SpacyProcessor(PackProcessor):
                 "The SpaCy pipeline is not initialized, maybe you "
                 "haven't called the initialization function.")
         result = self.nlp(doc)
-        print(type(result))
-        print(type(result.sents))
 
         # Record NER results.
         if "ner" in self.processors:
