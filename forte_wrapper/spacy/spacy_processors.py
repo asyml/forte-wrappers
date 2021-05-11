@@ -66,16 +66,29 @@ class SpacyProcessor(PackProcessor):
             from scispacy.linking import EntityLinker
             model = SCISPACYMODEL_URL[self.lang_model]
 
-            # import subprocess
-            # import sys
-            #
+            import subprocess
+            import sys
+            import os
+
             # subprocess.check_call(
             #     [sys.executable, "-m", "pip", "install", model])
 
-            import os
-            os.system('pip install {}'.format(model))
-            download(self.lang_model)
-            self.nlp = spacy.load(self.lang_model)
+            download_url = SCISPACYMODEL_URL[self.lang_model]
+            command = [sys.executable, "-m", "pip", "install"] + [
+                download_url]
+
+            cmd_list = command
+            cmd_str = " ".join(command)
+            ret = subprocess.run(
+                cmd_list,
+                env=os.environ.copy(),
+                encoding="utf8",
+                check=False,
+            )
+
+            # os.system('pip install {}'.format(model))
+            # download(self.lang_model)
+            # self.nlp = spacy.load(self.lang_model)
 
             linker = EntityLinker(resolve_abbreviations=True, name="umls")
             self.nlp.add_pipe(linker)
