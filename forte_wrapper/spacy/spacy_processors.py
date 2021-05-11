@@ -56,17 +56,18 @@ class SpacyProcessor(PackProcessor):
 
     # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
-        if "pos" in configs.processors or "lemma" in configs.processors \
-                or "tokenize" in configs.processors:
-            if "sent_parse" not in configs.processors:
-                raise ProcessorConfigError('sent_parse is necessary in '
-                                           'configs.processors for '
-                                           'tokenize or pos or lemma')
+        super().initialize(resources, configs)
+
         if "pos" in configs.processors or "lemma" in configs.processors:
             if "tokenize" not in configs.processors:
                 raise ProcessorConfigError('tokenize is necessary in '
                                            'configs.processors for '
                                            'pos or lemma')
+            else:
+                if "sentence" not in configs.processors:
+                    raise ProcessorConfigError('sentence is necessary in '
+                                               'configs.processors for '
+                                               'tokenize or pos or lemma')
 
         self.processors = configs.processors
         self.lang_model = configs.lang
@@ -80,21 +81,21 @@ class SpacyProcessor(PackProcessor):
             dictionary with the default config for this processor.
         Following are the keys for this dictionary:
             - processors: defines what operations to be done on the sentence,
-                default value is "tokenize,pos,lemma,sent_parse" which performs
+                default value is "sentence, tokenize,pos,lemma" which performs
                 all the basic operations.
             - lang: language model, default value is 'en_core_web_sm'.
             - use_gpu: use gpu or not, default value is False.
         """
         config = super().default_configs()
         config.update({
-            'processors': 'sent_parse, tokenize, pos, lemma',
+            'processors': 'sentence, tokenize, pos, lemma',
             'lang': 'en_core_web_sm',
             # Language code for the language to build the Pipeline
             'use_gpu': False,
         })
         return config
 
-    def _process_parser(self, sentences, input_pack):
+    def _process_parser(self, sentences, input_pack: DataPack):
         """Parse the sentence. Default behaviour is to segment sentence, POSTag
         and Lemmatize.
 
@@ -121,7 +122,7 @@ class SpacyProcessor(PackProcessor):
                     if "lemma" in self.processors:
                         token.lemma = word.lemma_
 
-    def _process_ner(self, result, input_pack):
+    def _process_ner(self, result, input_pack: DataPack):
         """Perform spaCy's NER Pipeline on the document.
 
         Args:
@@ -136,16 +137,16 @@ class SpacyProcessor(PackProcessor):
                                    item.end_char)
             entity.ner_type = item.label_
 
-    def _process_entity_linking(self, result, input_pack):
+    def _process_umls_entity_linking(self, result, input_pack: DataPack):
         """
-        Do medical entity linking task, and store medical entity mentions
-        :param result:
-        :param input_pack:
-        :return:
+        Do UMLS medical entity linking with scispacy, and store medical entity
+        mentions and UMLS concepts.
+        Args:
+            result: SpaCy results
+            input_pack: Input datapack
+        Returns:
         """
-
         medical_entities = result.ents
-        # linker = self.nlp.get_pipe("scispacy_linker")
         linker = self.nlp.get_pipe('EntityLinker')
 
         # get medical entity mentions and UMLS concepts
@@ -179,18 +180,20 @@ class SpacyProcessor(PackProcessor):
                 "The SpaCy pipeline is not initialized, maybe you "
                 "haven't called the initialization function.")
         result = self.nlp(doc)
+        print(type(result))
+        print(type(result.sents))
 
         # Record NER results.
         if "ner" in self.processors:
             self._process_ner(result, input_pack)
 
         # Process sentence parses.
-        if 'sent_parse' in self.processors:
+        if 'sentence' in self.processors:
             self._process_parser(result.sents, input_pack)
 
         # Record medical entity linking results.
         if 'umls_link' in self.processors:
-            self._process_entity_linking(result, input_pack)
+            self._process_umls_entity_linking(result, input_pack)
 
     def record(self, record_meta: Dict[str, Set[str]]):
         r"""Method to add output type record of current processor
@@ -200,7 +203,7 @@ class SpacyProcessor(PackProcessor):
             record_meta: the field in the datapack for type record that need to
                 fill in for consistency checking.
         """
-        if "sent_parse" in self.processors:
+        if "sentence" in self.processors:
             record_meta["ft.onto.base_ontology.Sentence"] = set()
             if "tokenize" in self.processors:
                 record_meta["ft.onto.base_ontology.Token"] = set()
