@@ -69,6 +69,7 @@ class SpacyProcessor(PackProcessor):
             import subprocess
             import sys
             import os
+            import importlib
 
             # subprocess.check_call(
             #     [sys.executable, "-m", "pip", "install", model])
@@ -85,10 +86,12 @@ class SpacyProcessor(PackProcessor):
                 check=False,
             )
 
+            cls = importlib.import_module(self.lang_model)
+            self.nlp = cls.load()
             # os.system('pip install {}'.format(model))
             # download(self.lang_model)
             # self.nlp = spacy.load(self.lang_model)
-            self.nlp = spacy.load(model)
+            # self.nlp = spacy.load(model)
 
             linker = EntityLinker(resolve_abbreviations=True, name="umls")
             self.nlp.add_pipe(linker)
