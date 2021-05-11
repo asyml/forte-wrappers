@@ -14,7 +14,9 @@ typing>=3.7.4; python_version < '3.5'
 typing-inspect>=0.6.0
 
 # PyTorch installation for ReadTheDocs
-https://download.pytorch.org/whl/cpu/torch-1.1.0-cp37-cp37m-linux_x86_64.whl
+#https://download.pytorch.org/whl/cpu/torch-1.1.0-cp37-cp37m-linux_x86_64.whl
+# Try newer version of pytorch wheel.
+https://download.pytorch.org/whl/cpu/torch-1.3.0%2Bcpu-cp37-cp37m-linux_x86_64.whl
 
 # Forte via source
 git+https://git@github.com/asyml/forte#egg=forte
