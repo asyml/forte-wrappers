@@ -78,7 +78,6 @@ class SpacyProcessor(PackProcessor):
                 download_url]
 
             cmd_list = command
-            cmd_str = " ".join(command)
             ret = subprocess.run(
                 cmd_list,
                 env=os.environ.copy(),
@@ -88,7 +87,7 @@ class SpacyProcessor(PackProcessor):
 
             # os.system('pip install {}'.format(model))
             # download(self.lang_model)
-            # self.nlp = spacy.load(self.lang_model)
+            self.nlp = spacy.load(self.lang_model)
 
             linker = EntityLinker(resolve_abbreviations=True, name="umls")
             self.nlp.add_pipe(linker)
