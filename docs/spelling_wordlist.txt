@@ -140,3 +140,5 @@ lemmatizer
 tokenizer
 url
 chunker
+spaCy
+SpaCy
