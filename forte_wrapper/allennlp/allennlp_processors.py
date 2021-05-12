@@ -104,27 +104,36 @@ class AllenNLPProcessor(PackProcessor):
     def default_configs(cls):
         """
         This defines a basic config structure for AllenNLP.
-        :return: A dictionary with the default config for this processor.
+
         Following are the keys for this dictionary:
+
             - processors: defines what operations to be done on the sentence,
-                default value is "tokenize,pos,depparse" which performs all the
-                three operations.
+              default value is `tokenize,pos,depparse` which performs all the
+              three operations.
+
             - tag_formalism: format of the POS tags and dependency parsing,
-                can be "universal" or "stanford", default value is "stanford".
+              can be `universal` or `stanford`, default value is `stanford`.
+
             - overwrite_entries: whether to overwrite the entries of the same
-                type as produced by this processor, default value is False.
+              type as produced by this processor, default value is False.
+
             - allow_parallel_entries: whether to allow similar new entries when
-                they already exist, e.g. allowing new tokens with same spans,
-                used only when `overwrite_entries` is False.
-            - <model>_url: url of the corresponding model, default urls for
-                "stanford", "srl" and "universal" can be found in `MODEL2URL`.
+              they already exist, e.g. allowing new tokens with same spans,
+              used only when `overwrite_entries` is False.
+
+            - model_url: URL of the corresponding model, default URL(s) for
+              `stanford`, `srl` and `universal` can be found in `MODEL2URL`.
+
             - cuda_devices: a list of integers indicating the available
-                cuda/gpu devices that can be used by this processor. When
-                multiple models are loaded, cuda devices are assigned in a
-                round robin fashion. E.g. [0, -1] -> first model uses gpu 0
-                but second model uses cpu.
+              cuda/gpu devices that can be used by this processor. When
+              multiple models are loaded, cuda devices are assigned in a
+              round robin fashion. E.g. [0, -1] -> first model uses gpu 0
+              but second model uses cpu.
+
             - infer_batch_size: maximum number of sentences passed in as a
-                batch to model's predict function. A value <= 0 means no limit.
+              batch to model's predict function. A value <= 0 means no limit.
+
+        Returns: A dictionary with the default config for this processor.
         """
         config = super().default_configs()
         config.update({
