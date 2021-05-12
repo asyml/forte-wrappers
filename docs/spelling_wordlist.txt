@@ -149,3 +149,8 @@ Faiss
 NLTK
 ScispaCy
 UMLS
+umls
+lemmatization
+tokenize
+Cython
+github
