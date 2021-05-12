@@ -42,9 +42,29 @@ SCISPACYMODEL_URL = {
 # pylint: enable=line-too-long
 class SpacyProcessor(PackProcessor):
     """
-    This provide a wrapper for spaCy and ScispaCy processors.
+    This processor wraps spaCy(v2.3.x) and ScispaCy(v0.3.0) models,
+    providing functions including sentence parsing, tokenize, POS tagging,
+    lemmatization, NER, and medical entity linking.
+
+    This processor will do user defined tasks according to configs.
+    The supported tasks includes:
+    "sentence": sentence segmentation
+    "tokenize": word tokenize
+    "pos": Part-of-speech tagging
+    "lemma": word lemmatization
+    "ner": named entity recognition
+    "umls_link": medical entity linking to UMLS concepts
+
+    spaCy is a library for advanced Natural Language Processing in Python
+    and Cython.
     spaCy github page: https://github.com/explosion/spaCy/tree/v2.3.1
+
+    ScispaCy is a Python package containing spaCy models for processing
+    biomedical, scientific or clinical text.
     ScispaCy github page: https://github.com/allenai/scispacy/tree/v0.3.0
+
+    Citation: ScispaCy: Fast and Robust Models for Biomedical Natural Language
+    Processing.
     """
     def __init__(self):
         super().__init__()
@@ -115,9 +135,11 @@ class SpacyProcessor(PackProcessor):
                 all the basic operations.
             - lang: language model, default is spaCy 'en_core_web_sm' model.
                 The pipeline support spaCy and ScispaCy models.
-                spaCy models could be found at https://spacy.io/models.
+                A list of available spaCy models could be found at
+                https://spacy.io/models.
                 For UMLS entity linking task, ScispaCy model trained on
-                biomedical dataset is preferred. Models could be found at
+                biomedical dataset is preferred. A list of available models
+                could be found at
                 https://github.com/allenai/scispacy/tree/v0.3.0.
             - use_gpu: use gpu or not, default value is False.
         """
@@ -174,12 +196,15 @@ class SpacyProcessor(PackProcessor):
 
     def _process_umls_entity_linking(self, result, input_pack: DataPack):
         """
-        Do UMLS medical entity linking with EntityLinker, and store medical
+        Perform UMLS medical entity linking with EntityLinker, and store medical
         entity mentions and UMLS concepts.
+
         Args:
             result: SpaCy results
             input_pack: Input datapack
+
         Returns:
+
         """
         medical_entities = result.ents
         linker = self.nlp.get_pipe('EntityLinker')  # type: ignore
