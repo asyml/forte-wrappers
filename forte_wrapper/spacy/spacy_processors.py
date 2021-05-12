@@ -39,7 +39,7 @@ SCISPACYMODEL_URL = {
     "en_ner_bionlp13cg_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_ner_bionlp13cg_md-0.3.0.tar.gz"
 }
 
-
+# pylint: enable=line-too-long
 class SpacyProcessor(PackProcessor):
     """
     This provide a wrapper for spaCy and ScispaCy processors.
@@ -54,13 +54,13 @@ class SpacyProcessor(PackProcessor):
 
     def set_up(self):
         # pylint: disable=import-outside-toplevel
-        self.load_lang_model()
+        self._load_lang_model()
         if 'umls_link' in self.processors:  # add UMLS entity linking component
             from scispacy.linking import EntityLinker
             linker = EntityLinker(resolve_abbreviations=True, name="umls")
             self.nlp.add_pipe(linker)
 
-    def load_lang_model(self):
+    def _load_lang_model(self):
         # pylint: disable=import-outside-toplevel
         # download ScispaCy model using URL
         if self.lang_model in SCISPACYMODEL_URL:
