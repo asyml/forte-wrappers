@@ -48,12 +48,12 @@ class SpacyProcessor(PackProcessor):
 
     This processor will do user defined tasks according to configs.
     The supported tasks includes:
-    "sentence": sentence segmentation
-    "tokenize": word tokenize
-    "pos": Part-of-speech tagging
-    "lemma": word lemmatization
-    "ner": named entity recognition
-    "umls_link": medical entity linking to UMLS concepts
+    `"sentence"`: sentence segmentation
+    `"tokenize"`: word tokenize
+    `"pos"`: Part-of-speech tagging
+    `"lemma"`: word lemmatization
+    `"ner"`: named entity recognition
+    `"umls_link"`: medical entity linking to UMLS concepts
 
     spaCy is a library for advanced Natural Language Processing in Python
     and Cython.
@@ -130,10 +130,10 @@ class SpacyProcessor(PackProcessor):
         Returns:
             dictionary with the default config for this processor.
         Following are the keys for this dictionary:
-            - processors: defines what operations to be done on the sentence,
-                default value is "sentence, tokenize,pos,lemma" which performs
-                all the basic operations.
-            - lang: language model, default is spaCy 'en_core_web_sm' model.
+            - `"processors"`: defines what operations to be done on the
+                sentence, default value is `"sentence, tokenize,pos,lemma"`
+                which performs all the basic operations.
+            - `"lang"`: language model, default is spaCy `en_core_web_sm` model.
                 The pipeline support spaCy and ScispaCy models.
                 A list of available spaCy models could be found at
                 https://spacy.io/models.
@@ -141,7 +141,7 @@ class SpacyProcessor(PackProcessor):
                 biomedical dataset is preferred. A list of available models
                 could be found at
                 https://github.com/allenai/scispacy/tree/v0.3.0.
-            - use_gpu: use gpu or not, default value is False.
+            - `"use_gpu"`: use gpu or not, default value is False.
         """
         config = super().default_configs()
         config.update({
