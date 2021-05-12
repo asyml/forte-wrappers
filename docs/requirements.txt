@@ -1,0 +1,46 @@
+sphinx>=3.4.3
+sphinx-rtd-theme >= 0.5.0
+Pygments >= 2.1.1
+funcsigs~=1.0.2
+myst-parser==0.14.0
+mypy_extensions~=0.4.1
+sphinxcontrib-spelling
+
+pyyaml==5.4
+jsonpickle==1.4
+sortedcontainers==2.1.0
+texar-pytorch>=0.1.1
+typing>=3.7.4; python_version < '3.5'
+typing-inspect>=0.6.0
+
+# PyTorch installation for ReadTheDocs
+#https://download.pytorch.org/whl/cpu/torch-1.1.0-cp37-cp37m-linux_x86_64.whl
+# Try newer version of pytorch wheel.
+# https://download.pytorch.org/whl/cpu/torch-1.3.0%2Bcpu-cp37-cp37m-linux_x86_64.whl
+torch>=1.6.0
+
+# Forte via source
+git+https://git@github.com/asyml/forte#egg=forte
+
+
+# faiss
+faiss-cpu>=1.6.1
+
+# elasticsearch
+elasticsearch==7.5.1
+
+# Transformers
+transformers>=3.1
+
+# NLTK
+nltk==3.4.5
+
+# Stanza
+stanza==1.2
+
+# AllenNLP
+allennlp==1.2.0
+more-itertools==8.7.0
+
+# Spacy
+spacy==2.1.8

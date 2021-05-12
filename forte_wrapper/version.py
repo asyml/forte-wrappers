@@ -12,4 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from forte_wrapper.version import VERSION as __version__
+_MAJOR = "0"
+_MINOR = "0"
+_REVISION = "1"
+
+VERSION_SHORT = "{0}.{1}".format(_MAJOR, _MINOR)
+VERSION = "{0}.{1}.{2}".format(_MAJOR, _MINOR, _REVISION)
