@@ -147,3 +147,5 @@ AllenNLP
 GPT2
 Faiss
 NLTK
+ScispaCy
+UMLS
