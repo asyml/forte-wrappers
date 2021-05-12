@@ -50,8 +50,6 @@ pip install ."[allennlp]"
     - [BioBERT NER](https://github.com/dmis-lab/biobert-pytorch) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/huggingface/biobert_ner))
 - [Vader Sentiment](https://github.com/cjhutto/vaderSentiment) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/vader))
     - Sentiment Analysis
-- [CliNER](https://github.com/text-machine-lab/CliNER) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/cliner))
-    - Clinical NER
 - [Elastic Search](https://www.elastic.co/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/elastic))
     - Elastic Indexer
     - Elastic Search

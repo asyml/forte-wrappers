@@ -142,3 +142,8 @@ url
 chunker
 spaCy
 SpaCy
+faiss
+AllenNLP
+GPT2
+Faiss
+NLTK
