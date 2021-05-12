@@ -147,3 +147,10 @@ AllenNLP
 GPT2
 Faiss
 NLTK
+ScispaCy
+UMLS
+umls
+lemmatization
+tokenize
+Cython
+github

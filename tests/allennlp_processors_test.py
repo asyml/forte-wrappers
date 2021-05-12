@@ -188,7 +188,7 @@ class TestAllenNLPProcessor(unittest.TestCase):
 
         # Using SpacyProcessor to segment the sentences
         nlp.add(component=SpacyProcessor(), config={
-            'processors': '',
+            'processors': 'sentence',
             'lang': "en_core_web_sm",  # Language code to build the Pipeline
             'use_gpu': False
         })
