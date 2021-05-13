@@ -21,7 +21,7 @@ from ddt import ddt, data
 import spacy
 from spacy.language import Language
 
-from forte.common import ProcessExecutionException
+from forte.common import ProcessExecutionException, ProcessorConfigError
 from forte.data.data_pack import DataPack
 from forte.data.readers import StringReader
 from forte.pipeline import Pipeline
@@ -67,10 +67,8 @@ class TestSpacyProcessor(unittest.TestCase):
         "sentence, tokenize, pos",
         "sentence, tokenize, pos, lemma",
         "sentence, tokenize, lemma",
-        "sentence, lemma",
         "sentence, ner, tokenize, lemma, pos",
         "ner",
-
     )
     def test_spacy_variation_pipeline(self, value):
         spacy = Pipeline[DataPack]()
@@ -142,6 +140,25 @@ class TestSpacyProcessor(unittest.TestCase):
 
             self.assertEqual(entities_text, exp_ent_text)
             self.assertEqual(entities_type, exp_ent_types)
+
+    @data(
+        "sentence, lemma",
+        "tokenize, pos",
+    )
+    def test_spacy_processor_with_invalid_config(self, processor):
+        spacy = Pipeline[DataPack]()
+        spacy.set_reader(StringReader())
+
+        config = {
+            "processors": processor,
+            "lang": "en_core_web_sm",
+            # Language code for the language to build the Pipeline
+            "use_gpu": False
+        }
+        spacy.add(SpacyProcessor(), config=config)
+
+        with self.assertRaises(ProcessorConfigError):
+            spacy.initialize()
 
     def test_neg_spacy_processor(self):
         spacy = Pipeline[DataPack]()
