@@ -187,6 +187,9 @@ jobs:
           python -m pip install --progress-bar off --upgrade pip
           pip install --progress-bar off pytest==5.1.3
           pip install --progress-bar off coverage ddt
+      - name: Install deep learning frameworks
+        run: |
+          pip install --progress-bar off torch==${{ matrix.torch-version }}
       - name: Install the project
         run: |
           pip install .[spacy]
