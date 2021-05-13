@@ -155,7 +155,7 @@ jobs:
           pip install --progress-bar off torch==${{ matrix.torch-version }}
       - name: Install the project
         run: |
-          pip install .[varder]
+          pip install .[varder,nltk]
       - name: Test with pytest and run coverage
         run: |
           coverage run -m pytest tests/sentiment_processor_test.py
