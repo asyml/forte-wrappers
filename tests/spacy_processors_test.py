@@ -142,8 +142,8 @@ class TestSpacyProcessor(unittest.TestCase):
             self.assertEqual(entities_type, exp_ent_types)
 
     @data(
-        "sentence, lemma",
-        "tokenize, pos",
+        "sentence, lemma", # tokenize is required for lemma
+        "tokenize, pos", # sentence is required for pos
     )
     def test_spacy_processor_with_invalid_config(self, processor):
         spacy = Pipeline[DataPack]()
@@ -159,27 +159,6 @@ class TestSpacyProcessor(unittest.TestCase):
 
         with self.assertRaises(ProcessorConfigError):
             spacy.initialize()
-
-    def test_neg_spacy_processor(self):
-        spacy = Pipeline[DataPack]()
-        spacy.set_reader(StringReader())
-
-        config = {
-            "processors": 'ner',
-            "lang": "xx_ent_wiki_sm",
-            # Language code for the language to build the Pipeline
-            "use_gpu": False
-        }
-        spacy.add(SpacyProcessor(), config=config)
-        spacy.initialize()
-
-        sentences = ["This tool is called Forte.",
-                     "The goal of this project to help you build NLP "
-                     "pipelines.",
-                     "NLP has never been made this easy before."]
-        document = ' '.join(sentences)
-        with self.assertRaises(ProcessExecutionException):
-            _ = spacy.process(document)
 
 
 if __name__ == "__main__":
