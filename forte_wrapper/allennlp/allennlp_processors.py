@@ -14,7 +14,7 @@
 
 import itertools
 import logging
-from typing import Any, Dict, Iterable, Iterator, List, Set
+from typing import Any, Dict, Iterator, List, Set
 import more_itertools
 
 from allennlp.predictors import Predictor
@@ -27,7 +27,7 @@ from forte.processors.base import PackProcessor
 from ft.onto.base_ontology import Token, Sentence, Dependency, \
     PredicateLink, PredicateArgument, PredicateMention
 
-from forte_wrapper.utils.utils_processor import parse_allennlp_srl_tags, \
+from forte_wrapper.allennlp.utils_processor import parse_allennlp_srl_tags, \
     parse_allennlp_srl_results
 
 logger = logging.getLogger(__name__)
@@ -104,27 +104,36 @@ class AllenNLPProcessor(PackProcessor):
     def default_configs(cls):
         """
         This defines a basic config structure for AllenNLP.
-        :return: A dictionary with the default config for this processor.
+
         Following are the keys for this dictionary:
+
             - processors: defines what operations to be done on the sentence,
-                default value is "tokenize,pos,depparse" which performs all the
-                three operations.
+              default value is `tokenize,pos,depparse` which performs all the
+              three operations.
+
             - tag_formalism: format of the POS tags and dependency parsing,
-                can be "universal" or "stanford", default value is "stanford".
+              can be `universal` or `stanford`, default value is `stanford`.
+
             - overwrite_entries: whether to overwrite the entries of the same
-                type as produced by this processor, default value is False.
+              type as produced by this processor, default value is False.
+
             - allow_parallel_entries: whether to allow similar new entries when
-                they already exist, e.g. allowing new tokens with same spans,
-                used only when `overwrite_entries` is False.
-            - <model>_url: url of the corresponding model, default urls for
-                "stanford", "srl" and "universal" can be found in `MODEL2URL`.
+              they already exist, e.g. allowing new tokens with same spans,
+              used only when `overwrite_entries` is False.
+
+            - model_url: URL of the corresponding model, default URL(s) for
+              `stanford`, `srl` and `universal` can be found in `MODEL2URL`.
+
             - cuda_devices: a list of integers indicating the available
-                cuda/gpu devices that can be used by this processor. When
-                multiple models are loaded, cuda devices are assigned in a
-                round robin fashion. E.g. [0, -1] -> first model uses gpu 0
-                but second model uses cpu.
+              cuda/gpu devices that can be used by this processor. When
+              multiple models are loaded, cuda devices are assigned in a
+              round robin fashion. E.g. [0, -1] -> first model uses gpu 0
+              but second model uses cpu.
+
             - infer_batch_size: maximum number of sentences passed in as a
-                batch to model's predict function. A value <= 0 means no limit.
+              batch to model's predict function. A value <= 0 means no limit.
+
+        Returns: A dictionary with the default config for this processor.
         """
         config = super().default_configs()
         config.update({
@@ -145,20 +154,30 @@ class AllenNLPProcessor(PackProcessor):
         self._process_existing_entries(input_pack)
 
         batch_size: int = self.configs['infer_batch_size']
-        batches: Iterator[Iterable[Sentence]]
+        batches: Iterator[Iterator[Sentence]]
+        # Need a copy of the one-pass iterators to support a second loop on
+        # them. All other ways around it like using `itertools.tee` and `list`
+        # would require extra storage conflicting with the idea of using
+        # iterators in the first place. `more_itertools.ichunked` uses
+        # `itertools.tee` under the hood but our usage (reading iterators
+        # in order) does not cause memory issues.
+        batches_copy: Iterator[Iterator[Sentence]]
         if batch_size <= 0:
             batches = iter([input_pack.get(Sentence)])
+            batches_copy = iter([input_pack.get(Sentence)])
         else:
-            batches = more_itertools.chunked(
+            batches = more_itertools.ichunked(
                 input_pack.get(Sentence), batch_size)
-        for sentences in batches:
+            batches_copy = more_itertools.ichunked(
+                input_pack.get(Sentence), batch_size)
+        for sentences, sentences_copy in zip(batches, batches_copy):
             inputs: List[Dict[str, str]] = [{"sentence": s.text}
                                             for s in sentences]
             results: Dict[str, List[Dict[str, Any]]] = {
                 k: p.predict_batch_json(inputs)
                 for k, p in self.predictor.items()
             }
-            for i, sent in enumerate(sentences):
+            for i, sent in enumerate(sentences_copy):
                 result: Dict[str, List[str]] = {}
                 for key in self.predictor:
                     if key == 'srl':
@@ -236,6 +255,8 @@ class AllenNLPProcessor(PackProcessor):
     def expected_types_and_attributes(cls) -> Dict[str, Set[str]]:
         r"""Method to add expected type for current processor input which
         would be checked before running the processor if
+        the pipeline is initialized with
+        `enforce_consistency=True` or
         :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
         the pipeline.
         """

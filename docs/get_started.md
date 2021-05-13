@@ -17,7 +17,7 @@ community.
 
 This project is part of the [CASL Open Source](http://casl-project.ai/) family.
 
-### Get Started
+# Get Started
 
 - First, install the library along with the desired tools. Let's take AllenNLP
   as an example:
@@ -28,7 +28,7 @@ cd forte-wrappers
 pip install ."[allennlp]"
 ```
 
-### Libraries and Tools Supported
+# Libraries and Wrapper Source
 
 - [NLTK](https://www.nltk.org/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/nltk))
     - POS Tagger
@@ -50,8 +50,6 @@ pip install ."[allennlp]"
     - [BioBERT NER](https://github.com/dmis-lab/biobert-pytorch) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/huggingface/biobert_ner))
 - [Vader Sentiment](https://github.com/cjhutto/vaderSentiment) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/vader))
     - Sentiment Analysis
-- [CliNER](https://github.com/text-machine-lab/CliNER) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/cliner))
-    - Clinical NER
 - [Elastic Search](https://www.elastic.co/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/elastic))
     - Elastic Indexer
     - Elastic Search
@@ -59,23 +57,9 @@ pip install ."[allennlp]"
     - Faiss Indexer
 - [GPT2](https://openai.com/blog/gpt-2-1-5b-release/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/gpt2))
     - GPT2 Text Generation
+  
+# License
 
-### Contributing
+[Apache License 2.0](https://github.com/asyml/fort-wrappers/blob/master/LICENSE)
 
-If you are interested in making enhancement to this repository, Forte or other
-ASYML/CASL projects, please first go over
-our [Code of Conduct](https://github.com/asyml/forte/blob/master/CODE_OF_CONDUCT.md)
-and [Contribution Guideline](https://github.com/asyml/forte/blob/master/CONTRIBUTING.md)
-
-### License
-
-[Apache License 2.0](./LICENSE)
-
-### Companies and Universities Supporting Forte
-
-<p float="left">
-   <img src="https://raw.githubusercontent.com/asyml/forte/master/docs/_static/img/Petuum.png" width="200" align="top">
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-   <img src="https://asyml.io/assets/institutions/cmu.png", width="200" align="top">
-</p>
 
