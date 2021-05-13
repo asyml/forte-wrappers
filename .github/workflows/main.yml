@@ -82,39 +82,7 @@ jobs:
           pip install .[allennlp]
       - name: Test with pytest and run coverage
         run: |
-          echo "::set-env name=PYTHONPATH::/home/runner/work/forte-wrappers"
           coverage run -m pytest tests/allennlp_processors_test.py
-
-  docs:
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      python-version: 3.7
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ env.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ env.python-version }}
-      - name: Cache pip
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            ${{ runner.os }}-
-      - name: Install dependencies
-        run: |
-          python -m pip install --progress-bar off --upgrade pip
-          pip install --progress-bar off -r docs/requirements.txt
-      - name: Build Docs
-        run: |
-          cd docs
-          sphinx-build -W -b html -d _build/doctrees . _build/html
-          sphinx-build -W -b spelling -d _build/doctrees . _build/spelling
-          cd ..
-
 
 
   dispatch:
