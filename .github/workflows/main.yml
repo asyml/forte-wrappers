@@ -21,7 +21,7 @@ jobs:
         test-details:
           - {dep: allennlp, testfile: tests/allennlp_processors_test.py}
           - {dep: nltk, testfile: tests/nltk_processors_test.py}
-          - {dep: varder,nltk, testfile: tests/sentiment_processor_test.py}
+          - {dep: "varder,nltk", testfile: tests/sentiment_processor_test.py}
           - {dep: spacy, testile: tests/spacy_processors_test.py}
           - {dep: stanza, testfile: tests/stanfordnlp_processor_test.py}
 
