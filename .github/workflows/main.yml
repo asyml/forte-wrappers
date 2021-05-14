@@ -107,7 +107,7 @@ jobs:
           coverage run -m pytest ${{ matrix.test-details.testfile}}
 
   docs:
-    needs: build
+    needs: [build, pytest]
     runs-on: ubuntu-latest
     env:
       python-version: 3.7
@@ -137,7 +137,7 @@ jobs:
           cd ..
 
   dispatch:
-    needs: [build, docs]
+    needs: [build, pytest, docs]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
