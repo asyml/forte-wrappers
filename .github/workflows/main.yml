@@ -96,9 +96,14 @@ jobs:
           python -m pip install --progress-bar off --upgrade pip
           pip install --progress-bar off pytest==5.1.3
           pip install --progress-bar off coverage ddt
-      - name: Pytest
+      - name: Install deep learning frameworks
+        run: |
+          pip install --progress-bar off torch==${{ matrix.torch-version }}
+      - name: Install the project
         run: |
           pip install .[${{ matrix.test-details.dep}}]
+      - name: Test with pytest and run coverage
+        run: |
           coverage run -m pytest ${{ matrix.test-details.testfile}}
 
   docs:
