@@ -65,6 +65,7 @@ jobs:
           mypy .
 
   pytest:
+    needs: [build]
     runs-on: ubuntu-latest
     strategy:
       matrix:
