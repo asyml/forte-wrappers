@@ -250,8 +250,8 @@ class BioBERTNERPredictor(FixedSizeBatchProcessor):
 
     @classmethod
     def expected_types_and_attributes(cls):
-        r"""Method to add expected type ft.onto.base_ontology.Token` with
-        attribute `pos` and `ft.onto.base_ontology.Sentence` which
+        r"""Method to add expected type ft.onto.base_ontology.Subword` with
+        attribute `is_first_segment` and `ft.onto.base_ontology.Sentence` which
         would be checked before running the processor if
         the pipeline is initialized with
         `enforce_consistency=True` or

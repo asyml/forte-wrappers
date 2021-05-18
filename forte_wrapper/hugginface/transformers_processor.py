@@ -64,7 +64,8 @@ class BERTTokenizer(PackProcessor):
         return config
 
     def record(self, record_meta: Dict[str, Set[str]]):
-        r"""Method to add output type record of current processor
+        r"""Method to add output type `ft.onto.base_ontology.Subword`
+        of current processor `BERTTokenizer`
         to :attr:`forte.data.data_pack.Meta.record`.
 
         Args:

@@ -16,7 +16,6 @@ __all__ = [
     "VaderSentimentProcessor",
 ]
 
-from typing import Dict, Set
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 from forte.common import Resources
