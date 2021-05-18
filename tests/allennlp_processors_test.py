@@ -71,9 +71,7 @@ class TestAllenNLPProcessor(unittest.TestCase):
         "tokenize,pos",
         "tokenize,pos,depparse",
         "tokenize,depparse",
-        "",
-        "pos",  # nothing will be output by processor
-        "depparse",  # nothing will be output by processor
+        ""
     )
     def test_allennlp_processor_with_different_processors(self, processors):
         nlp = self._create_pipeline({
@@ -103,6 +101,28 @@ class TestAllenNLPProcessor(unittest.TestCase):
             processors = AllenNLPProcessor.default_configs()['processors']
 
             self._check_results(pack, processors, format)
+
+    @data(
+        "pos",  # raise exception as tokenize is required
+        "depparse",  # raise exception as tokenize is required
+    )
+    def test_allennlp_processor_with_invalid_config(self, processors):
+        nlp = Pipeline[DataPack]()
+        nlp.set_reader(StringReader())
+
+        # Using SpacyProcessor to segment the sentences
+        nlp.add(component=SpacyProcessor(), config={
+            'processors': 'sentence',
+            'lang': "en_core_web_sm",  # Language code to build the Pipeline
+            'use_gpu': False
+        })
+
+        nlp.add(component=AllenNLPProcessor(), config={
+            'processors': processors
+        })
+
+        with self.assertRaises(ProcessorConfigError):
+            nlp.initialize()
 
     @data(
         (True, True),
