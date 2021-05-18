@@ -1,5 +1,5 @@
 # pylint: disable=logging-fstring-interpolation
-from typing import Dict, List, Optional, Type, Tuple, Any
+from typing import Dict, List, Optional, Type, Tuple, Any, Set
 
 import numpy as np
 import torch
@@ -16,6 +16,11 @@ from forte.data.ontology import Annotation
 from forte.data.types import DataRequest
 from forte.processors.base.batch_processor import FixedSizeBatchProcessor
 from ft.onto.base_ontology import Sentence, EntityMention, Subword
+
+
+__all__ = [
+    "BioBERTNERPredictor",
+]
 
 
 class BioBERTNERPredictor(FixedSizeBatchProcessor):
@@ -232,3 +237,26 @@ class BioBERTNERPredictor(FixedSizeBatchProcessor):
 
         configs.update(more_configs)
         return configs
+
+    def record(self, record_meta: Dict[str, Set[str]]):
+        r"""Method to add output type record of current processor
+        to :attr:`forte.data.data_pack.Meta.record`.
+
+        Args:
+            record_meta: the field in the datapack for type record that need to
+                fill in for consistency checking.
+        """
+        record_meta["ft.onto.base_ontology.EntityMention"] = {"ner_type"}
+
+    @classmethod
+    def expected_types_and_attributes(cls):
+        r"""Method to add expected type ft.onto.base_ontology.Token` with
+        attribute `pos` and `ft.onto.base_ontology.Sentence` which
+        would be checked before running the processor if
+        the pipeline is initialized with
+        `enforce_consistency=True` or
+        :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
+        the pipeline.
+        """
+        return {"ft.onto.base_ontology.Subword": {"is_first_segment"},
+                "ft.onto.base_ontology.Sentence": set()}
