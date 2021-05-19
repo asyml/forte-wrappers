@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Dict, Any
+from typing import Dict, Any, Set
 
 from nltk.tokenize.util import align_tokens
 from transformers import AutoTokenizer
@@ -22,6 +22,10 @@ from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
 from ft.onto.base_ontology import Subword
+
+__all__ = [
+    "BERTTokenizer",
+]
 
 
 class BERTTokenizer(PackProcessor):
@@ -58,3 +62,14 @@ class BERTTokenizer(PackProcessor):
         config = super().default_configs()
         config.update({'model_path': None})
         return config
+
+    def record(self, record_meta: Dict[str, Set[str]]):
+        r"""Method to add output type `ft.onto.base_ontology.Subword`
+        of current processor `BERTTokenizer`
+        to :attr:`forte.data.data_pack.Meta.record`.
+
+        Args:
+            record_meta: the field in the datapack for type record that need to
+                fill in for consistency checking.
+        """
+        record_meta["ft.onto.base_ontology.Subword"] = {"is_first_segment"}

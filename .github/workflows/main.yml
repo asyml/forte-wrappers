@@ -140,7 +140,7 @@ jobs:
   dispatch:
     needs: [build, pytest, docs]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.repository == 'asyml/forte-wrappers' && github.ref == 'refs/heads/main'
     steps:
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v1
