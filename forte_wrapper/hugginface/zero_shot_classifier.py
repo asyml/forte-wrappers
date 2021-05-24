@@ -44,7 +44,7 @@ class ZeroShotClassifier(PackProcessor):
             result_dict = dict()
             for idx, lab in enumerate(result['labels']):
                 result_dict[lab] = round(result['scores'][idx], 4)
-            entry_specified.classification = result_dict
+            setattr(entry_specified, self.configs.attribute_name, result_dict)
 
     @classmethod
     def default_configs(cls):
