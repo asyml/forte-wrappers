@@ -3,7 +3,6 @@ from forte.common import Resources
 from forte.common.configuration import Config
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
-from ft.onto.base_ontology import Sentence
 from transformers import pipeline
 
 
