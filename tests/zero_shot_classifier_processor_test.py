@@ -14,7 +14,6 @@
 """
 Unit tests for Stanford NLP processors.
 """
-import os
 import unittest
 
 from forte.data.data_pack import DataPack
@@ -30,7 +29,10 @@ class TestZeroShotClassifier(unittest.TestCase):
         self.nlp = Pipeline[DataPack](enforce_consistency=True)
         self.nlp.set_reader(StringReader())
         self.nlp.add(NLTKSentenceSegmenter())
-        self.nlp.add(ZeroShotClassifier())
+        config = {
+            "use_gpu": False
+        }
+        self.nlp.add(ZeroShotClassifier(), config=config)
         self.nlp.initialize()
 
     def test_stanford_processor(self):

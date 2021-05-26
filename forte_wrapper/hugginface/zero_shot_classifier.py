@@ -41,10 +41,10 @@ class ZeroShotClassifier(PackProcessor):
                 candidate_labels=self.configs.candidate_labels,
                 hypothesis_template=self.configs.hypothesis_template,
                 multi_class=self.configs.multi_class)
-            result_dict = dict()
+            curr_dict = getattr(entry_specified, self.configs.attribute_name)
             for idx, lab in enumerate(result['labels']):
-                result_dict[lab] = round(result['scores'][idx], 4)
-            setattr(entry_specified, self.configs.attribute_name, result_dict)
+                curr_dict[lab] = round(result['scores'][idx], 4)
+            setattr(entry_specified, self.configs.attribute_name, curr_dict)
 
     @classmethod
     def default_configs(cls):
