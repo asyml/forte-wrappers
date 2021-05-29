@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Unit tests for Stanford NLP processors.
+Unit tests for ZeroShotClassifier processor.
 """
+from typing import Dict
 import unittest
 
 from forte.data.data_pack import DataPack
@@ -22,6 +23,12 @@ from forte.data.readers import StringReader
 from forte_wrapper.nltk import NLTKSentenceSegmenter
 from forte_wrapper.hugginface.zero_shot_classifier import ZeroShotClassifier
 from ft.onto.base_ontology import Sentence
+
+
+def get_top_scores_label(curr_dict: Dict):
+    top1 = sorted(curr_dict.keys(), key=lambda x: curr_dict[x],
+                  reverse=True)[0]
+    return top1
 
 
 class TestZeroShotClassifier(unittest.TestCase):
@@ -35,7 +42,7 @@ class TestZeroShotClassifier(unittest.TestCase):
         self.nlp.add(ZeroShotClassifier(), config=config)
         self.nlp.initialize()
 
-    def test_stanford_processor(self):
+    def test_huggingface_zero_shot_processor(self):
         sentences = ["One day I will see the world.",
                      "I will try out all types of the delicious cuisine!"]
         document = ' '.join(sentences)
@@ -46,8 +53,10 @@ class TestZeroShotClassifier(unittest.TestCase):
                             'cooking': 0.0009, 'dancing': 0.0008},
                            {'exploration': 0.89, 'cooking': 0.5343,
                             'travel': 0.0069, 'dancing': 0.0016}]
+        expected_tops = [get_top_scores_label(x) for x in expected_scores]
         for idx, sentence in enumerate(pack.get(Sentence)):
-            self.assertEqual(sentence.classification, expected_scores[idx])
+            self.assertEqual(get_top_scores_label(sentence.classification),
+                             expected_tops[idx])
 
 
 if __name__ == "__main__":
