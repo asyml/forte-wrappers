@@ -78,7 +78,7 @@ jobs:
           - { dep: "varder,nltk", testfile: tests/sentiment_processor_test.py }
           - { dep: spacy, testfile: tests/spacy_processors_test.py }
           - { dep: stanza, testfile: tests/stanfordnlp_processor_test.py }
-          - { dep: gpt2-example, testfile: examples/gpt2_test.py }
+          - { dep: "gpt2-example,nltk", testfile: examples/gpt2_test.py }
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
