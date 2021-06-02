@@ -14,7 +14,6 @@
 """
 Unit tests for ZeroShotClassifier processor.
 """
-from typing import Dict
 import unittest
 
 from forte.data.data_pack import DataPack
@@ -23,12 +22,7 @@ from forte.data.readers import StringReader
 from forte_wrapper.nltk import NLTKSentenceSegmenter
 from forte_wrapper.hugginface.zero_shot_classifier import ZeroShotClassifier
 from ft.onto.base_ontology import Sentence
-
-
-def get_top_scores_label(curr_dict: Dict):
-    top1 = sorted(curr_dict.keys(), key=lambda x: curr_dict[x],
-                  reverse=True)[0]
-    return top1
+from helpers.test_utils import get_top_scores_label
 
 
 class TestZeroShotClassifier(unittest.TestCase):

@@ -23,7 +23,7 @@ __all__ = [
     "pretrained_test",
 ]
 
-from typing import Any, Callable
+from typing import Any, Callable, Dict
 
 
 def define_skip_condition(flag: str, explanation: str):
@@ -60,6 +60,12 @@ def dir_is_same(dir1, dir2):
         if not dir_is_same(new_dir1, new_dir2):
             return False
     return True
+
+
+def get_top_scores_label(curr_dict: Dict):
+    top1 = sorted(curr_dict.keys(), key=lambda x: curr_dict[x],
+                  reverse=True)[0]
+    return top1
 
 
 performance_test = define_skip_condition(

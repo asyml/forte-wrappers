@@ -11,7 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+"""
+Wrapper of the Question Answering models on HuggingFace platform (context
+understanding)
+"""
 import importlib
 from typing import Dict, Set
 from forte.common import Resources
@@ -20,6 +23,10 @@ from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
 from transformers import pipeline
 from ft.onto.base_ontology import Phrase
+
+__all__ = [
+    "QuestionAnsweringSingle",
+]
 
 
 class QuestionAnsweringSingle(PackProcessor):
