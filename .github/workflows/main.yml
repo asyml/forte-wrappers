@@ -114,6 +114,8 @@ jobs:
           tar -zxf elasticsearch-7.4.2-linux-x86_64.tar.gz
           rm -rf elasticsearch-7.4.2-linux-x86_64.tar.gz
           elasticsearch-7.4.2/bin/elasticsearch -d
+          chmod +x tests/wait_elastic.sh
+          tests/wait_elastic.sh
       - name: Test with pytest and run coverage
         run: |
           coverage run -m pytest ${{ matrix.test-details.testfile}}
