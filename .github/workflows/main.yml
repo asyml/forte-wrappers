@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [ main ]
   repository_dispatch:
-    types: [trigger-forte-wrappers]
+    types: [ trigger-forte-wrappers ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         python-version: [ 3.6, 3.7 ]
-        torch-version: [ 1.5.0]
+        torch-version: [ 1.5.0 ]
         tensorflow-version: [ 1.15.0 ]
 
     steps:
@@ -65,19 +65,23 @@ jobs:
           mypy .
 
   pytest:
-    needs: [build]
+    needs: [ build ]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [ 3.6, 3.7 ]
-        torch-version: [ 1.5.0]
+        torch-version: [ 1.5.0 ]
         tensorflow-version: [ 1.15.0 ]
         test-details:
-          - {dep: allennlp, testfile: tests/allennlp_processors_test.py}
-          - {dep: nltk, testfile: tests/nltk_processors_test.py}
-          - {dep: "varder,nltk", testfile: tests/sentiment_processor_test.py}
-          - {dep: spacy, testfile: tests/spacy_processors_test.py}
-          - {dep: stanza, testfile: tests/stanfordnlp_processor_test.py}
+          - { dep: allennlp, testfile: tests/wrappers/allennlp_processors_test.py }
+          - { dep: nltk, testfile: tests/wrappers/nltk_processors_test.py }
+          - { dep: "varder,nltk", testfile: tests/wrappers/sentiment_processor_test.py }
+          - { dep: spacy, testfile: tests/wrappers/spacy_processors_test.py }
+          - { dep: stanza, testfile: tests/wrappers/stanfordnlp_processor_test.py }
+          - { dep: "gpt2-example,nltk", testfile: examples/gpt2_test.py }
+          - { dep: elastic, testfile: tests/wrappers/elastic_indexers_test.py }
+          - { dep: faiss, testfile: tests/wrappers/faiss_indexers_test.py}
+          - { dep: elastic, testfile: tests/wrappers/elastic_indexers_test.py }
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -103,12 +107,21 @@ jobs:
       - name: Install the project
         run: |
           pip install .[${{ matrix.test-details.dep}}]
+      - name: Start elastic server if test elastic search
+        if: ${{ matrix.test-details.dep == 'elastic' }}
+        run: |
+          wget -q https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.4.2-linux-x86_64.tar.gz
+          tar -zxf elasticsearch-7.4.2-linux-x86_64.tar.gz
+          rm -rf elasticsearch-7.4.2-linux-x86_64.tar.gz
+          elasticsearch-7.4.2/bin/elasticsearch -d
+          chmod +x tests/wait_elastic.sh
+          tests/wait_elastic.sh
       - name: Test with pytest and run coverage
         run: |
           coverage run -m pytest ${{ matrix.test-details.testfile}}
 
   docs:
-    needs: [build, pytest]
+    needs: [ build, pytest ]
     runs-on: ubuntu-latest
     env:
       python-version: 3.7
@@ -138,7 +151,7 @@ jobs:
           cd ..
 
   dispatch:
-    needs: [build, pytest, docs]
+    needs: [ build, pytest, docs ]
     runs-on: ubuntu-latest
     if: github.repository == 'asyml/forte-wrappers' && github.ref == 'refs/heads/main'
     steps:
