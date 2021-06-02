@@ -26,7 +26,7 @@ from ft.onto.base_ontology import Phrase
 
 class TestQuestionAnswering(unittest.TestCase):
     def setUp(self):
-        self.nlp = Pipeline[DataPack]()
+        self.nlp = Pipeline[DataPack](enforce_consistency=True)
         self.nlp.set_reader(StringReader())
         config = {
             "use_gpu": False,
