@@ -36,7 +36,8 @@ setuptools.setup(
         'allennlp': ['allennlp==1.2.0', 'allennlp-models==1.2.0',
                      'torch>=1.5.0'],
         'cliner': ['python-crfsuite==0.9.7'],
-        'gpt2-example': ['termcolor>=1.1.0']
+        'gpt2-example': ['termcolor>=1.1.0'],
+        'huggingface': ['tranformers >= 3.1']
     },
     classifiers=[
         'Intended Audience :: Developers',
