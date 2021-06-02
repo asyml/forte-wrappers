@@ -16,6 +16,7 @@ Wrapper of the Question Answering models on HuggingFace platform (context
 understanding)
 """
 import importlib
+import itertools
 from typing import Dict, Set
 from forte.common import Resources
 from forte.common.configuration import Config
@@ -45,9 +46,8 @@ class QuestionAnsweringSingle(PackProcessor):
         self.extractor = None
 
     def set_up(self):
-        device_num = -1
-        if self.configs.use_gpu:
-            device_num = 0
+        cuda_devices = itertools.cycle(self.configs['cuda_devices'])
+        device_num = next(cuda_devices)
         self.extractor = pipeline("question-answering",
                                   model=self.configs.model_name,
                                   tokenizer=self.configs.model_name,
@@ -91,7 +91,11 @@ class QuestionAnsweringSingle(PackProcessor):
                 context.
             - `"max_answer_len"`: The maximum length of predicted answers (e.g.,
                 only answers with a shorter length are considered).
-            - `"use_gpu"`: use gpu or not, default value is False.
+            - `"cuda_devices"`: a list of integers indicating the available
+                cuda/gpu devices that can be used by this processor. When
+                multiple models are loaded, cuda devices are assigned in a
+                round robin fashion. E.g. [0, -1] -> first model uses gpu 0
+                but second model uses cpu.
             - `"handle_impossible_answer"`: Whether or not we accept
                 impossible as an answer.
         """
@@ -101,7 +105,7 @@ class QuestionAnsweringSingle(PackProcessor):
             'model_name': 'ktrapeznikov/biobert_v1.1_pubmed_squad_v2',
             'question': "My name is Sarah and I live in London",
             'max_answer_len': 15,
-            'use_gpu': False,
+            'cuda_devices': [-1],
             'handle_impossible_answer': False
 
         })
