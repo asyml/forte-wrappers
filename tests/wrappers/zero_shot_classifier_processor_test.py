@@ -30,10 +30,7 @@ class TestZeroShotClassifier(unittest.TestCase):
         self.nlp = Pipeline[DataPack](enforce_consistency=True)
         self.nlp.set_reader(StringReader())
         self.nlp.add(NLTKSentenceSegmenter())
-        config = {
-            "use_gpu": False
-        }
-        self.nlp.add(ZeroShotClassifier(), config=config)
+        self.nlp.add(ZeroShotClassifier())
         self.nlp.initialize()
 
     def test_huggingface_zero_shot_processor(self):

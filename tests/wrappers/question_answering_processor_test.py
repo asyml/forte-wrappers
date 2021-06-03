@@ -29,7 +29,6 @@ class TestQuestionAnswering(unittest.TestCase):
         self.nlp = Pipeline[DataPack](enforce_consistency=True)
         self.nlp.set_reader(StringReader())
         config = {
-            "use_gpu": False,
             'question': "What is the molecular function of"
                         " psoralen photobinding on DNA?"
         }
