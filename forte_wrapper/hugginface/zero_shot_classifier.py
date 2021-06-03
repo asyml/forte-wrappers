@@ -15,7 +15,6 @@
 Wrapper of the Zero Shot Classifier models on HuggingFace platform
 """
 from typing import Dict, Set
-import itertools
 import importlib
 from forte.common import Resources
 from forte.common.configuration import Config
@@ -45,8 +44,7 @@ class ZeroShotClassifier(PackProcessor):
         self.classifier = None
 
     def set_up(self):
-        cuda_devices = itertools.cycle(self.configs['cuda_devices'])
-        device_num = next(cuda_devices)
+        device_num = self.configs['cuda_device']
         self.classifier = pipeline("zero-shot-classification",
                                    model=self.configs.model_name,
                                    framework='pt',
@@ -102,11 +100,9 @@ class ZeroShotClassifier(PackProcessor):
                 template is :obj:`"This example is {}."` Note that for the
                 model with a specific language, the hypothesis_template need to
                 be of that language.
-            - `"cuda_devices"`: a list of integers indicating the available
-                cuda/gpu devices that can be used by this processor. When
-                multiple models are loaded, cuda devices are assigned in a
-                round robin fashion. E.g. [0, -1] -> first model uses gpu 0
-                but second model uses cpu.
+            - `"cuda_device"`: Device ordinal for CPU/GPU supports. Setting
+                this to -1 will leverage CPU, a positive will run the model
+                on the associated CUDA device id.
         """
         config = super().default_configs()
         config.update({
@@ -116,7 +112,7 @@ class ZeroShotClassifier(PackProcessor):
             'model_name': 'valhalla/distilbart-mnli-12-1',
             'candidate_labels': ['travel', 'cooking', 'dancing', 'exploration'],
             'hypothesis_template': "This example is {}.",
-            'cuda_devices': [-1]
+            'cuda_device': -1
         })
         return config
 

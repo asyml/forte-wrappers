@@ -154,3 +154,4 @@ lemmatization
 tokenize
 Cython
 github
+hugginface
