@@ -37,7 +37,7 @@ setuptools.setup(
                      'torch>=1.5.0'],
         'cliner': ['python-crfsuite==0.9.7'],
         'gpt2-example': ['termcolor>=1.1.0'],
-        'huggingface': ['tranformers >= 3.1']
+        'huggingface': ['transformers >= 3.1']
     },
     classifiers=[
         'Intended Audience :: Developers',
