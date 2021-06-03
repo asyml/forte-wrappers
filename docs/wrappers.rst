@@ -49,7 +49,7 @@ Stanza
     :members:
 
 HuggingFace
-======
+===========
 :hidden:`HuggingFace Processors`
 ----------------------------
 .. autoclass:: forte_wrapper.hugginface.ZeroShotClassifier
