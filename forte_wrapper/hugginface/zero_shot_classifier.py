@@ -85,7 +85,7 @@ class ZeroShotClassifier(PackProcessor):
                 `Sentence` in the input pack.
             - `"multi_class"`: whether to allow multiple class true
             - `"model_name"`: language model, default is
-                'valhalla/distilbart-mnli-12-1'.
+                `"valhalla/distilbart-mnli-12-1"`.
                 The wrapper supports Hugging Face models with pipeline tag of
                 `zero-shot-classification`.
             - `"candidate_labels"`: The set of possible class labels to
