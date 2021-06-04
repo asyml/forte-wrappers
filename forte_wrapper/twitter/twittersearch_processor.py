@@ -123,9 +123,6 @@ class TweetSearchProcessor(MultiPackProcessor):
 
 
     def query_tweets(self, query):
-        if self.configs.credential_file == '':
-            self.configs.credential_file = \
-                os.path.join(os.path.dirname(__file__), 'config.yml')
         credentials = yaml.safe_load(open(self.configs.credential_file, "r"))
         credentials = Config(credentials, default_hparams=None)
 

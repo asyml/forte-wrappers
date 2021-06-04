@@ -23,7 +23,6 @@ from forte.common import Resources
 from forte.common.configuration import Config
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
-from ft.onto.base_ontology import Sentence
 
 
 class VaderSentimentProcessor(PackProcessor):
@@ -94,4 +93,4 @@ class VaderSentimentProcessor(PackProcessor):
         :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
         the pipeline.
         """
-        return {"ft.onto.base_ontology.Sentence": set()}
+        return {cls().default_configs()["entry_type"]: set()}
