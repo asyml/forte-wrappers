@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import logging
-from typing import List, Any, Dict
+from typing import List, Any, Dict, Set
 
 import stanza
+from forte.common import ProcessorConfigError
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
@@ -40,6 +41,12 @@ class StandfordNLPProcessor(PackProcessor):
     # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
+        if ("pos" in configs.processors or "lemma" in configs.processors or
+                "depparse" in configs.processors):
+            if "tokenize" not in configs.processors:
+                raise ProcessorConfigError('tokenize is necessary in '
+                                           'configs.processors for '
+                                           'pos or lemma or depparse')
         self.set_up()
         self.nlp = stanza.Pipeline(
             lang=self.configs.lang,
@@ -118,3 +125,21 @@ class StandfordNLPProcessor(PackProcessor):
                     parent = tokens[word.head - 1]  # Head token
                     relation_entry = Dependency(input_pack, parent, child)
                     relation_entry.rel_type = word.deprel
+
+    def record(self, record_meta: Dict[str, Set[str]]):
+        r"""Method to add output type record of current processor
+        to :attr:`forte.data.data_pack.Meta.record`.
+
+        Args:
+            record_meta: the field in the datapack for type record that need to
+                fill in for consistency checking.
+        """
+        record_meta["ft.onto.base_ontology.Sentence"] = set()
+        if "tokenize" in self.configs.processors:
+            record_meta["ft.onto.base_ontology.Token"] = set()
+            if "pos" in self.configs.processors:
+                record_meta["ft.onto.base_ontology.Token"].add("pos")
+            if "lemma" in self.processors:
+                record_meta["ft.onto.base_ontology.Token"].add("lemma")
+            if "depparse" in self.configs.processors:
+                record_meta["ft.onto.base_ontology.Dependency"] = {"rel_type"}

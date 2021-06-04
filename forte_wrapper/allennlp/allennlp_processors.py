@@ -282,3 +282,5 @@ class AllenNLPProcessor(PackProcessor):
             if "srl" in self.configs.processors:
                 record_meta["ft.onto.base_ontology.PredicateArgument"] = set()
                 record_meta["ft.onto.base_ontology.PredicateMention"] = set()
+                record_meta["ft.onto.base_ontology.PredicateLink"] = \
+                    {"arg_type"}
