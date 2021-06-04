@@ -39,6 +39,7 @@ SCISPACYMODEL_URL = {
     "en_ner_bionlp13cg_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_ner_bionlp13cg_md-0.3.0.tar.gz"
 }
 
+
 # pylint: enable=line-too-long
 class SpacyProcessor(PackProcessor):
     """
@@ -66,6 +67,7 @@ class SpacyProcessor(PackProcessor):
     Citation: ScispaCy: Fast and Robust Models for Biomedical Natural Language
     Processing.
     """
+
     def __init__(self):
         super().__init__()
         self.processors: str = ""
@@ -212,7 +214,7 @@ class SpacyProcessor(PackProcessor):
         # get medical entity mentions and UMLS concepts
         for item in medical_entities:
             entity = MedicalEntityMention(input_pack, item.start_char,
-                                   item.end_char)
+                                          item.end_char)
             entity.ner_type = item.label_
 
             for umls_ent in item._.kb_ents:

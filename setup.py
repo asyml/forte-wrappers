@@ -31,7 +31,8 @@ setuptools.setup(
         'stanza': ['stanza==1.0.1'],
         'elastic': ['elasticsearch==7.5.1'],
         'faiss': ['faiss-cpu>=1.6.1'],
-        'spacy': ['spacy>=2.3.0, <2.4.0'],
+        'spacy2': ['spacy>=2.3.0, <=2.3.5'], # Download breaks at 2.3.6
+        # 'spacy3': ['spacy>=3.0.1'],
         'scispacy': ['scispacy==0.3.0'],
         'allennlp': ['allennlp==1.2.0', 'allennlp-models==1.2.0',
                      'torch>=1.5.0'],
