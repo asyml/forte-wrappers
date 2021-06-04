@@ -12,33 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import tweepy as tw
-import argparse
-import os
-
-import yaml
-
-from forte.common.configuration import Config
-
 # pylint: disable=attribute-defined-outside-init
+import tweepy as tw
+import yaml
 from typing import Dict, Any
 
 from forte.common.configuration import Config
 from forte.common.resources import Resources
-from forte.data.data_pack import DataPack
 from forte.data.multi_pack import MultiPack
-from forte.data.ontology.top import Query
 from forte.processors.base import MultiPackProcessor
-from forte.processors.base import PackProcessor
-from ft.onto.base_ontology import Document
-
-import os
-from typing import Any, Iterator
-
 from forte.data.data_pack import DataPack
-from forte.data.data_utils_io import dataset_path_iterator
-from forte.data.base_reader import PackReader
 from ft.onto.base_ontology import Document
 
 __all__ = [
@@ -51,33 +34,38 @@ class TweetSearchProcessor(MultiPackProcessor):
     TweetSearchProcessor is designed to query tweets with Twitter API.
     Tweets will be returned as datapacks in input multipack.
     """
-
     def __init__(self):
         super().__init__()
-        # tweets = self.query_tweets()
 
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
 
     @classmethod
     def default_configs(cls) -> Dict[str, Any]:
-        """This defines a basic config structure for ElasticSearchProcessor
+        # pylint: disable=line-too-long
+        """This defines a basic config structure for TweetSearchProcessor.
+        For more details about the parameters, refer to
+        https://docs.tweepy.org/en/latest/api.html#tweepy.API.search_tweets
+        and
+        https://developer.twitter.com/en/docs/twitter-api/v1/tweets/search/api-reference/get-search-tweets
+
         Returns:
-            A dictionary with the default config for this processor.
-            query_pack_name (str): The query pack's name, default is "query".
-            index_config (dict): The ElasticSearchIndexer's config.
-            field (str): Field name that will be used when creating the new
-                datapack.
-            response_pack_name_prefix (str): the pack name prefix to be used
+            dictionary with the default config for this processor.
+        Following are the keys for this dictionary:
+        - `"credential_file"`: defines the path of credential file needed for
+            Twitter API usage.
+        - `"tweet_items"`: defines the number of tweets returned by processor.
+        - `"lang"`: language, restricts tweets to the given language,
+            default is 'en'.
+        - `"date_since"`: restricts tweets created after the given date.
+        - `"result_type"`: defines what type of search results to receive.
+            The default is “recent.” Valid values include:
+            mixed : include both popular and real time results in the response
+            recent : return only the most recent results in the response
+            popular : return only the most popular results in the response
+        - `"query_pack_name"`: The query pack's name, default is "query".
+        - `"response_pack_name_prefix"`: the pack name prefix to be used
                 in response datapacks.
-            indexed_text_only (bool): defines whether the returned
-                value from the field (as specified by the field
-                configuration) will be considered as plain text. If True,
-                a new data pack will be created and the value will be
-                used as the text for the data pack. Otherwise, the returned
-                value will be considered as serialized data pack, and the
-                returned data pack will be created by deserialization.
-                Default is True.
         """
         config = super().default_configs()
         config.update({
@@ -92,7 +80,7 @@ class TweetSearchProcessor(MultiPackProcessor):
         return config
 
     def _process(self, input_pack: MultiPack):
-        r"""Searches `Elasticsearch` indexer to fetch documents for a query.
+        r"""Search using Twitter API to fetch tweets for a query.
         This query should be contained in the input multipack with name
         `self.config.query_pack_name`.
         This method adds new packs to `input_pack` containing the retrieved
@@ -121,8 +109,13 @@ class TweetSearchProcessor(MultiPackProcessor):
 
             Document(pack=pack, begin=0, end=len(text))
 
-
-    def query_tweets(self, query):
+    def query_tweets(self, query: str):
+        """
+        This function searches tweets using Twitter API
+        Args:
+            query: user's input query for twitter API search
+        Returns: List of tweets
+        """
         credentials = yaml.safe_load(open(self.configs.credential_file, "r"))
         credentials = Config(credentials, default_hparams=None)
 
@@ -139,6 +132,7 @@ class TweetSearchProcessor(MultiPackProcessor):
                            lang=self.configs.lang,
                            since=self.configs.date_since,
                            result_type=self.configs.result_type,
-                           tweet_mode="extended").items(self.configs.tweet_items)
+                           tweet_mode="extended").items(
+            self.configs.tweet_items)
 
         return tweets
