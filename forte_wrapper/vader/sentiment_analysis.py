@@ -16,6 +16,7 @@ __all__ = [
     "VaderSentimentProcessor",
 ]
 
+import importlib
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 from forte.common import Resources
@@ -51,24 +52,35 @@ class VaderSentimentProcessor(PackProcessor):
 
     def initialize(self, resources: Resources, configs: Config):
         # pylint: disable=unused-argument
+        super().initialize(resources, configs)
         self.sentence_component = configs.get('sentence_component')
 
     def _process(self, input_pack: DataPack):
-        for sentence in input_pack.get(entry_type=Sentence,
-                                       components=self.sentence_component):
-            scores = self.analyzer.polarity_scores(sentence.text)
-            sentence.sentiment = scores
+        path_str, module_str = self.configs.entry_type.rsplit('.', 1)
+
+        mod = importlib.import_module(path_str)
+        entry = getattr(mod, module_str)
+        for entry_specified in input_pack.get(entry_type=entry,
+                                              components=self.sentence_component):
+            scores = self.analyzer.polarity_scores(entry_specified.text)
+            entry_specified.sentiment = scores
 
     @classmethod
     def default_configs(cls):
         r"""This defines a basic config structure for VaderSentimentProcessor.
-
-        sentence_component (str): If not None, the processor will process
+        Returns:
+            dictionary with the default config for this processor.
+        Following are the keys for this dictionary:
+        - `"entry_type"`: defines which entry type in the input pack to make
+            prediction on. The default makes prediction on each `Sentence`
+            in the input pack.
+        - `"sentence_component"`: str. If not None, the processor will process
           sentence with the provided component name. If None, then all sentences
           will be processed.
         """
         config = super().default_configs()
         config.update({
+            'entry_type': 'ft.onto.base_ontology.Sentence',
             'sentence_component': None
         })
         return config

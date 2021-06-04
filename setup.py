@@ -30,13 +30,14 @@ setuptools.setup(
         'varder': ['vaderSentiment==3.2.1'],
         'stanza': ['stanza==1.0.1'],
         'elastic': ['elasticsearch==7.5.1'],
-        'faiss': ['faiss-cpu>=1.6.1'],
+        'faiss': ['faiss-cpu>=1.6.1', 'torch>=1.5.0'],
         'spacy': ['spacy>=2.3.0, <2.4.0'],
         'scispacy': ['scispacy==0.3.0'],
         'allennlp': ['allennlp==1.2.0', 'allennlp-models==1.2.0',
                      'torch>=1.5.0'],
         'cliner': ['python-crfsuite==0.9.7'],
-        'gpt2-example': ['termcolor>=1.1.0']
+        'gpt2-example': ['termcolor>=1.1.0'],
+        'twitter': ['tweepy==3.10.0']
     },
     classifiers=[
         'Intended Audience :: Developers',
