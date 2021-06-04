@@ -59,8 +59,9 @@ class VaderSentimentProcessor(PackProcessor):
 
         mod = importlib.import_module(path_str)
         entry = getattr(mod, module_str)
-        for entry_specified in input_pack.get(entry_type=entry,
-                                              components=self.sentence_component):
+        for entry_specified in input_pack.get(
+                entry_type=entry,
+                components=self.sentence_component):
             scores = self.analyzer.polarity_scores(entry_specified.text)
             entry_specified.sentiment = scores
 

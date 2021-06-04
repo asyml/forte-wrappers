@@ -13,9 +13,9 @@
 # limitations under the License.
 
 # pylint: disable=attribute-defined-outside-init
+from typing import Dict, Any
 import tweepy as tw
 import yaml
-from typing import Dict, Any
 
 from forte.common.configuration import Config
 from forte.common.resources import Resources
@@ -34,6 +34,7 @@ class TweetSearchProcessor(MultiPackProcessor):
     TweetSearchProcessor is designed to query tweets with Twitter API.
     Tweets will be returned as datapacks in input multipack.
     """
+    # pylint: disable=useless-super-delegation
     def __init__(self):
         super().__init__()
 
