@@ -66,8 +66,9 @@ class VaderSentimentProcessor(PackProcessor):
     @classmethod
     def default_configs(cls):
         r"""This defines a basic config structure for VaderSentimentProcessor.
+
         Returns:
-            dictionary with the default config for this processor.
+            A dictionary with the default config for this processor.
 
         Following are the keys for this dictionary:
 
