@@ -83,6 +83,8 @@ jobs:
           - { dep: elastic, testfile: tests/wrappers/elastic_indexers_test.py }
           - { dep: faiss, testfile: tests/wrappers/faiss_indexers_test.py}
           - { dep: elastic, testfile: tests/wrappers/elastic_indexers_test.py }
+          - { dep: "huggingface,nltk", testfile: tests/wrappers/zero_shot_classifier_processor_test.py }
+          - { dep: "huggingface,nltk", testfile: tests/wrappers/question_answering_processor_test.py }
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}

@@ -48,3 +48,15 @@ Stanza
 .. autoclass:: forte_wrapper.stanza.StandfordNLPProcessor
     :members:
 
+HuggingFace
+===========
+:hidden:`HuggingFace Processors`
+--------------------------------
+.. autoclass:: forte_wrapper.hugginface.ZeroShotClassifier
+    :members:
+.. autoclass:: forte_wrapper.hugginface.QuestionAnsweringSingle
+    :members:
+.. autoclass:: forte_wrapper.hugginface.BERTTokenizer
+    :members:
+.. autoclass:: forte_wrapper.hugginface.BioBERTNERPredictor
+    :members:
