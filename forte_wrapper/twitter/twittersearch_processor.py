@@ -17,7 +17,6 @@ import tweepy as tw
 import yaml
 
 from forte.common.configuration import Config
-from forte.common.resources import Resources
 from forte.data.multi_pack import MultiPack
 from forte.processors.base import MultiPackProcessor
 from forte.data.data_pack import DataPack
@@ -33,14 +32,6 @@ class TweetSearchProcessor(MultiPackProcessor):
     TweetSearchProcessor is designed to query tweets with Twitter API.
     Tweets will be returned as datapacks in input multipack.
     """
-    # # pylint: disable=attribute-defined-outside-init
-    # # pylint: disable=useless-super-delegation
-    # def __init__(self):
-    #     super().__init__()
-    #
-    # def initialize(self, resources: Resources, configs: Config):
-    #     super().initialize(resources, configs)
-
     @classmethod
     def default_configs(cls) -> Dict[str, Any]:
         # pylint: disable=line-too-long

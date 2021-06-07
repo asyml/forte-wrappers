@@ -16,7 +16,6 @@ __all__ = [
     "VaderSentimentProcessor",
 ]
 
-import importlib
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 from forte.common import Resources
@@ -55,16 +54,10 @@ class VaderSentimentProcessor(PackProcessor):
         self.sentence_component = configs.get('sentence_component')
 
     def _process(self, input_pack: DataPack):
-        # path_str, module_str = self.configs.entry_type.rsplit('.', 1)
-        #
-        # mod = importlib.import_module(path_str)
-        # entry = getattr(mod, module_str)
-        # input_pack.get("ft.onto.base_ontology.Sentence")
         for entry_specified in input_pack.get(
                 entry_type=self.configs.entry_type,
                 components=self.sentence_component):
             scores = self.analyzer.polarity_scores(entry_specified.text)
-            # entry_specified.sentiment = scores
             setattr(entry_specified, self.configs.attribute_name, scores)
 
 
