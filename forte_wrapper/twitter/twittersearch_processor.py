@@ -127,7 +127,8 @@ class TweetSearchProcessor(MultiPackProcessor):
         Args:
             query: user's input query for twitter API search
 
-        Returns: List of tweets
+        Returns:
+            List of tweets
         """
         credentials = yaml.safe_load(open(self.configs.credential_file, "r"))
         credentials = Config(credentials, default_hparams=None)
