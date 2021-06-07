@@ -31,7 +31,7 @@ __all__ = [
 
 class QuestionAnsweringSingle(PackProcessor):
     r"""Wrapper of the models on HuggingFace platform with pipeline tag of
-    `question-answering`.
+    `question-answering` (reading comprehension).
     https://huggingface.co/models?pipeline_tag=question-answering
     This wrapper could take any model name on HuggingFace platform with pipeline
     tag of `question-answering` in configs to make prediction on the context of
@@ -74,7 +74,7 @@ class QuestionAnsweringSingle(PackProcessor):
 
     @classmethod
     def default_configs(cls):
-        r"""This defines a basic config structure for QuestionAnsweringSingle.
+        r"""This defines a basic config structure for `QuestionAnsweringSingle`.
         Returns:
             dictionary with the default config for this processor.
         Following are the keys for this dictionary:
@@ -82,7 +82,7 @@ class QuestionAnsweringSingle(PackProcessor):
                 prediction on. The default makes prediction on each `Document`
                 in the input pack.
             - `"model_name"`: language model, default is
-                'ktrapeznikov/biobert_v1.1_pubmed_squad_v2'.
+                `"ktrapeznikov/biobert_v1.1_pubmed_squad_v2"`.
                 The wrapper supports Hugging Face models with pipeline tag of
                 `question-answering`.
             - `"question"`: One question to retrieve answer from the input pack
