@@ -78,7 +78,7 @@ class TweetSearchProcessor(MultiPackProcessor):
         This query should be contained in the input multipack with name
         `self.config.query_pack_name`.
         Each result is added as a new data pack, and a
-        ft.onto.base_ontology.Document annotation is used to cover the whole
+        `ft.onto.base_ontology.Document` annotation is used to cover the whole
         document.
         Args:
              input_pack: A multipack containing query as a pack.
