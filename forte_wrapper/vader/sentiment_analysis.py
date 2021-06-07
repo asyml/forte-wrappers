@@ -28,9 +28,11 @@ class VaderSentimentProcessor(PackProcessor):
     r"""A wrapper of a sentiment analyzer: Vader (Valence Aware Dictionary
     and sEntiment Reasoner). Vader needs to be installed to use this package
 
-     > pip install vaderSentiment
+     > `pip install vaderSentiment`
+
      or
-     > pip install --upgrade vaderSentiment
+
+     > `pip install --upgrade vaderSentiment`
 
     This processor will add assign sentiment label to each sentence in the
     document. If the input pack contains no sentence then no processing will
@@ -38,8 +40,9 @@ class VaderSentimentProcessor(PackProcessor):
     the set of sentences to tag by setting the `sentence_component` attribute.
 
     Vader URL: (https://github.com/cjhutto/vaderSentiment)
-    Citation: VADER: A Parsimonious Rule-based Model for Sentiment Analysis
-       of Social Media Text (by C.J. Hutto and Eric Gilbert)
+
+    Citation: VADER: A Parsimonious Rule-based Model for Sentiment Analysis of
+    Social Media Text (by C.J. Hutto and Eric Gilbert)
 
     """
 
@@ -60,22 +63,28 @@ class VaderSentimentProcessor(PackProcessor):
             scores = self.analyzer.polarity_scores(entry_specified.text)
             setattr(entry_specified, self.configs.attribute_name, scores)
 
-
     @classmethod
     def default_configs(cls):
         r"""This defines a basic config structure for VaderSentimentProcessor.
         Returns:
             dictionary with the default config for this processor.
+
         Following are the keys for this dictionary:
-        - `"entry_type"`: defines which entry type in the input pack to make
+
+        - `"entry_type"`:
+            Defines which entry type in the input pack to make
             prediction on. The default makes prediction on each `Sentence`
             in the input pack.
-        - `"attribute_name"`: defines which attribute of the `entry_type`
+
+        - `"attribute_name"`:
+            Defines which attribute of the `entry_type`
             in the input pack to save score to. The default saves prediction
             to the `sentiment` attribute for each `Sentence` in the input pack.
-        - `"sentence_component"`: str. If not None, the processor will process
-          sentence with the provided component name. If None, then all sentences
-          will be processed.
+
+        - `"sentence_component"`:
+            str. If not None, the processor will process sentence with the
+            provided component name. If None, then all sentences will be
+            processed.
         """
         config = super().default_configs()
         config.update({

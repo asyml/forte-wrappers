@@ -29,7 +29,8 @@ __all__ = [
 
 class TweetSearchProcessor(MultiPackProcessor):
     """
-    TweetSearchProcessor is designed to query tweets with Twitter API.
+    TweetSearchProcessor is designed to query tweets with Tweepy and
+    Twitter API.
     Tweets will be returned as datapacks in input multipack.
     """
     @classmethod
@@ -42,23 +43,37 @@ class TweetSearchProcessor(MultiPackProcessor):
         https://developer.twitter.com/en/docs/twitter-api/v1/tweets/search/api-reference/get-search-tweets
 
         Returns:
-            dictionary with the default config for this processor.
+            A dictionary with the default config for this processor.
+
         Following are the keys for this dictionary:
-        - `"credential_file"`: defines the path of credential file needed for
-            Twitter API usage.
-        - `"num_tweets_returned"`: defines the number of tweets returned by
-            processor.
-        - `"lang"`: language, restricts tweets to the given language,
-            default is 'en'.
-        - `"date_since"`: restricts tweets created after the given date.
-        - `"result_type"`: defines what type of search results to receive.
-            The default is “recent.” Valid values include:
-            mixed : include both popular and real time results in the response
-            recent : return only the most recent results in the response
-            popular : return only the most popular results in the response
-        - `"query_pack_name"`: The query pack's name, default is "query".
-        - `"response_pack_name_prefix"`: the pack name prefix to be used
-                in response datapacks.
+
+            - `"credential_file"`:
+                Defines the path of credential file needed for Twitter API usage.
+
+            - `"num_tweets_returned"`:
+                Defines the number of tweets returned by processor.
+
+            - `"lang"`:
+                Language, restricts tweets to the given language, default is 'en'.
+
+            - `"date_since"`:
+                Restricts tweets created after the given date.
+
+            - `"result_type"`:
+                Defines what type of search results to receive. The default is “recent.”
+                Valid values include:
+
+                mixed : include both popular and real time results in the response
+
+                recent : return only the most recent results in the response
+
+                popular : return only the most popular results in the response.
+
+            - `"query_pack_name"`:
+                The query pack's name, default is "query".
+
+            - `"response_pack_name_prefix"`:
+                The pack name prefix to be used in response datapacks.
         """
         # pylint: enable=line-too-long
         config = super().default_configs()
@@ -106,7 +121,7 @@ class TweetSearchProcessor(MultiPackProcessor):
 
     def _query_tweets(self, query: str):
         """
-        This function searches tweets using Twitter API
+        This function searches tweets using Tweepy.
         Args:
             query: user's input query for twitter API search
         Returns: List of tweets
