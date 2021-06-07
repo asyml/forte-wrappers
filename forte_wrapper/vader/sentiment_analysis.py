@@ -26,7 +26,7 @@ from forte.processors.base import PackProcessor
 
 class VaderSentimentProcessor(PackProcessor):
     r"""A wrapper of a sentiment analyzer: Vader (Valence Aware Dictionary
-    and sEntiment Reasoner). Vader needs to be installed to use this package
+    and Sentiment Reasoner). Vader needs to be installed to use this package
 
      > `pip install vaderSentiment`
 
