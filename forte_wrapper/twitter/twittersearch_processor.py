@@ -95,6 +95,7 @@ class TweetSearchProcessor(MultiPackProcessor):
         Each result is added as a new data pack, and a
         `ft.onto.base_ontology.Document` annotation is used to cover the whole
         document.
+
         Args:
              input_pack: A multipack containing query as a pack.
         """
@@ -122,8 +123,10 @@ class TweetSearchProcessor(MultiPackProcessor):
     def _query_tweets(self, query: str):
         """
         This function searches tweets using Tweepy.
+
         Args:
             query: user's input query for twitter API search
+
         Returns: List of tweets
         """
         credentials = yaml.safe_load(open(self.configs.credential_file, "r"))
