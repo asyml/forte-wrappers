@@ -55,15 +55,18 @@ class VaderSentimentProcessor(PackProcessor):
         self.sentence_component = configs.get('sentence_component')
 
     def _process(self, input_pack: DataPack):
-        path_str, module_str = self.configs.entry_type.rsplit('.', 1)
-
-        mod = importlib.import_module(path_str)
-        entry = getattr(mod, module_str)
+        # path_str, module_str = self.configs.entry_type.rsplit('.', 1)
+        #
+        # mod = importlib.import_module(path_str)
+        # entry = getattr(mod, module_str)
+        # input_pack.get("ft.onto.base_ontology.Sentence")
         for entry_specified in input_pack.get(
-                entry_type=entry,
+                entry_type=self.configs.entry_type,
                 components=self.sentence_component):
             scores = self.analyzer.polarity_scores(entry_specified.text)
-            entry_specified.sentiment = scores
+            # entry_specified.sentiment = scores
+            setattr(entry_specified, self.configs.attribute_name, scores)
+
 
     @classmethod
     def default_configs(cls):
@@ -74,6 +77,9 @@ class VaderSentimentProcessor(PackProcessor):
         - `"entry_type"`: defines which entry type in the input pack to make
             prediction on. The default makes prediction on each `Sentence`
             in the input pack.
+        - `"attribute_name"`: defines which attribute of the `entry_type`
+            in the input pack to save score to. The default saves prediction
+            to the `sentiment` attribute for each `Sentence` in the input pack.
         - `"sentence_component"`: str. If not None, the processor will process
           sentence with the provided component name. If None, then all sentences
           will be processed.
@@ -81,6 +87,7 @@ class VaderSentimentProcessor(PackProcessor):
         config = super().default_configs()
         config.update({
             'entry_type': 'ft.onto.base_ontology.Sentence',
+            'attribute_name': 'sentiment',
             'sentence_component': None
         })
         return config

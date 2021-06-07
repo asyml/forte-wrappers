@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# pylint: disable=attribute-defined-outside-init
 from typing import Dict, Any
 import tweepy as tw
 import yaml
@@ -34,12 +33,13 @@ class TweetSearchProcessor(MultiPackProcessor):
     TweetSearchProcessor is designed to query tweets with Twitter API.
     Tweets will be returned as datapacks in input multipack.
     """
-    # pylint: disable=useless-super-delegation
-    def __init__(self):
-        super().__init__()
-
-    def initialize(self, resources: Resources, configs: Config):
-        super().initialize(resources, configs)
+    # # pylint: disable=attribute-defined-outside-init
+    # # pylint: disable=useless-super-delegation
+    # def __init__(self):
+    #     super().__init__()
+    #
+    # def initialize(self, resources: Resources, configs: Config):
+    #     super().initialize(resources, configs)
 
     @classmethod
     def default_configs(cls) -> Dict[str, Any]:
@@ -55,7 +55,8 @@ class TweetSearchProcessor(MultiPackProcessor):
         Following are the keys for this dictionary:
         - `"credential_file"`: defines the path of credential file needed for
             Twitter API usage.
-        - `"tweet_items"`: defines the number of tweets returned by processor.
+        - `"num_tweets_returned"`: defines the number of tweets returned by
+            processor.
         - `"lang"`: language, restricts tweets to the given language,
             default is 'en'.
         - `"date_since"`: restricts tweets created after the given date.
@@ -68,10 +69,11 @@ class TweetSearchProcessor(MultiPackProcessor):
         - `"response_pack_name_prefix"`: the pack name prefix to be used
                 in response datapacks.
         """
+        # pylint: enable=line-too-long
         config = super().default_configs()
         config.update({
             "credential_file": "",
-            "tweet_items": 5,
+            "num_tweets_returned": 5,
             "lang": "en",
             "date_since": "2020-01-01",
             "result_type": 'recent',
@@ -84,15 +86,16 @@ class TweetSearchProcessor(MultiPackProcessor):
         r"""Search using Twitter API to fetch tweets for a query.
         This query should be contained in the input multipack with name
         `self.config.query_pack_name`.
-        This method adds new packs to `input_pack` containing the retrieved
-        results. Each result is added as a `ft.onto.base_ontology.Document`.
+        Each result is added as a new data pack, and a
+        ft.onto.base_ontology.Document annotation is used to cover the whole
+        document.
         Args:
              input_pack: A multipack containing query as a pack.
         """
         query_pack = input_pack.get_pack(self.configs.query_pack_name)
 
         query = query_pack.text
-        tweets = self.query_tweets(query)
+        tweets = self._query_tweets(query)
 
         for idx, tweet in enumerate(tweets):
             try:
@@ -110,7 +113,7 @@ class TweetSearchProcessor(MultiPackProcessor):
 
             Document(pack=pack, begin=0, end=len(text))
 
-    def query_tweets(self, query: str):
+    def _query_tweets(self, query: str):
         """
         This function searches tweets using Twitter API
         Args:
@@ -134,6 +137,6 @@ class TweetSearchProcessor(MultiPackProcessor):
                            since=self.configs.date_since,
                            result_type=self.configs.result_type,
                            tweet_mode="extended").items(
-            self.configs.tweet_items)
+            self.configs.num_tweets_returned)
 
         return tweets
