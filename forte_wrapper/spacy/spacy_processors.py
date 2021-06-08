@@ -129,21 +129,23 @@ class SpacyProcessor(PackProcessor):
     def default_configs(cls):
         """
         This defines a basic config structure for spaCy.
-        Returns:
-            dictionary with the default config for this processor.
+
         Following are the keys for this dictionary:
-            - `"processors"`: defines what operations to be done on the
-                sentence, default value is `"sentence, tokenize,pos,lemma"`
-                which performs all the basic operations.
-            - `"lang"`: language model, default is spaCy `en_core_web_sm` model.
-                The pipeline support spaCy and ScispaCy models.
-                A list of available spaCy models could be found at
-                https://spacy.io/models.
-                For UMLS entity linking task, ScispaCy model trained on
-                biomedical dataset is preferred. A list of available models
-                could be found at
-                https://github.com/allenai/scispacy/tree/v0.3.0.
-            - `"use_gpu"`: use gpu or not, default value is False.
+
+            - `processors`: defines what operations to be done on the
+              sentence, default value is `"sentence, tokenize,pos,lemma"`
+              which performs all the basic operations.
+            - `lang`: language model, default is spaCy `en_core_web_sm` model.
+              The pipeline support spaCy and ScispaCy models.
+              A list of available spaCy models could be found at
+              https://spacy.io/models.
+              For UMLS entity linking task, ScispaCy model trained on
+              biomedical dataset is preferred. A list of available models
+              could be found at
+              https://github.com/allenai/scispacy/tree/v0.3.0.
+            - `use_gpu`: use gpu or not, default value is False.
+
+        Returns: A dictionary with the default config for this processor.
         """
         config = super().default_configs()
         config.update({
