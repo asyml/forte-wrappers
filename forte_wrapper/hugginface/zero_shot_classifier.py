@@ -73,36 +73,37 @@ class ZeroShotClassifier(PackProcessor):
     @classmethod
     def default_configs(cls):
         r"""This defines a basic config structure for ZeroShotClassifier.
-        Returns:
-            dictionary with the default config for this processor.
+
         Following are the keys for this dictionary:
-            - `"entry_type"`: defines which entry type in the input pack to make
-                prediction on. The default makes prediction on each `Sentence`
-                in the input pack.
-            - `"attribute_name"`: defines which attribute of the `entry_type`
-                in the input pack to save prediction to. The default
-                saves prediction to the `classification` attribute for each
-                `Sentence` in the input pack.
-            - `"multi_class"`: whether to allow multiple class true
-            - `"model_name"`: language model, default is
-                `"valhalla/distilbart-mnli-12-1"`.
-                The wrapper supports Hugging Face models with pipeline tag of
-                `zero-shot-classification`.
-            - `"candidate_labels"`: The set of possible class labels to
-                classify each sequence into. Can be a single label, a string of
-                comma-separated labels, or a list of labels. Note that for the
-                model with a specific language, the candidate_labels need to
-                be of that language.
-            - `"hypothesis_template"`: The template used to turn each label
-                into an NLI-style hypothesis. This template must include a {}
-                or similar syntax for the candidate label to be inserted into
-                the template. For example, the default
-                template is :obj:`"This example is {}."` Note that for the
-                model with a specific language, the hypothesis_template need to
-                be of that language.
-            - `"cuda_device"`: Device ordinal for CPU/GPU supports. Setting
-                this to -1 will leverage CPU, a positive will run the model
-                on the associated CUDA device id.
+            - `entry_type`: defines which entry type in the input pack to make
+              prediction on. The default makes prediction on each `Sentence`
+              in the input pack.
+            - `attribute_name`: defines which attribute of the `entry_type`
+              in the input pack to save prediction to. The default
+              saves prediction to the `classification` attribute for each
+              `Sentence` in the input pack.
+            - `multi_class`: whether to allow multiple class true
+            - `model_name`: language model, default is
+              `"valhalla/distilbart-mnli-12-1"`.
+              The wrapper supports Hugging Face models with pipeline tag of
+              `zero-shot-classification`.
+            - `candidate_labels`: The set of possible class labels to
+              classify each sequence into. Can be a single label, a string of
+              comma-separated labels, or a list of labels. Note that for the
+              model with a specific language, the candidate_labels need to
+              be of that language.
+            - `hypothesis_template`: The template used to turn each label
+              into an NLI-style hypothesis. This template must include a {}
+              or similar syntax for the candidate label to be inserted into
+              the template. For example, the default
+              template is :obj:`"This example is {}."` Note that for the
+              model with a specific language, the hypothesis_template need to
+              be of that language.
+            - `cuda_device`: Device ordinal for CPU/GPU supports. Setting
+              this to -1 will leverage CPU, a positive will run the model
+              on the associated CUDA device id.
+
+        Returns: A dictionary with the default config for this processor.
         """
         config = super().default_configs()
         config.update({

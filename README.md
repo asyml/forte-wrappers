@@ -48,6 +48,8 @@ pip install ."[allennlp]"
     - Dependency Parsing
 - [HuggingFace Models](https://huggingface.co/)
     - [BioBERT NER](https://github.com/dmis-lab/biobert-pytorch) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/huggingface/biobert_ner))
+    - [Zero Shot Classifier](https://huggingface.co/models?pipeline_tag=zero-shot-classification)([Processors](https://github.com/asyml/forte-wrappers/blob/main/forte_wrapper/hugginface/zero_shot_classifier.py))
+    - [Question Answering](https://huggingface.co/models?pipeline_tag=question-answering)([Processors](https://github.com/asyml/forte-wrappers/blob/main/forte_wrapper/hugginface/question_and_answering_single.py))
 - [Vader Sentiment](https://github.com/cjhutto/vaderSentiment) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/vader))
     - Sentiment Analysis
 - [Elastic Search](https://www.elastic.co/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/elastic))
