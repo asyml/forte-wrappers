@@ -60,3 +60,17 @@ HuggingFace
     :members:
 .. autoclass:: forte_wrapper.hugginface.BioBERTNERPredictor
     :members:
+
+Twitter
+=======
+:hidden:`Twitter Processors`
+----------------------------
+.. autoclass:: forte_wrapper.twitter.TweetSearchProcessor
+    :members:
+
+Vader
+=====
+:hidden:`Vader Processors`
+----------------------------
+.. autoclass:: forte_wrapper.vader.VaderSentimentProcessor
+    :members:

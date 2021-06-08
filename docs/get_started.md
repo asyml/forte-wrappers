@@ -57,7 +57,9 @@ pip install ."[allennlp]"
     - Faiss Indexer
 - [GPT2](https://openai.com/blog/gpt-2-1-5b-release/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/gpt2))
     - GPT2 Text Generation
-  
+- [Tweepy](https://docs.tweepy.org/en/latest/index.html) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/twitter))
+    - TwitterAPI Search
+    
 # License
 
 [Apache License 2.0](https://github.com/asyml/fort-wrappers/blob/master/LICENSE)

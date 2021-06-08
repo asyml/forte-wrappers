@@ -44,3 +44,9 @@ more-itertools==8.7.0
 
 # Spacy
 spacy==2.1.8
+
+# Tweepy
+tweepy==3.10.0
+
+# Vader
+vaderSentiment==3.2.1

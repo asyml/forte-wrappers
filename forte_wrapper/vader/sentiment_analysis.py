@@ -22,16 +22,17 @@ from forte.common import Resources
 from forte.common.configuration import Config
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
-from ft.onto.base_ontology import Sentence
 
 
 class VaderSentimentProcessor(PackProcessor):
     r"""A wrapper of a sentiment analyzer: Vader (Valence Aware Dictionary
-    and sEntiment Reasoner). Vader needs to be installed to use this package
+    and Sentiment Reasoner). Vader needs to be installed to use this package
 
-     > pip install vaderSentiment
+     > `pip install vaderSentiment`
+
      or
-     > pip install --upgrade vaderSentiment
+
+     > `pip install --upgrade vaderSentiment`
 
     This processor will add assign sentiment label to each sentence in the
     document. If the input pack contains no sentence then no processing will
@@ -39,8 +40,9 @@ class VaderSentimentProcessor(PackProcessor):
     the set of sentences to tag by setting the `sentence_component` attribute.
 
     Vader URL: (https://github.com/cjhutto/vaderSentiment)
-    Citation: VADER: A Parsimonious Rule-based Model for Sentiment Analysis
-       of Social Media Text (by C.J. Hutto and Eric Gilbert)
+
+    Citation: VADER: A Parsimonious Rule-based Model for Sentiment Analysis of
+    Social Media Text (by C.J. Hutto and Eric Gilbert)
 
     """
 
@@ -50,25 +52,44 @@ class VaderSentimentProcessor(PackProcessor):
         self.analyzer = SentimentIntensityAnalyzer()
 
     def initialize(self, resources: Resources, configs: Config):
-        # pylint: disable=unused-argument
+        super().initialize(resources, configs)
         self.sentence_component = configs.get('sentence_component')
 
     def _process(self, input_pack: DataPack):
-        for sentence in input_pack.get(entry_type=Sentence,
-                                       components=self.sentence_component):
-            scores = self.analyzer.polarity_scores(sentence.text)
-            sentence.sentiment = scores
+        for entry_specified in input_pack.get(
+                entry_type=self.configs.entry_type,
+                components=self.sentence_component):
+            scores = self.analyzer.polarity_scores(entry_specified.text)
+            setattr(entry_specified, self.configs.attribute_name, scores)
 
     @classmethod
     def default_configs(cls):
         r"""This defines a basic config structure for VaderSentimentProcessor.
 
-        sentence_component (str): If not None, the processor will process
-          sentence with the provided component name. If None, then all sentences
-          will be processed.
+        Returns:
+            A dictionary with the default config for this processor.
+
+        Following are the keys for this dictionary:
+
+        - `"entry_type"`:
+            Defines which entry type in the input pack to make
+            prediction on. The default makes prediction on each `Sentence`
+            in the input pack.
+
+        - `"attribute_name"`:
+            Defines which attribute of the `entry_type`
+            in the input pack to save score to. The default saves prediction
+            to the `sentiment` attribute for each `Sentence` in the input pack.
+
+        - `"sentence_component"`:
+            str. If not None, the processor will process sentence with the
+            provided component name. If None, then all sentences will be
+            processed.
         """
         config = super().default_configs()
         config.update({
+            'entry_type': 'ft.onto.base_ontology.Sentence',
+            'attribute_name': 'sentiment',
             'sentence_component': None
         })
         return config
@@ -82,4 +103,4 @@ class VaderSentimentProcessor(PackProcessor):
         :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
         the pipeline.
         """
-        return {"ft.onto.base_ontology.Sentence": set()}
+        return {cls().default_configs()["entry_type"]: set()}
