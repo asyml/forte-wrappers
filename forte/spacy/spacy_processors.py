@@ -18,12 +18,12 @@ from spacy.language import Language
 from spacy.cli.download import download
 from ft.onto.base_ontology import EntityMention, Sentence, Token
 
+from ftx.medical import MedicalEntityMention, UMLSConceptLink
 from forte.common import ProcessExecutionException, ProcessorConfigError
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
-from onto.medical import MedicalEntityMention, UMLSConceptLink
 
 __all__ = [
     "SpacyProcessor",

@@ -1,5 +1,5 @@
 # ***automatically_generated***
-# ***source json:../../../../showcase/onto_spec/medical.json***
+# ***source json:../forte-wrappers/onto_spec/medical.json***
 # flake8: noqa
 # mypy: ignore-errors
 # pylint: skip-file
@@ -26,12 +26,12 @@ class UMLSConceptLink(Generics):
     """
     A umls concept entity, used to represent basic information of a umls concept
     Attributes:
-        cui (Optional[str])
-        name (Optional[str])
-        definition (Optional[str])
-        tuis (List[str])
-        aliases (List[str])
-        score (Optional[str])
+        cui (Optional[str]):
+        name (Optional[str]):
+        definition (Optional[str]):
+        tuis (List[str]):
+        aliases (List[str]):
+        score (Optional[str]):
     """
 
     cui: Optional[str]
@@ -56,8 +56,8 @@ class MedicalEntityMention(EntityMention):
     """
     A span based annotation class MedicalEntityMention, used to represent an Entity Mention in medical domain
     Attributes:
-        umls_link (Optional[str])
-        umls_entities (FList[UMLSConceptLink])
+        umls_link (Optional[str]):
+        umls_entities (FList[UMLSConceptLink]):
     """
 
     umls_link: Optional[str]
