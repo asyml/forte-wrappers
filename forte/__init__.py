@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from forte_wrapper.version import VERSION as __version__
+from forte.version import VERSION as __version__

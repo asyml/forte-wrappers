@@ -23,7 +23,7 @@ from forte.data.ontology.top import Query
 from forte.processors.base import MultiPackProcessor
 from ft.onto.base_ontology import Document
 
-from forte_wrapper.elastic.elastic_indexer import ElasticSearchIndexer
+from forte.elastic.elastic_indexer import ElasticSearchIndexer
 
 __all__ = [
     "ElasticSearchProcessor"

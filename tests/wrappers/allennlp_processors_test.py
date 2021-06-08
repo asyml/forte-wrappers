@@ -5,15 +5,15 @@ from typing import List
 from ddt import ddt, data, unpack
 
 from allennlp.predictors import Predictor
-from forte_wrapper.allennlp.utils_processor import parse_allennlp_srl_tags, \
+from forte.allennlp.utils_processor import parse_allennlp_srl_tags, \
     parse_allennlp_srl_results
 
 from forte.data.data_pack import DataPack
 from forte.pipeline import Pipeline
 from forte.data.readers import StringReader
-from forte_wrapper.allennlp.allennlp_processors import AllenNLPProcessor, \
+from forte.allennlp.allennlp_processors import AllenNLPProcessor, \
     MODEL2URL
-from forte_wrapper.spacy import SpacyProcessor
+from forte.spacy import SpacyProcessor
 from ft.onto.base_ontology import Sentence, Token, Dependency, PredicateLink, \
     PredicateMention, PredicateArgument
 from forte.common import ProcessorConfigError, ProcessExecutionException
