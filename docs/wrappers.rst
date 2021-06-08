@@ -8,14 +8,14 @@ AllenNLP
 ========
 :hidden:`AllenNLP Processors`
 -----------------------------
-.. autoclass:: forte_wrapper.allennlp.AllenNLPProcessor
+.. autoclass:: forte.allennlp.AllenNLPProcessor
     :members:
 
 SpaCy
 =====
 :hidden:`SpaCy Processors`
 ----------------------------
-.. autoclass:: forte_wrapper.spacy.SpacyProcessor
+.. autoclass:: forte.spacy.SpacyProcessor
     :members:
 
 
@@ -23,54 +23,54 @@ NLTK
 =====
 :hidden:`NLTK Processors`
 ----------------------------
-.. autoclass:: forte_wrapper.nltk.NLTKPOSTagger
+.. autoclass:: forte.nltk.NLTKPOSTagger
     :members:
 
-.. autoclass:: forte_wrapper.nltk.NLTKSentenceSegmenter
+.. autoclass:: forte.nltk.NLTKSentenceSegmenter
     :members:
 
-.. autoclass:: forte_wrapper.nltk.NLTKWordTokenizer
+.. autoclass:: forte.nltk.NLTKWordTokenizer
     :members:
 
-.. autoclass:: forte_wrapper.nltk.NLTKLemmatizer
+.. autoclass:: forte.nltk.NLTKLemmatizer
     :members:
 
-.. autoclass:: forte_wrapper.nltk.NLTKChunker
+.. autoclass:: forte.nltk.NLTKChunker
     :members:
 
-.. autoclass:: forte_wrapper.nltk.NLTKNER
+.. autoclass:: forte.nltk.NLTKNER
     :members:
 
 Stanza
 ======
 :hidden:`Stanza Processors`
 ----------------------------
-.. autoclass:: forte_wrapper.stanza.StandfordNLPProcessor
+.. autoclass:: forte.stanza.StandfordNLPProcessor
     :members:
 
 HuggingFace
 ===========
 :hidden:`HuggingFace Processors`
 --------------------------------
-.. autoclass:: forte_wrapper.hugginface.ZeroShotClassifier
+.. autoclass:: forte.hugginface.ZeroShotClassifier
     :members:
-.. autoclass:: forte_wrapper.hugginface.QuestionAnsweringSingle
+.. autoclass:: forte.hugginface.QuestionAnsweringSingle
     :members:
-.. autoclass:: forte_wrapper.hugginface.BERTTokenizer
+.. autoclass:: forte.hugginface.BERTTokenizer
     :members:
-.. autoclass:: forte_wrapper.hugginface.BioBERTNERPredictor
+.. autoclass:: forte.hugginface.BioBERTNERPredictor
     :members:
 
 Twitter
 =======
 :hidden:`Twitter Processors`
 ----------------------------
-.. autoclass:: forte_wrapper.twitter.TweetSearchProcessor
+.. autoclass:: forte.twitter.TweetSearchProcessor
     :members:
 
 Vader
 =====
 :hidden:`Vader Processors`
 ----------------------------
-.. autoclass:: forte_wrapper.vader.VaderSentimentProcessor
+.. autoclass:: forte.vader.VaderSentimentProcessor
     :members:

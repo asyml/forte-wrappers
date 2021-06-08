@@ -21,8 +21,8 @@ import os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('..'))
-from forte_wrapper import __version__
-from forte_wrapper.version import VERSION_SHORT as __version_short__
+from forte import __version__
+from forte.version import VERSION_SHORT as __version_short__
 
 # -- General configuration ------------------------------------------------
 

@@ -20,7 +20,7 @@ typing-inspect>=0.6.0
 torch>=1.6.0
 
 # Forte via source
-git+https://git@github.com/asyml/forte#egg=forte
+git+http://git@github.com/asyml/forte#egg=forte
 
 
 # faiss

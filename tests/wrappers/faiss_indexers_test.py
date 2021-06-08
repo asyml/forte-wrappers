@@ -20,7 +20,7 @@ import unittest
 
 import numpy as np
 
-from forte_wrapper.faiss import EmbeddingBasedIndexer
+from forte.faiss import EmbeddingBasedIndexer
 
 
 class TestEmbeddingBasedIndexer(unittest.TestCase):

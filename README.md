@@ -10,6 +10,7 @@
 [![Documentation Status](https://readthedocs.org/projects/forte-wrappers/badge/?version=latest)](https://forte-wrappers.readthedocs.io/en/latest/?badge=latest)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/asyml/forte/blob/master/LICENSE)
 [![Chat](http://img.shields.io/badge/gitter.im-asyml/forte-blue.svg)](https://gitter.im/asyml/community)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 **Forte** is a toolkit for building Natural Language Processing pipelines. This
 repository tries to wrap the fantastic collections of NLP libraries built by the
@@ -30,36 +31,36 @@ pip install ."[allennlp]"
 
 ### Libraries and Tools Supported
 
-- [NLTK](https://www.nltk.org/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/nltk))
+- [NLTK](https://www.nltk.org/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/nltk))
     - POS Tagger
     - Sentence Segmenter
     - Tokenizer
     - Lemmatizer
     - NER
-- [spaCy](https://spacy.io/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/spacy))
+- [spaCy](https://spacy.io/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/spacy))
     - Tokenizer, Lemmatizer and POS Tagging
     - NER
-- [AllenNLP](https://allennlp.org/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/allennlp))
+- [AllenNLP](https://allennlp.org/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/allennlp))
     - Tokenizer, POS Tagging
     - Semantic Role Labeling
     - Dependency Parsing
-- [Stanza](https://stanfordnlp.github.io/stanza/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/stanza))
+- [Stanza](https://stanfordnlp.github.io/stanza/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/stanza))
     - Tokenization, POS Tagging, Lemmatizer
     - Dependency Parsing
 - [HuggingFace Models](https://huggingface.co/)
-    - [BioBERT NER](https://github.com/dmis-lab/biobert-pytorch) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/huggingface/biobert_ner))
-    - [Zero Shot Classifier](https://huggingface.co/models?pipeline_tag=zero-shot-classification)([Processors](https://github.com/asyml/forte-wrappers/blob/main/forte_wrapper/hugginface/zero_shot_classifier.py))
-    - [Question Answering](https://huggingface.co/models?pipeline_tag=question-answering)([Processors](https://github.com/asyml/forte-wrappers/blob/main/forte_wrapper/hugginface/question_and_answering_single.py))
-- [Vader Sentiment](https://github.com/cjhutto/vaderSentiment) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/vader))
+    - [BioBERT NER](https://github.com/dmis-lab/biobert-pytorch) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/huggingface/biobert_ner))
+    - [Zero Shot Classifier](https://huggingface.co/models?pipeline_tag=zero-shot-classification)([Processors](https://github.com/asyml/forte-wrappers/blob/main/forte/hugginface/zero_shot_classifier.py))
+    - [Question Answering](https://huggingface.co/models?pipeline_tag=question-answering)([Processors](https://github.com/asyml/forte-wrappers/blob/main/forte/hugginface/question_and_answering_single.py))
+- [Vader Sentiment](https://github.com/cjhutto/vaderSentiment) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/vader))
     - Sentiment Analysis
-- [Elastic Search](https://www.elastic.co/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/elastic))
+- [Elastic Search](https://www.elastic.co/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/elastic))
     - Elastic Indexer
     - Elastic Search
-- [Faiss](https://github.com/facebookresearch/faiss) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/faiss))
+- [Faiss](https://github.com/facebookresearch/faiss) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/faiss))
     - Faiss Indexer
-- [GPT2](https://openai.com/blog/gpt-2-1-5b-release/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/gpt2))
+- [GPT2](https://openai.com/blog/gpt-2-1-5b-release/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/gpt2))
     - GPT2 Text Generation
-- [Tweepy](https://docs.tweepy.org/en/latest/index.html) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/twitter))
+- [Tweepy](https://docs.tweepy.org/en/latest/index.html) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/twitter))
     - TwitterAPI Search
 
 ### Contributing
@@ -71,7 +72,8 @@ and [Contribution Guideline](https://github.com/asyml/forte/blob/master/CONTRIBU
 
 ### License
 
-[Apache License 2.0](./LICENSE)
+This project is licensed by [Apache License 2.0](./LICENSE). The project provides wrappers to other open-sourced projects. To use
+them in your project, please check the license of the corresponding project.
 
 ### Companies and Universities Supporting Forte
 

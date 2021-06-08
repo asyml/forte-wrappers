@@ -30,38 +30,38 @@ pip install ."[allennlp]"
 
 # Libraries and Wrapper Source
 
-- [NLTK](https://www.nltk.org/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/nltk))
+- [NLTK](https://www.nltk.org/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/nltk))
     - POS Tagger
     - Sentence Segmenter
     - Tokenizer
     - Lemmatizer
     - NER
-- [spaCy](https://spacy.io/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/spacy))
+- [spaCy](https://spacy.io/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/spacy))
     - Tokenizer, Lemmatizer and POS Tagging
     - NER
-- [AllenNLP](https://allennlp.org/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/allennlp))
+- [AllenNLP](https://allennlp.org/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/allennlp))
     - Tokenizer, POS Tagging
     - Semantic Role Labeling
     - Dependency Parsing
-- [Stanza](https://stanfordnlp.github.io/stanza/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/stanza))
+- [Stanza](https://stanfordnlp.github.io/stanza/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/stanza))
     - Tokenization, POS Tagging, Lemmatizer
     - Dependency Parsing
 - [HuggingFace Models](https://huggingface.co/)
-    - [BioBERT NER](https://github.com/dmis-lab/biobert-pytorch) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/huggingface/biobert_ner))
-- [Vader Sentiment](https://github.com/cjhutto/vaderSentiment) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/vader))
+    - [BioBERT NER](https://github.com/dmis-lab/biobert-pytorch) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/huggingface/biobert_ner))
+- [Vader Sentiment](https://github.com/cjhutto/vaderSentiment) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/vader))
     - Sentiment Analysis
-- [Elastic Search](https://www.elastic.co/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/elastic))
+- [Elastic Search](https://www.elastic.co/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/elastic))
     - Elastic Indexer
     - Elastic Search
-- [Faiss](https://github.com/facebookresearch/faiss) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/faiss))
+- [Faiss](https://github.com/facebookresearch/faiss) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/faiss))
     - Faiss Indexer
-- [GPT2](https://openai.com/blog/gpt-2-1-5b-release/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/gpt2))
+- [GPT2](https://openai.com/blog/gpt-2-1-5b-release/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/gpt2))
     - GPT2 Text Generation
-- [Tweepy](https://docs.tweepy.org/en/latest/index.html) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte_wrapper/twitter))
+- [Tweepy](https://docs.tweepy.org/en/latest/index.html) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/twitter))
     - TwitterAPI Search
     
 # License
 
-[Apache License 2.0](https://github.com/asyml/fort-wrappers/blob/master/LICENSE)
+[Apache License 2.0](https://github.com/asyml/forte-wrappers/blob/master/LICENSE)
 
 
