@@ -53,12 +53,13 @@ class VaderSentimentProcessor(PackProcessor):
 
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
-        self.sentence_component = configs.get('sentence_component')
+        self.sentence_component = configs.get("sentence_component")
 
     def _process(self, input_pack: DataPack):
         for entry_specified in input_pack.get(
-                entry_type=self.configs.entry_type,
-                components=self.sentence_component):
+            entry_type=self.configs.entry_type,
+            components=self.sentence_component,
+        ):
             scores = self.analyzer.polarity_scores(entry_specified.text)
             setattr(entry_specified, self.configs.attribute_name, scores)
 
@@ -87,11 +88,13 @@ class VaderSentimentProcessor(PackProcessor):
             processed.
         """
         config = super().default_configs()
-        config.update({
-            'entry_type': 'ft.onto.base_ontology.Sentence',
-            'attribute_name': 'sentiment',
-            'sentence_component': None
-        })
+        config.update(
+            {
+                "entry_type": "ft.onto.base_ontology.Sentence",
+                "attribute_name": "sentiment",
+                "sentence_component": None,
+            }
+        )
         return config
 
     @classmethod

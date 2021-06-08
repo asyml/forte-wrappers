@@ -16,12 +16,13 @@ from typing import Optional, Dict, Set
 import spacy
 from spacy.language import Language
 from spacy.cli.download import download
+from ft.onto.base_ontology import EntityMention, Sentence, Token
+
 from forte.common import ProcessExecutionException, ProcessorConfigError
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
-from ft.onto.base_ontology import EntityMention, Sentence, Token
 from onto.medical import MedicalEntityMention, UMLSConceptLink
 
 __all__ = [
@@ -36,7 +37,7 @@ SCISPACYMODEL_URL = {
     "en_ner_craft_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_ner_craft_md-0.3.0.tar.gz",
     "en_ner_jnlpba_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_ner_jnlpba_md-0.3.0.tar.gz",
     "en_ner_bc5cdr_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_ner_bc5cdr_md-0.3.0.tar.gz",
-    "en_ner_bionlp13cg_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_ner_bionlp13cg_md-0.3.0.tar.gz"
+    "en_ner_bionlp13cg_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_ner_bionlp13cg_md-0.3.0.tar.gz",
 }
 
 
@@ -72,13 +73,14 @@ class SpacyProcessor(PackProcessor):
         super().__init__()
         self.processors: str = ""
         self.nlp: Optional[Language] = None
-        self.lang_model: str = ''
+        self.lang_model: str = ""
 
     def set_up(self):
         # pylint: disable=import-outside-toplevel
         self._load_lang_model()
-        if 'umls_link' in self.processors:  # add UMLS entity linking component
+        if "umls_link" in self.processors:  # add UMLS entity linking component
             from scispacy.linking import EntityLinker
+
             linker = EntityLinker(resolve_abbreviations=True, name="umls")
             self.nlp.add_pipe(linker)
 
@@ -93,8 +95,9 @@ class SpacyProcessor(PackProcessor):
 
             download_url = SCISPACYMODEL_URL[self.lang_model]
             command = [sys.executable, "-m", "pip", "install"] + [download_url]
-            subprocess.run(command, env=os.environ.copy(), encoding="utf8",
-                           check=False)
+            subprocess.run(
+                command, env=os.environ.copy(), encoding="utf8", check=False
+            )
 
             cls = importlib.import_module(self.lang_model)
             self.nlp = cls.load()
@@ -112,14 +115,18 @@ class SpacyProcessor(PackProcessor):
 
         if "pos" in configs.processors or "lemma" in configs.processors:
             if "tokenize" not in configs.processors:
-                raise ProcessorConfigError('tokenize is necessary in '
-                                           'configs.processors for '
-                                           'pos or lemma')
+                raise ProcessorConfigError(
+                    "tokenize is necessary in "
+                    "configs.processors for "
+                    "pos or lemma"
+                )
             else:
                 if "sentence" not in configs.processors:
-                    raise ProcessorConfigError('sentence is necessary in '
-                                               'configs.processors for '
-                                               'tokenize or pos or lemma')
+                    raise ProcessorConfigError(
+                        "sentence is necessary in "
+                        "configs.processors for "
+                        "tokenize or pos or lemma"
+                    )
 
         self.processors = configs.processors
         self.lang_model = configs.lang
@@ -148,12 +155,14 @@ class SpacyProcessor(PackProcessor):
         Returns: A dictionary with the default config for this processor.
         """
         config = super().default_configs()
-        config.update({
-            'processors': 'sentence, tokenize, pos, lemma',
-            'lang': 'en_core_web_sm',
-            # Language code for the language to build the Pipeline
-            'use_gpu': False,
-        })
+        config.update(
+            {
+                "processors": "sentence, tokenize, pos, lemma",
+                "lang": "en_core_web_sm",
+                # Language code for the language to build the Pipeline
+                "use_gpu": False,
+            }
+        )
         return config
 
     def _process_parser(self, sentences, input_pack: DataPack):
@@ -194,8 +203,7 @@ class SpacyProcessor(PackProcessor):
 
         """
         for item in result.ents:
-            entity = EntityMention(input_pack, item.start_char,
-                                   item.end_char)
+            entity = EntityMention(input_pack, item.start_char, item.end_char)
             entity.ner_type = item.label_
 
     def _process_umls_entity_linking(self, result, input_pack: DataPack):
@@ -211,12 +219,13 @@ class SpacyProcessor(PackProcessor):
 
         """
         medical_entities = result.ents
-        linker = self.nlp.get_pipe('EntityLinker')  # type: ignore
+        linker = self.nlp.get_pipe("EntityLinker")  # type: ignore
 
         # get medical entity mentions and UMLS concepts
         for item in medical_entities:
-            entity = MedicalEntityMention(input_pack, item.start_char,
-                                          item.end_char)
+            entity = MedicalEntityMention(
+                input_pack, item.start_char, item.end_char
+            )
             entity.ner_type = item.label_
 
             for umls_ent in item._.kb_ents:
@@ -242,7 +251,8 @@ class SpacyProcessor(PackProcessor):
         if self.nlp is None:
             raise ProcessExecutionException(
                 "The SpaCy pipeline is not initialized, maybe you "
-                "haven't called the initialization function.")
+                "haven't called the initialization function."
+            )
         result = self.nlp(doc)
 
         # Record NER results.
@@ -250,11 +260,11 @@ class SpacyProcessor(PackProcessor):
             self._process_ner(result, input_pack)
 
         # Process sentence parses.
-        if 'sentence' in self.processors:
+        if "sentence" in self.processors:
             self._process_parser(result.sents, input_pack)
 
         # Record medical entity linking results.
-        if 'umls_link' in self.processors:
+        if "umls_link" in self.processors:
             self._process_umls_entity_linking(result, input_pack)
 
     def record(self, record_meta: Dict[str, Set[str]]):
@@ -278,6 +288,11 @@ class SpacyProcessor(PackProcessor):
             record_meta["ft.onto.base_ontology.EntityMention"] = {"ner_type"}
         if "umls_link" in self.processors:
             record_meta["onto.medical.MedicalEntityMention"] = {"ner_type"}
-            record_meta["onto.medical.UMLSConceptLink"] = {"cui", "score",
-                                                           "name", "definition",
-                                                           "tuis", "aliases"}
+            record_meta["onto.medical.UMLSConceptLink"] = {
+                "cui",
+                "score",
+                "name",
+                "definition",
+                "tuis",
+                "aliases",
+            }

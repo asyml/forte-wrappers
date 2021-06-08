@@ -18,25 +18,24 @@ from typing import Dict, List, Optional
 import numpy as np
 import torch
 import texar.torch as tx
+from ft.onto.base_ontology import Sentence
 
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.batchers import (
-    ProcessingBatcher, FixedSizeMultiPackProcessingBatcher)
+    ProcessingBatcher,
+    FixedSizeMultiPackProcessingBatcher,
+)
 from forte.data.multi_pack import MultiPack, MultiPackLink
 from forte.data.types import DataRequest
 from forte.processors.base.batch_processor import MultiPackBatchProcessor
-from ft.onto.base_ontology import Sentence
 
 logger = logging.getLogger(__name__)
 
-__all__ = [
-    "TextGenerationProcessor"
-]
+__all__ = ["TextGenerationProcessor"]
 
 
 class TextGenerationProcessor(MultiPackBatchProcessor):
-
     def __init__(self):
         super().__init__()
         self.input_pack_name = None
@@ -93,13 +92,15 @@ class TextGenerationProcessor(MultiPackBatchProcessor):
             self.top_p = configs.top_p
             self.model = tx.modules.GPT2Decoder(configs.pretrained_model_name)
 
-        self.device = torch.device("cuda" if torch.cuda.is_available()
-                                   else "cpu")
+        self.device = torch.device(
+            "cuda" if torch.cuda.is_available() else "cpu"
+        )
         self.model.to(device=self.device)
 
         resources.update(model=self.model)
         self.word_processor = tx.data.GPT2Tokenizer(
-            pretrained_model_name=configs.pretrained_model_name)
+            pretrained_model_name=configs.pretrained_model_name
+        )
 
         end_token = self.word_processor.map_token_to_id("<|endoftext|>")
 
@@ -132,10 +133,11 @@ class TextGenerationProcessor(MultiPackBatchProcessor):
             "output_sents": [],
         }
 
-        preds['input_sents_tids'] += data_batch['tid']
+        preds["input_sents_tids"] += data_batch["tid"]
 
         context, context_length = self.get_batch_tensor(
-            data_batch["context"], device=self.device)
+            data_batch["context"], device=self.device
+        )
 
         start_tokens = context[:, 0]
         max_decoding_length = self.max_decoding_length
@@ -143,19 +145,23 @@ class TextGenerationProcessor(MultiPackBatchProcessor):
         helper = self._get_helper(start_tokens)
 
         output, _ = self.model(
-            context=context, context_sequence_length=context_length,
-            max_decoding_length=max_decoding_length, helper=helper)
+            context=context,
+            context_sequence_length=context_length,
+            max_decoding_length=max_decoding_length,
+            helper=helper,
+        )
 
         sample_id = output.sample_id
         instance_num = len(sample_id)
         sentences = []
         complete_sentences = []
         for i in range(instance_num):
-            si = sample_id[i][context_length[i]:]
+            si = sample_id[i][context_length[i] :]
             sentences.append(self.word_processor.map_id_to_text(si.tolist()))
             si = sample_id[i]
             complete_sentences.append(
-                self.word_processor.map_id_to_text(si.tolist()))
+                self.word_processor.map_id_to_text(si.tolist())
+            )
         preds["output_sents"] += complete_sentences
         return preds
 
@@ -197,8 +203,9 @@ class TextGenerationProcessor(MultiPackBatchProcessor):
 
         """
         batch_size = len(data)
-        batch_tokens = [self.word_processor.map_text_to_token(sent)
-                        for sent in data]
+        batch_tokens = [
+            self.word_processor.map_text_to_token(sent) for sent in data
+        ]
 
         batch_length = max([len(d) for d in batch_tokens])
         wid_inputs = np.empty([batch_size, batch_length], dtype=np.int64)
@@ -209,8 +216,9 @@ class TextGenerationProcessor(MultiPackBatchProcessor):
             inst_size = len(wids)
             lengths[i] = inst_size
             # word ids
-            wid_inputs[i, :inst_size] = \
-                self.word_processor.map_token_to_id(wids)
+            wid_inputs[i, :inst_size] = self.word_processor.map_token_to_id(
+                wids
+            )
             wid_inputs[i, inst_size:] = 0
             # The existence of length will mask these padding positions out
             # So we just set the padding value as 0,
@@ -226,18 +234,18 @@ class TextGenerationProcessor(MultiPackBatchProcessor):
         config = super().default_configs()
         config.update(
             {
-                'max_decoding_length': 128,
-                'temperature': 0.7,
-                'top_p': None,
-                'top_k': 40,
-                'pretrained_model_name': "117M",
-                'checkpoint': None,
-                'input_pack_name': None,
-                'output_pack_name': None,
-                'selector': {
-                    'type': 'forte.data.selector.DummySelector',
-                    'args': None,
-                    'kwargs': {}
+                "max_decoding_length": 128,
+                "temperature": 0.7,
+                "top_p": None,
+                "top_k": 40,
+                "pretrained_model_name": "117M",
+                "checkpoint": None,
+                "input_pack_name": None,
+                "output_pack_name": None,
+                "selector": {
+                    "type": "forte.data.selector.DummySelector",
+                    "args": None,
+                    "kwargs": {},
                 },
             }
         )

@@ -17,12 +17,14 @@ understanding)
 """
 import importlib
 from typing import Dict, Set
+
+from transformers import pipeline
+from ft.onto.base_ontology import Phrase
+
 from forte.common import Resources
 from forte.common.configuration import Config
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
-from transformers import pipeline
-from ft.onto.base_ontology import Phrase
 
 __all__ = [
     "QuestionAnsweringSingle",
@@ -45,19 +47,21 @@ class QuestionAnsweringSingle(PackProcessor):
         self.extractor = None
 
     def set_up(self):
-        device_num = self.configs['cuda_devices']
-        self.extractor = pipeline("question-answering",
-                                  model=self.configs.model_name,
-                                  tokenizer=self.configs.model_name,
-                                  framework='pt',
-                                  device=device_num)
+        device_num = self.configs["cuda_devices"]
+        self.extractor = pipeline(
+            "question-answering",
+            model=self.configs.model_name,
+            tokenizer=self.configs.model_name,
+            framework="pt",
+            device=device_num,
+        )
 
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
         self.set_up()
 
     def _process(self, input_pack: DataPack):
-        path_str, module_str = self.configs.entry_type.rsplit('.', 1)
+        path_str, module_str = self.configs.entry_type.rsplit(".", 1)
 
         mod = importlib.import_module(path_str)
         entry = getattr(mod, module_str)
@@ -66,10 +70,10 @@ class QuestionAnsweringSingle(PackProcessor):
                 context=entry_specified.text,
                 question=self.configs.question,
                 max_answer_len=self.configs.max_answer_len,
-                handle_impossible_answer=self.configs.handle_impossible_answer
+                handle_impossible_answer=self.configs.handle_impossible_answer,
             )
-            start = result['start']
-            end = result['end']
+            start = result["start"]
+            end = result["end"]
             Phrase(pack=input_pack, begin=start, end=end)
 
     @classmethod
@@ -97,15 +101,16 @@ class QuestionAnsweringSingle(PackProcessor):
         Returns: A dictionary with the default config for this processor.
         """
         config = super().default_configs()
-        config.update({
-            'entry_type': 'ft.onto.base_ontology.Document',
-            'model_name': 'ktrapeznikov/biobert_v1.1_pubmed_squad_v2',
-            'question': "Where do I live",
-            'max_answer_len': 15,
-            'cuda_devices': -1,
-            'handle_impossible_answer': False
-
-        })
+        config.update(
+            {
+                "entry_type": "ft.onto.base_ontology.Document",
+                "model_name": "ktrapeznikov/biobert_v1.1_pubmed_squad_v2",
+                "question": "Where do I live",
+                "max_answer_len": 15,
+                "cuda_devices": -1,
+                "handle_impossible_answer": False,
+            }
+        )
         return config
 
     @classmethod

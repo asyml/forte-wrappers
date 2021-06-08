@@ -80,27 +80,27 @@ class ElasticSearchIndexerBase(IndexProcessor, ABC):
 
         """
         config = super().default_configs()
-        config.update({
-            "fields": ["doc_id", "content"],
-            "indexer": {
-                "name": "ElasticSearchIndexer",
-                "hparams": ElasticSearchIndexer.default_configs(),
-                "other_kwargs": {
-                    "request_timeout": 10,
-                    "refresh": False
-                }
+        config.update(
+            {
+                "fields": ["doc_id", "content"],
+                "indexer": {
+                    "name": "ElasticSearchIndexer",
+                    "hparams": ElasticSearchIndexer.default_configs(),
+                    "other_kwargs": {"request_timeout": 10, "refresh": False},
+                },
             }
-        })
+        )
         return config
 
     def _bulk_process(self):
-        self.indexer.add_bulk(self.documents,
-                              **self.configs.indexer.other_kwargs)
+        self.indexer.add_bulk(
+            self.documents, **self.configs.indexer.other_kwargs
+        )
 
 
 class ElasticSearchTextIndexProcessor(ElasticSearchIndexerBase):
     r"""This processor indexes the text of data packs into an
-      `Elasticsearch` index."""
+    `Elasticsearch` index."""
 
     def _content_for_index(self, input_pack: DataPack) -> List[str]:
         """
@@ -132,8 +132,11 @@ class ElasticSearchPackIndexProcessor(ElasticSearchIndexerBase):
         Returns:
 
         """
-        return [str(input_pack.pack_id), input_pack.text,
-                input_pack.serialize(True)]
+        return [
+            str(input_pack.pack_id),
+            input_pack.text,
+            input_pack.serialize(True),
+        ]
 
     def _field_names(self) -> List[str]:
         return ["doc_id", "content", "pack_info"]

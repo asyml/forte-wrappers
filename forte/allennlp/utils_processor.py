@@ -15,19 +15,18 @@
 Utility functions related to processors.
 """
 
-__all__ = [
-    "parse_allennlp_srl_results",
-    "parse_allennlp_srl_tags"
-]
+__all__ = ["parse_allennlp_srl_results", "parse_allennlp_srl_tags"]
 
 from typing import Dict, List, Tuple, Any, Optional
 from collections import defaultdict
 from forte.data.span import Span
+
 # from ft.onto.base_ontology import Token
 
 
 def parse_allennlp_srl_results(
-        results: List[Dict[str, Any]]) -> Dict[str, List[str]]:
+    results: List[Dict[str, Any]]
+) -> Dict[str, List[str]]:
     r"""Convert SRL output into a dictionary
     of verbs and tags.
 
@@ -39,17 +38,17 @@ def parse_allennlp_srl_results(
          a dictionary of verbs and tags
     """
     parsed_results: Dict[str, List[str]] = defaultdict(list)
-    parsed_results['verbs'] = []
-    parsed_results['srl_tags'] = []
+    parsed_results["verbs"] = []
+    parsed_results["srl_tags"] = []
     for verb_item in results:
-        parsed_results['verbs'].append(verb_item['verb'])
-        parsed_results['srl_tags'].append(
-            ' '.join(verb_item['tags']))
+        parsed_results["verbs"].append(verb_item["verb"])
+        parsed_results["srl_tags"].append(" ".join(verb_item["tags"]))
     return parsed_results
 
 
-def parse_allennlp_srl_tags(tags: str) -> \
-        Tuple[Optional[Span], List[Tuple[Span, str]]]:
+def parse_allennlp_srl_tags(
+    tags: str,
+) -> Tuple[Optional[Span], List[Tuple[Span, str]]]:
     r"""Parse the tag list of a specific verb output by
     AllenNLP SRL processor.
 
@@ -62,15 +61,18 @@ def parse_allennlp_srl_tags(tags: str) -> \
     """
     pred_span = None
     arguments = []
-    begin, end, prev_argument = -1, -1, ''
-    tags += ' O'
+    begin, end, prev_argument = -1, -1, ""
+    tags += " O"
     for i, tag in enumerate(tags.split()):
-        argument = '-'.join(tag.split('-')[1:])
-        if tag[0] == 'O' or tag[0] == 'B' or \
-            (tag[0] == 'I' and argument != prev_argument):
-            if prev_argument == 'V':
+        argument = "-".join(tag.split("-")[1:])
+        if (
+            tag[0] == "O"
+            or tag[0] == "B"
+            or (tag[0] == "I" and argument != prev_argument)
+        ):
+            if prev_argument == "V":
                 pred_span = Span(begin, end)
-            elif prev_argument != '':
+            elif prev_argument != "":
                 arg_span = Span(begin, end)
                 arguments.append((arg_span, prev_argument))
             begin = i

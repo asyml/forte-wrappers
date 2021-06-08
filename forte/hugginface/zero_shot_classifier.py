@@ -16,11 +16,13 @@ Wrapper of the Zero Shot Classifier models on HuggingFace platform
 """
 from typing import Dict, Set
 import importlib
+
+from transformers import pipeline
+
 from forte.common import Resources
 from forte.common.configuration import Config
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
-from transformers import pipeline
 
 __all__ = [
     "ZeroShotClassifier",
@@ -44,18 +46,20 @@ class ZeroShotClassifier(PackProcessor):
         self.classifier = None
 
     def set_up(self):
-        device_num = self.configs['cuda_device']
-        self.classifier = pipeline("zero-shot-classification",
-                                   model=self.configs.model_name,
-                                   framework='pt',
-                                   device=device_num)
+        device_num = self.configs["cuda_device"]
+        self.classifier = pipeline(
+            "zero-shot-classification",
+            model=self.configs.model_name,
+            framework="pt",
+            device=device_num,
+        )
 
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
         self.set_up()
 
     def _process(self, input_pack: DataPack):
-        path_str, module_str = self.configs.entry_type.rsplit('.', 1)
+        path_str, module_str = self.configs.entry_type.rsplit(".", 1)
 
         mod = importlib.import_module(path_str)
         entry = getattr(mod, module_str)
@@ -64,10 +68,11 @@ class ZeroShotClassifier(PackProcessor):
                 sequences=entry_specified.text,
                 candidate_labels=self.configs.candidate_labels,
                 hypothesis_template=self.configs.hypothesis_template,
-                multi_class=self.configs.multi_class)
+                multi_class=self.configs.multi_class,
+            )
             curr_dict = getattr(entry_specified, self.configs.attribute_name)
-            for idx, lab in enumerate(result['labels']):
-                curr_dict[lab] = round(result['scores'][idx], 4)
+            for idx, lab in enumerate(result["labels"]):
+                curr_dict[lab] = round(result["scores"][idx], 4)
             setattr(entry_specified, self.configs.attribute_name, curr_dict)
 
     @classmethod
@@ -106,15 +111,22 @@ class ZeroShotClassifier(PackProcessor):
         Returns: A dictionary with the default config for this processor.
         """
         config = super().default_configs()
-        config.update({
-            'entry_type': 'ft.onto.base_ontology.Sentence',
-            'attribute_name': 'classification',
-            'multi_class': True,
-            'model_name': 'valhalla/distilbart-mnli-12-1',
-            'candidate_labels': ['travel', 'cooking', 'dancing', 'exploration'],
-            'hypothesis_template': "This example is {}.",
-            'cuda_device': -1
-        })
+        config.update(
+            {
+                "entry_type": "ft.onto.base_ontology.Sentence",
+                "attribute_name": "classification",
+                "multi_class": True,
+                "model_name": "valhalla/distilbart-mnli-12-1",
+                "candidate_labels": [
+                    "travel",
+                    "cooking",
+                    "dancing",
+                    "exploration",
+                ],
+                "hypothesis_template": "This example is {}.",
+                "cuda_device": -1,
+            }
+        )
         return config
 
     @classmethod

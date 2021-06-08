@@ -16,12 +16,13 @@ import logging
 from typing import List, Any, Dict, Set
 
 import stanza
+from ft.onto.base_ontology import Token, Sentence, Dependency
+
 from forte.common import ProcessorConfigError
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
-from ft.onto.base_ontology import Token, Sentence, Dependency
 
 __all__ = [
     "StandfordNLPProcessor",
@@ -36,17 +37,22 @@ class StandfordNLPProcessor(PackProcessor):
 
     def set_up(self):
         stanza.download(self.configs.lang, self.configs.dir)
-        self.processors = set(self.configs.processors.split(','))
+        self.processors = set(self.configs.processors.split(","))
 
     # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
-        if ("pos" in configs.processors or "lemma" in configs.processors or
-                "depparse" in configs.processors):
+        if (
+            "pos" in configs.processors
+            or "lemma" in configs.processors
+            or "depparse" in configs.processors
+        ):
             if "tokenize" not in configs.processors:
-                raise ProcessorConfigError('tokenize is necessary in '
-                                           'configs.processors for '
-                                           'pos or lemma or depparse')
+                raise ProcessorConfigError(
+                    "tokenize is necessary in "
+                    "configs.processors for "
+                    "pos or lemma or depparse"
+                )
         self.set_up()
         self.nlp = stanza.Pipeline(
             lang=self.configs.lang,
@@ -64,12 +70,13 @@ class StandfordNLPProcessor(PackProcessor):
         config = super().default_configs()
         config.update(
             {
-                'processors': 'tokenize,pos,lemma,depparse',
-                'lang': 'en',
+                "processors": "tokenize,pos,lemma,depparse",
+                "lang": "en",
                 # Language code for the language to build the Pipeline
-                'use_gpu': False,
-                'dir': '.',
-            })
+                "use_gpu": False,
+                "dir": ".",
+            }
+        )
         return config
 
     def _process(self, input_pack: DataPack):
@@ -83,28 +90,32 @@ class StandfordNLPProcessor(PackProcessor):
 
         # Iterating through stanfordnlp sentence objects
         for sentence in sentences:
-            Sentence(input_pack, sentence.tokens[0].start_char,
-                     sentence.tokens[-1].end_char)
+            Sentence(
+                input_pack,
+                sentence.tokens[0].start_char,
+                sentence.tokens[-1].end_char,
+            )
 
             tokens: List[Token] = []
             if "tokenize" in self.processors:
                 # Iterating through stanfordnlp word objects
                 for word in sentence.words:
-                    misc = word.misc.split('|')
+                    misc = word.misc.split("|")
 
                     t_start = -1
                     t_end = -1
                     for m in misc:
-                        k, v = m.split('=')
-                        if k == 'start_char':
+                        k, v = m.split("=")
+                        if k == "start_char":
                             t_start = int(v)
-                        elif k == 'end_char':
+                        elif k == "end_char":
                             t_end = int(v)
 
                     if t_start < 0 or t_end < 0:
                         raise ValueError(
                             "Cannot determine word start or end for "
-                            "stanfordnlp.")
+                            "stanfordnlp."
+                        )
 
                     token = Token(input_pack, t_start, t_end)
 

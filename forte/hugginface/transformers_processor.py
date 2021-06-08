@@ -16,12 +16,12 @@ from typing import Dict, Any, Set
 
 from nltk.tokenize.util import align_tokens
 from transformers import AutoTokenizer
+from ft.onto.base_ontology import Subword
 
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
-from ft.onto.base_ontology import Subword
 
 __all__ = [
     "BERTTokenizer",
@@ -29,8 +29,7 @@ __all__ = [
 
 
 class BERTTokenizer(PackProcessor):
-    r"""A wrapper of BERT tokenizer.
-    """
+    r"""A wrapper of BERT tokenizer."""
 
     def __init__(self):
         super().__init__()
@@ -43,15 +42,18 @@ class BERTTokenizer(PackProcessor):
     def _process(self, input_pack: DataPack):
         inputs = self.tokenizer(input_pack.text, return_tensors="pt")
         tokens = self.tokenizer.convert_ids_to_tokens(
-                     inputs['input_ids'][0].tolist()
-                 )[1:-1]
-        tokens_clean = [token.replace('##', '') if token.startswith('##')
-                        else token for token in tokens]
+            inputs["input_ids"][0].tolist()
+        )[1:-1]
+        tokens_clean = [
+            token.replace("##", "") if token.startswith("##") else token
+            for token in tokens
+        ]
 
-        for i, (begin, end) in enumerate(align_tokens(tokens_clean,
-                                                      input_pack.text.lower())):
+        for i, (begin, end) in enumerate(
+            align_tokens(tokens_clean, input_pack.text.lower())
+        ):
             subword = Subword(input_pack, begin, end)
-            subword.is_first_segment = not tokens[i].startswith('##')
+            subword.is_first_segment = not tokens[i].startswith("##")
 
     @classmethod
     def default_configs(cls) -> Dict[str, Any]:
@@ -60,7 +62,7 @@ class BERTTokenizer(PackProcessor):
         pipeline construction.
         """
         config = super().default_configs()
-        config.update({'model_path': None})
+        config.update({"model_path": None})
         return config
 
     def record(self, record_meta: Dict[str, Set[str]]):

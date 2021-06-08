@@ -15,13 +15,12 @@
 import yaml
 
 from termcolor import colored
+from ft.onto.base_ontology import Subword, Sentence, EntityMention
 
 from forte.common.configuration import Config
 from forte.data.data_pack import DataPack
 from forte.data.readers import StringReader
 from forte.pipeline import Pipeline
-from ft.onto.base_ontology import Subword, Sentence, EntityMention
-
 from forte.hugginface.transformers_processor import BERTTokenizer
 from forte.hugginface.bio_ner_predictor import BioBERTNERPredictor
 from forte.nltk.nltk_processors import NLTKSentenceSegmenter
@@ -45,22 +44,27 @@ def main():
         "14 (35%) with upper respiratory tract infections, "
         "and 2 (5%) with bronchiolitis. "
         "The 3 patients who died of M pneumoniae pneumonia "
-        "had other comorbidities. ")
+        "had other comorbidities. "
+    )
     pack = pl.process(text)
 
     for sentence in pack.get(Sentence):
         sent_text = sentence.text
-        print(colored("Sentence:", 'red'), sent_text, "\n")
+        print(colored("Sentence:", "red"), sent_text, "\n")
         # first method to get entry in a sentence
-        subwords = [(subword.text, subword.ner) for subword in
-                    pack.get(Subword, sentence)]
-        entities = [(entity.text, entity.ner_type) for entity in
-                    pack.get(EntityMention, sentence)]
-        print(colored("Subwords:", 'red'), subwords, "\n")
-        print(colored("EntityMentions:", 'red'), entities, "\n")
+        subwords = [
+            (subword.text, subword.ner)
+            for subword in pack.get(Subword, sentence)
+        ]
+        entities = [
+            (entity.text, entity.ner_type)
+            for entity in pack.get(EntityMention, sentence)
+        ]
+        print(colored("Subwords:", "red"), subwords, "\n")
+        print(colored("EntityMentions:", "red"), entities, "\n")
 
-        input(colored("Press ENTER to continue...\n", 'green'))
+        input(colored("Press ENTER to continue...\n", "green"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

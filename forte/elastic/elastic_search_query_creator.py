@@ -19,9 +19,7 @@ from forte.data.data_pack import DataPack
 from forte.data.multi_pack import MultiPack
 from forte.processors.base import QueryProcessor
 
-__all__ = [
-    "ElasticSearchQueryCreator"
-]
+__all__ = ["ElasticSearchQueryCreator"]
 
 
 class ElasticSearchQueryCreator(QueryProcessor):
@@ -51,15 +49,14 @@ class ElasticSearchQueryCreator(QueryProcessor):
     @classmethod
     def default_configs(cls) -> Dict[str, Any]:
         config = super().default_configs()
-        config.update({
-            "size": 1000,
-            "field": "content",
-            "query_pack_name": "query"
-        })
+        config.update(
+            {"size": 1000, "field": "content", "query_pack_name": "query"}
+        )
         return config
 
-    def _process_query(self, input_pack: MultiPack) -> \
-            Tuple[DataPack, Dict[str, Any]]:
+    def _process_query(
+        self, input_pack: MultiPack
+    ) -> Tuple[DataPack, Dict[str, Any]]:
         query_pack = input_pack.get_pack(self.configs.query_pack_name)
         query = self._build_query(text=query_pack.text)
         return query_pack, query

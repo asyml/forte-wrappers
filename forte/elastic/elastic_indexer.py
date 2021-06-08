@@ -20,9 +20,7 @@ from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 from elasticsearch import logger as es_logger
 
-__all__ = [
-    "ElasticSearchIndexer"
-]
+__all__ = ["ElasticSearchIndexer"]
 
 from forte.common.configuration import Config
 
@@ -39,8 +37,12 @@ class ElasticSearchIndexer:
         self._config = Config(config, self.default_configs())
         self.elasticsearch = Elasticsearch(hosts=self._config.hosts)
 
-    def index(self, document: Dict[str, Any], index_name: Optional[str] = None,
-              refresh: Optional[Union[bool, str]] = False) -> None:
+    def index(
+        self,
+        document: Dict[str, Any],
+        index_name: Optional[str] = None,
+        refresh: Optional[Union[bool, str]] = False,
+    ) -> None:
         r"""Index a document ``document`` in the index specified by
         ``index_name``. If ``index_name`` is None, it will be picked from
         the processor configs.
@@ -62,8 +64,12 @@ class ElasticSearchIndexer:
         """
         self.add(document, index_name, refresh)
 
-    def add(self, document: Dict[str, Any], index_name: Optional[str] = None,
-            refresh: Optional[Union[bool, str]] = False) -> None:
+    def add(
+        self,
+        document: Dict[str, Any],
+        index_name: Optional[str] = None,
+        refresh: Optional[Union[bool, str]] = False,
+    ) -> None:
         r"""Add a document ``document`` to the index specified by
         ``index_name``. If ``index_name`` is None, it will be picked from
         processor configs.
@@ -84,11 +90,15 @@ class ElasticSearchIndexer:
         """
         index_name = index_name if index_name else self._config.index_name
         self.elasticsearch.index(  # pylint: disable=unexpected-keyword-arg
-            index=index_name, body=document, refresh=refresh)
+            index=index_name, body=document, refresh=refresh
+        )
 
-    def add_bulk(self, documents: Iterable[Dict[str, Any]],
-                 index_name: Optional[str] = None,
-                 **kwargs: Optional[Dict[str, Any]]) -> None:
+    def add_bulk(
+        self,
+        documents: Iterable[Dict[str, Any]],
+        index_name: Optional[str] = None,
+        **kwargs: Optional[Dict[str, Any]]
+    ) -> None:
         r"""Add a bulk of documents to the index specified by ``index_name``.
         If ``index_name`` is None, it will be picked from the processor
         configs.
@@ -115,15 +125,23 @@ class ElasticSearchIndexer:
             for document in documents:
                 new_document = deepcopy(document)
                 new_document.update(
-                    {"_index":
-                         index_name if index_name else self.hparams.index_name,
-                     "_type": "document"})
+                    {
+                        "_index": index_name
+                        if index_name
+                        else self.hparams.index_name,
+                        "_type": "document",
+                    }
+                )
                 yield new_document
 
         bulk(self.elasticsearch, actions(), **kwargs)
 
-    def search(self, query: Dict[str, Any], index_name: Optional[str] = None,
-               **kwargs: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    def search(
+        self,
+        query: Dict[str, Any],
+        index_name: Optional[str] = None,
+        **kwargs: Optional[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         # pylint: disable=line-too-long
         r"""Search the index specified by ``index_name`` that matches the
         ``query``.
@@ -147,7 +165,8 @@ class ElasticSearchIndexer:
         # TODO: until fix: https://github.com/PyCQA/pylint/issues/3507
         if not isinstance(query, Dict):
             raise ValueError(
-                "The query to the elastic indexer need to be a dictionary.")
+                "The query to the elastic indexer need to be a dictionary."
+            )
         return self.elasticsearch.search(index=index_name, body=query, **kwargs)
 
     @property
@@ -180,5 +199,5 @@ class ElasticSearchIndexer:
         return {
             "index_name": "elastic_indexer",
             "hosts": "localhost:9200",
-            "algorithm": "bm25"
+            "algorithm": "bm25",
         }

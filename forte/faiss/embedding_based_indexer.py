@@ -17,15 +17,13 @@ import pickle
 from typing import Optional, List, Tuple, Dict, Union, Any
 import numpy as np
 
-import faiss
 import torch
+import faiss
 
 from forte.common.configuration import Config
 from forte import utils
 
-__all__ = [
-    "EmbeddingBasedIndexer"
-]
+__all__ = ["EmbeddingBasedIndexer"]
 
 
 class EmbeddingBasedIndexer:
@@ -43,13 +41,14 @@ class EmbeddingBasedIndexer:
     INDEX_TYPE_TO_CONFIG = {
         "GpuIndexFlatL2": "GpuIndexFlatConfig",
         "GpuIndexFlatIP": "GpuIndexFlatConfig",
-        "GpuIndexIVFFlat": "GpuIndexIVFFlatConfig"
+        "GpuIndexIVFFlat": "GpuIndexIVFFlatConfig",
     }
 
     def __init__(self, config: Optional[Union[Dict, Config]] = None):
         super().__init__()
-        self._config = Config(hparams=config,
-                              default_hparams=self.default_configs())
+        self._config = Config(
+            hparams=config, default_hparams=self.default_configs()
+        )
         self._meta_data: Dict[int, str] = {}
 
         index_type = self._config.index_type
@@ -65,14 +64,19 @@ class EmbeddingBasedIndexer:
             gpu_id = int(device[3:])
             if faiss.get_num_gpus() < gpu_id:
                 gpu_id = 0
-                logging.warning("Cannot create the index on device %s. "
-                                "Total number of GPUs on this machine is "
-                                "%s. Using gpu0 for the index.",
-                                self._config.device, faiss.get_num_gpus())
-            config_class_name = \
-                self.INDEX_TYPE_TO_CONFIG.get(index_class.__name__)
-            config = utils.get_class(config_class_name,
-                                     module_paths=["faiss"])()
+                logging.warning(
+                    "Cannot create the index on device %s. "
+                    "Total number of GPUs on this machine is "
+                    "%s. Using gpu0 for the index.",
+                    self._config.device,
+                    faiss.get_num_gpus(),
+                )
+            config_class_name = self.INDEX_TYPE_TO_CONFIG.get(
+                index_class.__name__
+            )
+            config = utils.get_class(
+                config_class_name, module_paths=["faiss"]
+            )()
             config.device = gpu_id
             self._index = index_class(gpu_resource, dim, config)
 
@@ -104,17 +108,16 @@ class EmbeddingBasedIndexer:
 
         """
 
-        return {
-            "index_type": "IndexFlatIP",
-            "dim": 768,
-            "device": "cpu"
-        }
+        return {"index_type": "IndexFlatIP", "dim": 768, "device": "cpu"}
 
     def index(self):
         pass
 
-    def add(self, vectors: Union[np.ndarray, torch.Tensor],
-            meta_data: Dict[int, str]) -> None:
+    def add(
+        self,
+        vectors: Union[np.ndarray, torch.Tensor],
+        meta_data: Dict[int, str],
+    ) -> None:
         r"""Add ``vectors`` along with their ``meta_data`` into the index data
         structure.
 
@@ -161,8 +164,9 @@ class EmbeddingBasedIndexer:
         """
 
         _, indices = self._index.search(query, k)
-        return [[(idx, self._meta_data[idx]) for idx in index]
-                for index in indices]
+        return [
+            [(idx, self._meta_data[idx]) for idx in index] for index in indices
+        ]
 
     def save(self, path: str) -> None:
         r"""Save the index and meta data in ``path`` directory. The index
@@ -175,13 +179,19 @@ class EmbeddingBasedIndexer:
         """
 
         if os.path.exists(path):
-            logging.warning("%s directory already exists. Index will be "
-                            "saved into an existing directory", path)
+            logging.warning(
+                "%s directory already exists. Index will be "
+                "saved into an existing directory",
+                path,
+            )
         else:
             os.makedirs(path)
 
-        cpu_index = faiss.index_gpu_to_cpu(self._index) \
-            if self._index.__class__.__name__.startswith("Gpu") else self._index
+        cpu_index = (
+            faiss.index_gpu_to_cpu(self._index)
+            if self._index.__class__.__name__.startswith("Gpu")
+            else self._index
+        )
         faiss.write_index(cpu_index, f"{path}/index.faiss")
         with open(f"{path}/index.meta_data", "wb") as f:
             pickle.dump(self._meta_data, f)
@@ -197,8 +207,9 @@ class EmbeddingBasedIndexer:
         """
 
         if not os.path.exists(path):
-            raise ValueError(f"Failed to load the index. {path} "
-                             f"does not exist.")
+            raise ValueError(
+                f"Failed to load the index. {path} " f"does not exist."
+            )
 
         cpu_index = faiss.read_index(f"{path}/index.faiss")
 
@@ -210,12 +221,16 @@ class EmbeddingBasedIndexer:
             gpu_id = int(device[3:])
             if faiss.get_num_gpus() < gpu_id:
                 gpu_id = 0
-                logging.warning("Cannot create the index on device %s. "
-                                "Total number of GPUs on this machine is "
-                                "%s. Using the gpu0 for the index.",
-                                device, faiss.get_num_gpus())
+                logging.warning(
+                    "Cannot create the index on device %s. "
+                    "Total number of GPUs on this machine is "
+                    "%s. Using the gpu0 for the index.",
+                    device,
+                    faiss.get_num_gpus(),
+                )
             self._index = faiss.index_cpu_to_gpu(
-                gpu_resource, gpu_id, cpu_index)
+                gpu_resource, gpu_id, cpu_index
+            )
 
         else:
             self._index = cpu_index

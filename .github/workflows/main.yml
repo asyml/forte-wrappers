@@ -60,6 +60,9 @@ jobs:
       - name: Lint with pylint
         run: |
           pylint forte_wrapper/
+      - name: Format check with Black
+        run: |
+          black --line-length 80 --check forte/
       - name: Lint with mypy
         run: |
           mypy .

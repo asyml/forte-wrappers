@@ -13,14 +13,15 @@
 # limitations under the License.
 
 from typing import Dict, Any
-import tweepy as tw
 import yaml
+
+from ft.onto.base_ontology import Document
+import tweepy as tw
 
 from forte.common.configuration import Config
 from forte.data.multi_pack import MultiPack
 from forte.processors.base import MultiPackProcessor
 from forte.data.data_pack import DataPack
-from ft.onto.base_ontology import Document
 
 __all__ = [
     "TweetSearchProcessor",
@@ -33,6 +34,7 @@ class TweetSearchProcessor(MultiPackProcessor):
     Twitter API.
     Tweets will be returned as datapacks in input multipack.
     """
+
     @classmethod
     def default_configs(cls) -> Dict[str, Any]:
         # pylint: disable=line-too-long
@@ -77,15 +79,17 @@ class TweetSearchProcessor(MultiPackProcessor):
         """
         # pylint: enable=line-too-long
         config = super().default_configs()
-        config.update({
-            "credential_file": "",
-            "num_tweets_returned": 5,
-            "lang": "en",
-            "date_since": "2020-01-01",
-            "result_type": 'recent',
-            "query_pack_name": "query",
-            "response_pack_name_prefix": "passage"
-        })
+        config.update(
+            {
+                "credential_file": "",
+                "num_tweets_returned": 5,
+                "lang": "en",
+                "date_since": "2020-01-01",
+                "result_type": "recent",
+                "query_pack_name": "query",
+                "response_pack_name_prefix": "passage",
+            }
+        )
         return config
 
     def _process(self, input_pack: MultiPack):
@@ -133,20 +137,23 @@ class TweetSearchProcessor(MultiPackProcessor):
         credentials = yaml.safe_load(open(self.configs.credential_file, "r"))
         credentials = Config(credentials, default_hparams=None)
 
-        auth = tw.OAuthHandler(credentials.consumer_key,
-                               credentials.consumer_secret)
-        auth.set_access_token(credentials.access_token,
-                              credentials.access_token_secret)
+        auth = tw.OAuthHandler(
+            credentials.consumer_key, credentials.consumer_secret
+        )
+        auth.set_access_token(
+            credentials.access_token, credentials.access_token_secret
+        )
 
         api = tw.API(auth, wait_on_rate_limit=True)
 
         # Collect tweets
-        tweets = tw.Cursor(api.search,
-                           q=query,
-                           lang=self.configs.lang,
-                           since=self.configs.date_since,
-                           result_type=self.configs.result_type,
-                           tweet_mode="extended").items(
-            self.configs.num_tweets_returned)
+        tweets = tw.Cursor(
+            api.search,
+            q=query,
+            lang=self.configs.lang,
+            since=self.configs.date_since,
+            result_type=self.configs.result_type,
+            tweet_mode="extended",
+        ).items(self.configs.num_tweets_returned)
 
         return tweets

@@ -8,6 +8,8 @@ from transformers import (
     AutoModelForTokenClassification,
     AutoTokenizer,
 )
+from ft.onto.base_ontology import Sentence, EntityMention, Subword
+
 
 from forte.common.configuration import Config
 from forte.common.resources import Resources
@@ -15,7 +17,6 @@ from forte.data.data_pack import DataPack
 from forte.data.ontology import Annotation
 from forte.data.types import DataRequest
 from forte.processors.base.batch_processor import FixedSizeBatchProcessor
-from ft.onto.base_ontology import Sentence, EntityMention, Subword
 
 
 __all__ = [
@@ -25,11 +26,11 @@ __all__ = [
 
 class BioBERTNERPredictor(FixedSizeBatchProcessor):
     """
-       An Named Entity Recognizer fine-tuned on BioBERT
+    An Named Entity Recognizer fine-tuned on BioBERT
 
-       Note that to use :class:`BioBERTNERPredictor`, the :attr:`ontology` of
-       :class:`Pipeline` must be an ontology that include
-       ``ft.onto.base_ontology.Subword`` and ``ft.onto.base_ontology.Sentence``.
+    Note that to use :class:`BioBERTNERPredictor`, the :attr:`ontology` of
+    :class:`Pipeline` must be an ontology that include
+    ``ft.onto.base_ontology.Subword`` and ``ft.onto.base_ontology.Sentence``.
     """
 
     def __init__(self):
@@ -60,8 +61,11 @@ class BioBERTNERPredictor(FixedSizeBatchProcessor):
         if resources.get("device"):
             self.device = resources.get("device")
         else:
-            self.device = torch.device('cuda') if torch.cuda.is_available() \
-                else torch.device('cpu')
+            self.device = (
+                torch.device("cuda")
+                if torch.cuda.is_available()
+                else torch.device("cpu")
+            )
 
         self.resources = resources
         self.ft_configs = configs
@@ -72,26 +76,30 @@ class BioBERTNERPredictor(FixedSizeBatchProcessor):
         self.model = AutoModelForTokenClassification.from_pretrained(
             model_path,
             from_tf=bool(".ckpt" in model_path),
-            config=self.model_config
+            config=self.model_config,
         )
         self.model.to(self.device)
 
     @torch.no_grad()
-    def predict(self, data_batch: Dict[str, Dict[str, List[str]]]) \
-            -> Dict[str, Dict[str, List[np.array]]]:
-        sentences = data_batch['context']
-        subwords = data_batch['Subword']
+    def predict(
+        self, data_batch: Dict[str, Dict[str, List[str]]]
+    ) -> Dict[str, Dict[str, List[np.array]]]:
+        sentences = data_batch["context"]
+        subwords = data_batch["Subword"]
 
         inputs = self.tokenizer(sentences, return_tensors="pt", padding=True)
         inputs = {key: value.to(self.device) for key, value in inputs.items()}
 
-        input_shape = inputs['input_ids'].shape
+        input_shape = inputs["input_ids"].shape
         if input_shape[1] > 512:
             # TODO: Temporarily work around the length problem.
             #   The real solution should further split up the sentences to make
             #   the sentences shorter.
-            labels_idx = inputs['input_ids'].new_full(
-                input_shape, 2, device='cpu')[:, 1:-1].numpy()
+            labels_idx = (
+                inputs["input_ids"]
+                .new_full(input_shape, 2, device="cpu")[:, 1:-1]
+                .numpy()
+            )
         else:
             outputs = self.model(**inputs)[0].cpu().numpy()
             score = np.exp(outputs) / np.exp(outputs).sum(-1, keepdims=True)
@@ -110,11 +118,13 @@ class BioBERTNERPredictor(FixedSizeBatchProcessor):
 
         return pred
 
-    def _complete_entity(self,
-                         subword_entities: List[Dict[str, Any]],
-                         data_pack: DataPack,
-                         tids: List[int]) -> Tuple[int, int]:
-        """ Complete entity span from predicted subword entities
+    def _complete_entity(
+        self,
+        subword_entities: List[Dict[str, Any]],
+        data_pack: DataPack,
+        tids: List[int],
+    ) -> Tuple[int, int]:
+        """Complete entity span from predicted subword entities
 
         Start from the first subword with predicted entity. If this entity
         is a subword (e.g. "##on"), then move on to the previous subword until
@@ -122,25 +132,31 @@ class BioBERTNERPredictor(FixedSizeBatchProcessor):
 
         """
 
-        first_idx: int = subword_entities[0]['idx']
-        first_tid = subword_entities[0]['tid']
-        while first_idx > 0 and not data_pack.get_entry(
-            first_tid).is_first_segment:
+        first_idx: int = subword_entities[0]["idx"]
+        first_tid = subword_entities[0]["tid"]
+        while (
+            first_idx > 0
+            and not data_pack.get_entry(first_tid).is_first_segment
+        ):
             first_idx -= 1
             first_tid = tids[first_idx]
 
-        last_idx: int = subword_entities[-1]['idx']
-        while last_idx < len(tids) - 1 and not data_pack.get_entry(
-            tids[last_idx + 1]).is_first_segment:
+        last_idx: int = subword_entities[-1]["idx"]
+        while (
+            last_idx < len(tids) - 1
+            and not data_pack.get_entry(tids[last_idx + 1]).is_first_segment
+        ):
             last_idx += 1
 
         return first_idx, last_idx
 
-    def _compose_entities(self,
-                          entities: List[Dict[str, Any]],
-                          data_pack: DataPack,
-                          tids: List[int]) -> List[Tuple[int, int]]:
-        """ Composes entity spans from subword entity predictions
+    def _compose_entities(
+        self,
+        entities: List[Dict[str, Any]],
+        data_pack: DataPack,
+        tids: List[int],
+    ) -> List[Tuple[int, int]]:
+        """Composes entity spans from subword entity predictions
 
         Label Syntax:
         A "B" label indicates the beginning of an entity, an "I" label
@@ -166,15 +182,14 @@ class BioBERTNERPredictor(FixedSizeBatchProcessor):
         subword_entities: List[Dict[str, Any]] = []
 
         for entity in entities:
-            subword = data_pack.get_entry(entity['tid'])
+            subword = data_pack.get_entry(entity["tid"])
 
-            if entity['label'] == 'B' and subword.is_first_segment:
+            if entity["label"] == "B" and subword.is_first_segment:
                 # Flush the existing entity and start a new entity
                 if subword_entities:
-                    complete_entity = \
-                        self._complete_entity(subword_entities,
-                                              data_pack,
-                                              tids)
+                    complete_entity = self._complete_entity(
+                        subword_entities, data_pack, tids
+                    )
                     complete_entities.append(complete_entity)
                 subword_entities = [entity]
             else:
@@ -182,15 +197,18 @@ class BioBERTNERPredictor(FixedSizeBatchProcessor):
                 subword_entities.append(entity)
 
         if subword_entities:
-            complete_entity = self._complete_entity(subword_entities,
-                                                    data_pack,
-                                                    tids)
+            complete_entity = self._complete_entity(
+                subword_entities, data_pack, tids
+            )
             complete_entities.append(complete_entity)
 
         return complete_entities
 
-    def pack(self, data_pack: DataPack,
-             output_dict: Optional[Dict[str, Dict[str, List[Any]]]] = None):
+    def pack(
+        self,
+        data_pack: DataPack,
+        output_dict: Optional[Dict[str, Dict[str, List[Any]]]] = None,
+    ):
         """
         Write the prediction results back to datapack. by writing the predicted
         ner to the original subwords and convert predictions to something that
@@ -205,19 +223,19 @@ class BioBERTNERPredictor(FixedSizeBatchProcessor):
             labels = output_dict["Subword"]["ner"][i]
 
             # Filter to labels not in `self.ft_configs.ignore_labels`
-            entities = [dict(idx=idx, label=label, tid=tid)
-                        for idx, (label, tid) in enumerate(zip(labels, tids))
-                        if label not in self.ft_configs.ignore_labels]
+            entities = [
+                dict(idx=idx, label=label, tid=tid)
+                for idx, (label, tid) in enumerate(zip(labels, tids))
+                if label not in self.ft_configs.ignore_labels
+            ]
 
             entity_groups = self._compose_entities(entities, data_pack, tids)
             # Add NER tags and create EntityMention ontologies.
             for first_idx, last_idx in entity_groups:
-                first_token: Subword = data_pack.get_entry(
-                    tids[first_idx])
+                first_token: Subword = data_pack.get_entry(tids[first_idx])
                 begin = first_token.span.begin
 
-                last_token: Subword = data_pack.get_entry(
-                    tids[last_idx])
+                last_token: Subword = data_pack.get_entry(tids[last_idx])
                 end = last_token.span.end
 
                 entity = EntityMention(data_pack, begin, end)
@@ -231,9 +249,11 @@ class BioBERTNERPredictor(FixedSizeBatchProcessor):
         # TODO: Batcher in NER need to be update to use the sytem one.
         configs["batcher"] = {"batch_size": 10}
 
-        more_configs = {'model_path': None,
-                        'ner_type': 'BioEntity',
-                        'ignore_labels': ['O']}
+        more_configs = {
+            "model_path": None,
+            "ner_type": "BioEntity",
+            "ignore_labels": ["O"],
+        }
 
         configs.update(more_configs)
         return configs
@@ -258,5 +278,7 @@ class BioBERTNERPredictor(FixedSizeBatchProcessor):
         :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
         the pipeline.
         """
-        return {"ft.onto.base_ontology.Subword": {"is_first_segment"},
-                "ft.onto.base_ontology.Sentence": set()}
+        return {
+            "ft.onto.base_ontology.Subword": {"is_first_segment"},
+            "ft.onto.base_ontology.Sentence": set(),
+        }

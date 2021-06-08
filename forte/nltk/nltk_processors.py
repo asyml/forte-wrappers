@@ -18,12 +18,12 @@ from nltk import pos_tag, ne_chunk, PunktSentenceTokenizer
 from nltk.chunk import RegexpParser
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize.treebank import TreebankWordTokenizer
+from ft.onto.base_ontology import EntityMention, Token, Sentence, Phrase
 
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
-from ft.onto.base_ontology import EntityMention, Token, Sentence, Phrase
 
 __all__ = [
     "NLTKPOSTagger",
@@ -36,8 +36,7 @@ __all__ = [
 
 
 class NLTKWordTokenizer(PackProcessor):
-    r"""A wrapper of NLTK word tokenizer.
-    """
+    r"""A wrapper of NLTK word tokenizer."""
 
     def __init__(self):
         super().__init__()
@@ -60,20 +59,20 @@ class NLTKWordTokenizer(PackProcessor):
 
 
 class NLTKPOSTagger(PackProcessor):
-    r"""A wrapper of NLTK pos tagger.
-    """
+    r"""A wrapper of NLTK pos tagger."""
 
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
-        nltk.download('averaged_perceptron_tagger')
+        nltk.download("averaged_perceptron_tagger")
 
     def __init__(self):
         super().__init__()
         self.token_component = None
 
     def _process(self, input_pack: DataPack):
-        token_entries = list(input_pack.get(entry_type=Token,
-                                            components=self.token_component))
+        token_entries = list(
+            input_pack.get(entry_type=Token, components=self.token_component)
+        )
         token_texts = [token.text for token in token_entries]
         taggings = pos_tag(token_texts)
         for token, tag in zip(token_entries, taggings):
@@ -103,12 +102,11 @@ class NLTKPOSTagger(PackProcessor):
 
 
 class NLTKLemmatizer(PackProcessor):
-    r"""A wrapper of NLTK lemmatizer.
-    """
+    r"""A wrapper of NLTK lemmatizer."""
 
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
-        nltk.download('wordnet')
+        nltk.download("wordnet")
 
     def __init__(self):
         super().__init__()
@@ -116,8 +114,9 @@ class NLTKLemmatizer(PackProcessor):
         self.lemmatizer = WordNetLemmatizer()
 
     def _process(self, input_pack: DataPack):
-        token_entries: List[Token] = list(input_pack.get(
-            entry_type=Token, components=self.token_component))
+        token_entries: List[Token] = list(
+            input_pack.get(entry_type=Token, components=self.token_component)
+        )
 
         token_texts: List[str] = []
         token_poses: List[str] = []
@@ -126,8 +125,10 @@ class NLTKLemmatizer(PackProcessor):
             assert token.pos is not None
             token_poses.append(penn2morphy(token.pos))
 
-        lemmas = [self.lemmatizer.lemmatize(token_texts[i], token_poses[i])
-                  for i in range(len(token_texts))]
+        lemmas = [
+            self.lemmatizer.lemmatize(token_texts[i], token_poses[i])
+            for i in range(len(token_texts))
+        ]
         for token, lemma in zip(token_entries, lemmas):
             token.lemma = lemma
 
@@ -156,18 +157,16 @@ class NLTKLemmatizer(PackProcessor):
 
 
 def penn2morphy(penntag: str) -> str:
-    r"""Converts tags from Penn format to Morphy.
-    """
-    morphy_tag = {'NN': 'n', 'JJ': 'a', 'VB': 'v', 'RB': 'r'}
+    r"""Converts tags from Penn format to Morphy."""
+    morphy_tag = {"NN": "n", "JJ": "a", "VB": "v", "RB": "r"}
     if penntag[:2] in morphy_tag:
         return morphy_tag[penntag[:2]]
     else:
-        return 'n'
+        return "n"
 
 
 class NLTKChunker(PackProcessor):
-    r"""A wrapper of NLTK chunker.
-    """
+    r"""A wrapper of NLTK chunker."""
 
     def __init__(self):
         super().__init__()
@@ -175,34 +174,40 @@ class NLTKChunker(PackProcessor):
 
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
-        nltk.download('maxent_ne_chunker')
+        nltk.download("maxent_ne_chunker")
         self.chunker = RegexpParser(configs.pattern)
 
     @classmethod
     def default_configs(cls):
-        r"""This defines a basic config structure for NLTKChunker.
-        """
+        r"""This defines a basic config structure for NLTKChunker."""
         config = super().default_configs()
-        config.update({
-            'pattern': 'NP: {<DT>?<JJ>*<NN>}',
-            'token_component': None,
-            'sentence_component': None
-        })
+        config.update(
+            {
+                "pattern": "NP: {<DT>?<JJ>*<NN>}",
+                "token_component": None,
+                "sentence_component": None,
+            }
+        )
         return config
 
     def _process(self, input_pack: DataPack):
         for sentence in input_pack.get(
-                Sentence, components=self.configs.sentence_component):
-            token_entries = list(input_pack.get(
-                entry_type=Token, range_annotation=sentence,
-                components=self.configs.token_component))
+            Sentence, components=self.configs.sentence_component
+        ):
+            token_entries = list(
+                input_pack.get(
+                    entry_type=Token,
+                    range_annotation=sentence,
+                    components=self.configs.token_component,
+                )
+            )
 
             tokens = [(token.text, token.pos) for token in token_entries]
             cs = self.chunker.parse(tokens)
 
             index = 0
             for chunk in cs:
-                if hasattr(chunk, 'label'):
+                if hasattr(chunk, "label"):
                     # For example:
                     # chunk: Tree('NP', [('This', 'DT'), ('tool', 'NN')])
                     begin_pos = token_entries[index].span.begin
@@ -237,17 +242,18 @@ class NLTKChunker(PackProcessor):
         :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
         the pipeline.
         """
-        return {"ft.onto.base_ontology.Sentence": set(),
-                "ft.onto.base_ontology.Token": {"pos"}}
+        return {
+            "ft.onto.base_ontology.Sentence": set(),
+            "ft.onto.base_ontology.Token": {"pos"},
+        }
 
 
 class NLTKSentenceSegmenter(PackProcessor):
-    r"""A wrapper of NLTK sentence tokenizer.
-    """
+    r"""A wrapper of NLTK sentence tokenizer."""
 
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
-        nltk.download('punkt')
+        nltk.download("punkt")
 
     def __init__(self):
         super().__init__()
@@ -270,13 +276,12 @@ class NLTKSentenceSegmenter(PackProcessor):
 
 
 class NLTKNER(PackProcessor):
-    r"""A wrapper of NLTK NER.
-    """
+    r"""A wrapper of NLTK NER."""
 
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
-        nltk.download('maxent_ne_chunker')
-        nltk.download('words')
+        nltk.download("maxent_ne_chunker")
+        nltk.download("words")
 
     def __init__(self):
         super().__init__()
@@ -284,15 +289,19 @@ class NLTKNER(PackProcessor):
 
     def _process(self, input_pack: DataPack):
         for sentence in input_pack.get(Sentence):
-            token_entries = list(input_pack.get(
-                entry_type=Token, range_annotation=sentence,
-                components=self.token_component))
+            token_entries = list(
+                input_pack.get(
+                    entry_type=Token,
+                    range_annotation=sentence,
+                    components=self.token_component,
+                )
+            )
             tokens = [(token.text, token.pos) for token in token_entries]
             ne_tree = ne_chunk(tokens)
 
             index = 0
             for chunk in ne_tree:
-                if hasattr(chunk, 'label'):
+                if hasattr(chunk, "label"):
                     # For example:
                     # chunk: Tree('GPE', [('New', 'NNP'), ('York', 'NNP')])
                     begin_pos = token_entries[index].span.begin
@@ -326,5 +335,7 @@ class NLTKNER(PackProcessor):
         :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
         the pipeline.
         """
-        return {"ft.onto.base_ontology.Sentence": set(),
-                "ft.onto.base_ontology.Token": {"pos"}}
+        return {
+            "ft.onto.base_ontology.Sentence": set(),
+            "ft.onto.base_ontology.Token": {"pos"},
+        }

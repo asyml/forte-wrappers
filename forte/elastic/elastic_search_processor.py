@@ -15,19 +15,17 @@
 # pylint: disable=attribute-defined-outside-init
 from typing import Dict, Any
 
+from ft.onto.base_ontology import Document
+
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.data.multi_pack import MultiPack
 from forte.data.ontology.top import Query
 from forte.processors.base import MultiPackProcessor
-from ft.onto.base_ontology import Document
-
 from forte.elastic.elastic_indexer import ElasticSearchIndexer
 
-__all__ = [
-    "ElasticSearchProcessor"
-]
+__all__ = ["ElasticSearchProcessor"]
 
 
 class ElasticSearchProcessor(MultiPackProcessor):
@@ -62,13 +60,15 @@ class ElasticSearchProcessor(MultiPackProcessor):
                 Default is True.
         """
         config = super().default_configs()
-        config.update({
-            "query_pack_name": "query",
-            "index_config": ElasticSearchIndexer.default_configs(),
-            "field": "content",
-            "response_pack_name_prefix": "passage",
-            "indexed_text_only": True
-        })
+        config.update(
+            {
+                "query_pack_name": "query",
+                "index_config": ElasticSearchIndexer.default_configs(),
+                "field": "content",
+                "response_pack_name_prefix": "passage",
+                "indexed_text_only": True,
+            }
+        )
         return config
 
     def _process(self, input_pack: MultiPack):
@@ -91,7 +91,8 @@ class ElasticSearchProcessor(MultiPackProcessor):
         # TODO: until fix: https://github.com/PyCQA/pylint/issues/3507
         if not isinstance(first_query.value, Dict):
             raise ValueError(
-                "The query to the elastic indexer need to be a dictionary.")
+                "The query to the elastic indexer need to be a dictionary."
+            )
         results = self.index.search(first_query.value)
         hits = results["hits"]["hits"]
 
@@ -111,7 +112,8 @@ class ElasticSearchProcessor(MultiPackProcessor):
                 Document(pack=pack, begin=0, end=len(content))
 
             else:
-                pack = DataPack.deserialize(document['pack_info'])
+                pack = DataPack.deserialize(document["pack_info"])
                 input_pack.add_pack_(
-                    pack, f"{self.configs.response_pack_name_prefix}_{idx}")
+                    pack, f"{self.configs.response_pack_name_prefix}_{idx}"
+                )
                 pack.pack_name = document["doc_id"]
