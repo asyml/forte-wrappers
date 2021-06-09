@@ -17,6 +17,7 @@ import os
 
 import glob
 print(glob.glob("*"))
+print(glob.glob("../*"))
 
 with open(os.path.join("forte-wrappers", 'VERSION')) as version_file:
     version = version_file.read().strip()
