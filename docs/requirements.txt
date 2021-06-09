@@ -19,6 +19,9 @@ typing-inspect>=0.6.0
 # https://download.pytorch.org/whl/cpu/torch-1.3.0%2Bcpu-cp37-cp37m-linux_x86_64.whl
 torch>=1.6.0
 
+# Forte main
+git+https://git@github.com/asyml/forte#egg=forte
+
 git+https://git@github.com/asyml/forte-wrappers.git#egg=forte.nltk&subdirectory=src/nltk
 git+https://git@github.com/asyml/forte-wrappers.git#egg=forte.elastic&subdirectory=src/elastic
 git+https://git@github.com/asyml/forte-wrappers.git#egg=forte.faiss&subdirectory=src/faiss
