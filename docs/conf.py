@@ -15,7 +15,7 @@
 import sys
 import os
 
-with open(os.path.join(".", 'VERSION')) as version_file:
+with open(os.path.join("forte-wrappers", 'VERSION')) as version_file:
     version = version_file.read().strip()
 
 # from unittest.mock import MagicMock
