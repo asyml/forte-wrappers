@@ -21,7 +21,7 @@ import unittest
 from ddt import ddt, data, unpack
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
-from forte_wrapper.elastic import ElasticSearchIndexer
+from forte.elastic import ElasticSearchIndexer
 from helpers.test_utils import performance_test
 
 
@@ -30,33 +30,44 @@ class TestElasticSearchIndexer(unittest.TestCase):
     r"""Tests Elastic Indexer."""
 
     def setUp(self):
-        self.indexer = ElasticSearchIndexer(
-            config={"index_name": "test_index"})
+        self.indexer = ElasticSearchIndexer(config={"index_name": "test_index"})
 
     def tearDown(self):
         self.indexer.elasticsearch.indices.delete(
-            index=self.indexer.hparams.index_name, ignore=[400, 404])
+            index=self.indexer.hparams.index_name, ignore=[400, 404]
+        )
 
     def test_add(self):
-        document = {"key": "This document is created to test "
-                           "ElasticSearchIndexer"}
+        document = {
+            "key": "This document is created to test " "ElasticSearchIndexer"
+        }
         self.indexer.add(document, refresh="wait_for")
         retrieved_document = self.indexer.search(
-            query={"query": {"match": {"key": "ElasticSearchIndexer"}},
-                   "_source": ["key"]})
+            query={
+                "query": {"match": {"key": "ElasticSearchIndexer"}},
+                "_source": ["key"],
+            }
+        )
         hits = retrieved_document["hits"]["hits"]
         self.assertEqual(len(hits), 1)
         self.assertEqual(hits[0]["_source"], document)
 
     def test_add_bulk(self):
         size = 10000
-        documents = set([f"This document {i} is created to test "
-                         f"ElasticSearchIndexer" for i in range(size)])
-        self.indexer.add_bulk([{"key": document} for document in documents],
-                              refresh="wait_for")
+        documents = set(
+            [
+                f"This document {i} is created to test " f"ElasticSearchIndexer"
+                for i in range(size)
+            ]
+        )
+        self.indexer.add_bulk(
+            [{"key": document} for document in documents], refresh="wait_for"
+        )
         retrieved_document = self.indexer.search(
             query={"query": {"match_all": {}}},
-            index_name="test_index", size=size)
+            index_name="test_index",
+            size=size,
+        )
         hits = retrieved_document["hits"]["hits"]
         self.assertEqual(len(hits), size)
         results = set([hit["_source"]["key"] for hit in hits])
@@ -67,24 +78,34 @@ class TestElasticSearchIndexer(unittest.TestCase):
     @unpack
     def test_speed(self, size, epsilon):
         es = Elasticsearch()
-        documents = [{"_index": "test_index_",
-                      "_type": "document",
-                      "key": f"This document {i} is created to test "
-                             f"ElasticSearchIndexer"} for i in range(size)]
+        documents = [
+            {
+                "_index": "test_index_",
+                "_type": "document",
+                "key": f"This document {i} is created to test "
+                f"ElasticSearchIndexer",
+            }
+            for i in range(size)
+        ]
 
         start = time.time()
         bulk(es, documents, refresh=False)
         baseline = time.time() - start
         es.indices.delete(index="test_index_", ignore=[400, 404])
 
-        documents = set([f"This document {i} is created to test "
-                         f"ElasticSearchIndexer" for i in range(size)])
+        documents = set(
+            [
+                f"This document {i} is created to test " f"ElasticSearchIndexer"
+                for i in range(size)
+            ]
+        )
         start = time.time()
-        self.indexer.add_bulk([{"key": document} for document in documents],
-                              refresh=False)
+        self.indexer.add_bulk(
+            [{"key": document} for document in documents], refresh=False
+        )
         forte_time = time.time() - start
         self.assertLessEqual(forte_time, baseline + epsilon)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
