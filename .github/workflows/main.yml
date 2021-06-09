@@ -76,17 +76,15 @@ jobs:
         torch-version: [ 1.5.0 ]
         tensorflow-version: [ 1.15.0 ]
         test-details:
-          - { dep: allennlp, testfile: tests/wrappers/allennlp_processors_test.py }
+          - { dep: "nltk allennlp", testfile: tests/wrappers/allennlp_processors_test.py }
           - { dep: nltk, testfile: tests/wrappers/nltk_processors_test.py }
-          - { dep: "varder,nltk", testfile: tests/wrappers/sentiment_processor_test.py }
-          - { dep: spacy, testfile: tests/wrappers/spacy_processors_test.py }
+          - { dep: "vader nltk ", testfile: tests/wrappers/sentiment_processor_test.py }
+          #          - { dep: spacy, testfile: tests/wrappers/spacy_processors_test.py }
           - { dep: stanza, testfile: tests/wrappers/stanfordnlp_processor_test.py }
-          - { dep: "gpt2-example,nltk", testfile: examples/gpt2_test.py }
+          - { dep: "nltk gpt2", extra: "termcolor>=1.1.0", testfile: examples/gpt2_test.py }
           - { dep: elastic, testfile: tests/wrappers/elastic_indexers_test.py }
-          - { dep: faiss, testfile: tests/wrappers/faiss_indexers_test.py}
-          - { dep: elastic, testfile: tests/wrappers/elastic_indexers_test.py }
-          - { dep: "huggingface,nltk", testfile: tests/wrappers/zero_shot_classifier_processor_test.py }
-          - { dep: "huggingface,nltk", testfile: tests/wrappers/question_answering_processor_test.py }
+          - { dep: faiss, testfile: tests/wrappers/faiss_indexers_test.py }
+          - { dep: "huggingface nltk", testfile: tests/wrappers/huggingface }
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -109,9 +107,15 @@ jobs:
       - name: Install deep learning frameworks
         run: |
           pip install --progress-bar off torch==${{ matrix.torch-version }}
-      - name: Install the project
+      - name: Install the project dependencies
         run: |
-          pip install .[${{ matrix.test-details.dep}}]
+          # Install Wrappers
+          for d in ${{ matrix.test-details.dep }}; do pip install "forte/"$d; done
+          # Install Extras
+          if [ ! -z ${{ matrix.test-details.extra }} ]
+          then
+              pip install ${{ matrix.test-details.extra }}
+          fi
       - name: Start elastic server if test elastic search
         if: ${{ matrix.test-details.dep == 'elastic' }}
         run: |
@@ -148,7 +152,11 @@ jobs:
         run: |
           python -m pip install --progress-bar off --upgrade pip
           pip install --progress-bar off -r docs/requirements.txt
-          pip install .
+          # Install Wrappers
+          for dep in allennlp elastic faiss gpt2 huggingface nltk spacy stanza tweepy vader
+            do
+              pip install "forte/"$dep
+            done
       - name: Build Docs
         run: |
           cd docs

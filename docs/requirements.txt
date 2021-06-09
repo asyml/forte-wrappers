@@ -19,34 +19,3 @@ typing-inspect>=0.6.0
 # https://download.pytorch.org/whl/cpu/torch-1.3.0%2Bcpu-cp37-cp37m-linux_x86_64.whl
 torch>=1.6.0
 
-# Forte via source
-git+http://git@github.com/asyml/forte#egg=forte
-
-
-# faiss
-faiss-cpu>=1.6.1
-
-# elasticsearch
-elasticsearch==7.5.1
-
-# Transformers
-transformers>=3.1
-
-# NLTK
-nltk==3.4.5
-
-# Stanza
-stanza==1.2
-
-# AllenNLP
-allennlp==1.2.0
-more-itertools==8.7.0
-
-# Spacy
-spacy==2.1.8
-
-# Tweepy
-tweepy==3.10.0
-
-# Vader
-vaderSentiment==3.2.1
