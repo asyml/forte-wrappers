@@ -112,7 +112,7 @@ jobs:
           # Install Wrappers
           for dep in ${{ matrix.test-details.dep }}
             do
-              pip install "forte/"${{ dep }}
+              pip install "forte/"$dep
             done
           # Install Extras
           if [ ! -z ${{ matrix.test-details.extra }} ]
