@@ -12,10 +12,8 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys
 import os
-
-import glob
+import sys
 
 # We should be in the `docs` directory, so the VERSION is one step up.
 with open(os.path.join("..", 'VERSION')) as version_file:
