@@ -34,20 +34,34 @@ class TestZeroShotClassifier(unittest.TestCase):
         self.nlp.initialize()
 
     def test_huggingface_zero_shot_processor(self):
-        sentences = ["One day I will see the world.",
-                     "I will try out all types of the delicious cuisine!"]
-        document = ' '.join(sentences)
+        sentences = [
+            "One day I will see the world.",
+            "I will try out all types of the delicious cuisine!",
+        ]
+        document = " ".join(sentences)
         pack = self.nlp.process(document)
 
         # sentence: Sentence
-        expected_scores = [{'travel': 0.6254, 'exploration': 0.1733,
-                            'cooking': 0.0009, 'dancing': 0.0008},
-                           {'exploration': 0.89, 'cooking': 0.5343,
-                            'travel': 0.0069, 'dancing': 0.0016}]
+        expected_scores = [
+            {
+                "travel": 0.6254,
+                "exploration": 0.1733,
+                "cooking": 0.0009,
+                "dancing": 0.0008,
+            },
+            {
+                "exploration": 0.89,
+                "cooking": 0.5343,
+                "travel": 0.0069,
+                "dancing": 0.0016,
+            },
+        ]
         expected_tops = [get_top_scores_label(x) for x in expected_scores]
         for idx, sentence in enumerate(pack.get(Sentence)):
-            self.assertEqual(get_top_scores_label(sentence.classification),
-                             expected_tops[idx])
+            self.assertEqual(
+                get_top_scores_label(sentence.classification),
+                expected_tops[idx],
+            )
 
 
 if __name__ == "__main__":
