@@ -1,1 +1,1 @@
-from forte.twitter.twittersearch_processor import *
+from forte.tweepy.twittersearch_processor import *

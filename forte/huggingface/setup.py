@@ -6,18 +6,19 @@ if sys.version_info < (3, 6):
     sys.exit("Python>=3.6 is required by Forte.")
 
 setuptools.setup(
-    name="forte.spacy",
+    name="forte.huggingface",
     version="0.0.1",
-    url="https://github.com/asyml/forte_wrappers/spacy",
+    url="https://github.com/asyml/forte_wrappers/huggingface",
     description="Provide Forte implementations of a fantastic collection of "
     "NLP tools.",
     license="Apache License Version 2.0",
-    packages=["forte.spacy"],
+    packages=["forte.huggingface"],
     include_package_data=True,
     platforms="any",
     install_requires=[
         "forte @ git+https://git@github.com/asyml/forte.git",
-        "spacy>=2.3.0, <=2.3.5",
+        "more-itertools>=8.0.0",
+        "transformers >= 3.1",
     ],
     classifiers=[
         "Intended Audience :: Developers",

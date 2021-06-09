@@ -155,7 +155,11 @@ jobs:
         run: |
           python -m pip install --progress-bar off --upgrade pip
           pip install --progress-bar off -r docs/requirements.txt
-          pip install .
+          # Install Wrappers
+          for dep in allennlp elastic faiss gpt2 huggingface nltk spacy stanza tweepy vader
+            do
+              pip install "forte/"$dep
+            done
       - name: Build Docs
         run: |
           cd docs

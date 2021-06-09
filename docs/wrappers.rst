@@ -52,20 +52,20 @@ HuggingFace
 ===========
 :hidden:`HuggingFace Processors`
 --------------------------------
-.. autoclass:: forte.hugginface.ZeroShotClassifier
+.. autoclass:: forte.huggingface.ZeroShotClassifier
     :members:
-.. autoclass:: forte.hugginface.QuestionAnsweringSingle
+.. autoclass:: forte.huggingface.QuestionAnsweringSingle
     :members:
-.. autoclass:: forte.hugginface.BERTTokenizer
+.. autoclass:: forte.huggingface.BERTTokenizer
     :members:
-.. autoclass:: forte.hugginface.BioBERTNERPredictor
+.. autoclass:: forte.huggingface.BioBERTNERPredictor
     :members:
 
 Twitter
 =======
 :hidden:`Twitter Processors`
 ----------------------------
-.. autoclass:: forte.twitter.TweetSearchProcessor
+.. autoclass:: forte.tweepy.TweetSearchProcessor
     :members:
 
 Vader
