@@ -15,7 +15,7 @@ python:
     - method: pip
       path: forte/faiss
     - method: pip
-      path: forte/hugginface
+      path: forte/huggingface
     - method: pip
       path: forte/nltk
     - method: pip
