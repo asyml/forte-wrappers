@@ -16,10 +16,9 @@ import sys
 import os
 
 import glob
-print(glob.glob("*"))
-print(glob.glob("../*"))
 
-with open(os.path.join("forte-wrappers", 'VERSION')) as version_file:
+# We should be in the `docs` directory, so the VERSION is one step up.
+with open(os.path.join("..", 'VERSION')) as version_file:
     version = version_file.read().strip()
 
 # from unittest.mock import MagicMock
