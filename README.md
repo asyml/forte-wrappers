@@ -26,41 +26,51 @@ This project is part of the [CASL Open Source](http://casl-project.ai/) family.
 ```shell
 git clone https://github.com/asyml/forte-wrappers.git
 cd forte-wrappers
-pip install ."[allennlp]"
+pip install src/allennlp
 ```
 
 ### Libraries and Tools Supported
 
-- [NLTK](https://www.nltk.org/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/nltk))
+- [NLTK](https://www.nltk.org/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/src/nltk))
+    - `pip install src/nltk`
     - POS Tagger
     - Sentence Segmenter
     - Tokenizer
     - Lemmatizer
     - NER
-- [spaCy](https://spacy.io/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/spacy))
+- [spaCy](https://spacy.io/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/src/spacy))
+    - `pip install src/spacy`
     - Tokenizer, Lemmatizer and POS Tagging
     - NER
-- [AllenNLP](https://allennlp.org/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/allennlp))
+- [AllenNLP](https://allennlp.org/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/src/allennlp))
+    - `pip install src/allennlp`
     - Tokenizer, POS Tagging
     - Semantic Role Labeling
     - Dependency Parsing
-- [Stanza](https://stanfordnlp.github.io/stanza/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/stanza))
+- [Stanza](https://stanfordnlp.github.io/stanza/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/src/stanza))
+    - `pip install src/stanza`
     - Tokenization, POS Tagging, Lemmatizer
     - Dependency Parsing
 - [HuggingFace Models](https://huggingface.co/)
-    - [BioBERT NER](https://github.com/dmis-lab/biobert-pytorch) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/huggingface/biobert_ner))
-    - [Zero Shot Classifier](https://huggingface.co/models?pipeline_tag=zero-shot-classification)([Processors](https://github.com/asyml/forte-wrappers/blob/main/forte/hugginface/zero_shot_classifier.py))
-    - [Question Answering](https://huggingface.co/models?pipeline_tag=question-answering)([Processors](https://github.com/asyml/forte-wrappers/blob/main/forte/hugginface/question_and_answering_single.py))
-- [Vader Sentiment](https://github.com/cjhutto/vaderSentiment) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/vader))
+    - `pip install src/huggingface`
+    - [BioBERT NER](https://github.com/dmis-lab/biobert-pytorch) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/src/huggingface/forte/huggingface/biobert_ner))
+    - [Zero Shot Classifier](https://huggingface.co/models?pipeline_tag=zero-shot-classification)([Processors](https://github.com/asyml/forte-wrappers/blob/main/src/huggingface/forte/huggingface/zero_shot_classifier.py))
+    - [Question Answering](https://huggingface.co/models?pipeline_tag=question-answering)([Processors](https://github.com/asyml/forte-wrappers/blob/main/src/huggingface/forte/huggingface/question_and_answering_single.py))
+- [Vader Sentiment](https://github.com/cjhutto/vaderSentiment) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/src/vader))
+    - `pip install src/vader`
     - Sentiment Analysis
-- [Elastic Search](https://www.elastic.co/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/elastic))
+- [Elastic Search](https://www.elastic.co/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/src/elastic))
+    - `pip install src/elastic`
     - Elastic Indexer
     - Elastic Search
-- [Faiss](https://github.com/facebookresearch/faiss) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/faiss))
+- [Faiss](https://github.com/facebookresearch/faiss) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/src/faiss))
+    - `pip install src/faiss`
     - Faiss Indexer
-- [GPT2](https://openai.com/blog/gpt-2-1-5b-release/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/gpt2))
+- [GPT2](https://openai.com/blog/gpt-2-1-5b-release/) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/src/gpt2))
+    - `pip install src/gpt2`
     - GPT2 Text Generation
-- [Tweepy](https://docs.tweepy.org/en/latest/index.html) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/forte/twitter))
+- [Tweepy](https://docs.tweepy.org/en/latest/index.html) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/src/tweepy))
+    - `pip install src/tweepy`
     - TwitterAPI Search
 
 ### Contributing
