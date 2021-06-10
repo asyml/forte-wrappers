@@ -73,7 +73,6 @@ pip install src/allennlp
     - `pip install src/tweepy`
     - TwitterAPI Search
 
-
 ### Contributing
 
 If you are interested in making enhancement to this repository, Forte or other
