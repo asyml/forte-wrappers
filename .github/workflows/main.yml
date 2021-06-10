@@ -65,7 +65,10 @@ jobs:
           black --line-length 80 --check src/
       - name: Lint with mypy
         run: |
-          mypy .
+          for dep in allennlp elastic faiss gpt2 huggingface nltk spacy stanza tweepy vader
+            do
+              mypy "src/"$dep
+            done
 
   pytest:
     needs: [ build ]

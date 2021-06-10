@@ -30,4 +30,3 @@ git+https://git@github.com/asyml/forte-wrappers.git#egg=forte.spacy&subdirectory
 git+https://git@github.com/asyml/forte-wrappers.git#egg=forte.stanza&subdirectory=src/stanza
 git+https://git@github.com/asyml/forte-wrappers.git#egg=forte.tweepy&subdirectory=src/tweepy
 git+https://git@github.com/asyml/forte-wrappers.git#egg=forte.vader&subdirectory=src/vader
-
