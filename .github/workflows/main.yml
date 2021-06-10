@@ -65,7 +65,7 @@ jobs:
           black --line-length 80 --check src/
       - name: Lint with mypy
         run: |
-          mypy --config-file mypy.ini examples/ src/ tests/
+          mypy --config-file mypy.ini -p src/ tests/
 
   pytest:
     needs: [ build ]
