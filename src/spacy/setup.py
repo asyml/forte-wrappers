@@ -18,6 +18,7 @@ setuptools.setup(
     install_requires=[
         "forte @ git+https://git@github.com/asyml/forte.git",
         "spacy>=2.3.0, <=2.3.5",
+        "scispacy==0.3.0",
     ],
     classifiers=[
         "Intended Audience :: Developers",
