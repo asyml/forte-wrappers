@@ -73,9 +73,6 @@ pip install src/allennlp
     - `pip install src/tweepy`
     - TwitterAPI Search
 
-- [Tweepy](https://docs.tweepy.org/en/latest/index.html) ([Processors](https://github.com/asyml/forte-wrappers/tree/main/src/tweepy))
-    - `pip install src/tweepy`
-    - TwitterAPI Search
 
 ### Contributing
 
