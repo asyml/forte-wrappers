@@ -85,9 +85,10 @@ jobs:
           - { dep: spacy, testfile: tests/wrappers/spacy_processors_test.py }
           - { dep: stanza, testfile: tests/wrappers/stanfordnlp_processor_test.py }
           - { dep: "nltk gpt2", extra: "termcolor>=1.1.0", testfile: examples/gpt2_test.py }
-          - { dep: elastic, testfile: tests/wrappers/elastic_indexers_test.py }
+          - { dep: elastic, testfile: tests/wrappers/elastic }
           - { dep: faiss, testfile: tests/wrappers/faiss_indexers_test.py }
           - { dep: "huggingface nltk", testfile: tests/wrappers/huggingface }
+          - { dep: tweepy, testfile: tests/wrappers/twitter_processor_test.py }
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
