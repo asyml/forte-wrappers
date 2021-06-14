@@ -20,7 +20,7 @@ import unittest
 from forte.data.data_pack import DataPack
 from forte.pipeline import Pipeline
 from forte.data.readers import StringReader
-from forte_wrapper.stanza import StandfordNLPProcessor
+from forte.stanza import StandfordNLPProcessor
 
 
 class TestStanfordNLPProcessor(unittest.TestCase):
@@ -31,18 +31,18 @@ class TestStanfordNLPProcessor(unittest.TestCase):
             "processors": "tokenize",
             "lang": "en",
             # Language code for the language to build the Pipeline
-            "use_gpu": False
+            "use_gpu": False,
         }
-        self.stanford_nlp.add(StandfordNLPProcessor(),
-                              config=config)
+        self.stanford_nlp.add(StandfordNLPProcessor(), config=config)
         self.stanford_nlp.initialize()
 
     def test_stanford_processor(self):
-        sentences = ["This tool is called Forte.",
-                     "The goal of this project to help you build NLP "
-                     "pipelines.",
-                     "NLP has never been made this easy before."]
-        document = ' '.join(sentences)
+        sentences = [
+            "This tool is called Forte.",
+            "The goal of this project to help you build NLP " "pipelines.",
+            "NLP has never been made this easy before.",
+        ]
+        document = " ".join(sentences)
         self.stanford_nlp.process(document)
 
 

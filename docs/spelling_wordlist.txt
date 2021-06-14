@@ -154,8 +154,10 @@ lemmatization
 tokenize
 Cython
 github
-hugginface
+huggingface
 nli
 subword
 Subword
 subwords
+Tweepy
+Hutto
