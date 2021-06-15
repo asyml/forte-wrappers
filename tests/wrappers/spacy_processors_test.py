@@ -21,7 +21,7 @@ from ddt import ddt, data
 import spacy
 from spacy.language import Language
 
-from forte.common import ProcessExecutionException, ProcessorConfigError
+from forte.common import ProcessorConfigError
 from forte.data.data_pack import DataPack
 from forte.data.readers import StringReader
 from forte.pipeline import Pipeline
