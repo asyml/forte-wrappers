@@ -15,7 +15,6 @@
 Wrapper of the Question Answering models on HuggingFace platform (context
 understanding)
 """
-import importlib
 from typing import Dict, Set
 
 from transformers import pipeline
