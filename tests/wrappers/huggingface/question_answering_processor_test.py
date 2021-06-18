@@ -22,7 +22,6 @@ from forte.data.readers import StringReader
 from forte.huggingface.question_and_answering_single import (
     QuestionAnsweringSingle,
 )
-
 from ft.onto.base_ontology import Phrase
 
 
