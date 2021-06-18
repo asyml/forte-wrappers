@@ -61,9 +61,6 @@ class QuestionAnsweringMulti(MultiPackProcessor):
         self.set_up()
 
     def _process(self, input_pack: MultiPack):
-        path_str, module_str = self.configs.entry_type.rsplit(".", 1)
-        mod = importlib.import_module(path_str)
-        entry = getattr(mod, module_str)
         context_list = list()
         doc_id_list = list()
         for doc_id in input_pack.pack_names:
@@ -71,11 +68,11 @@ class QuestionAnsweringMulti(MultiPackProcessor):
                 continue
 
             pack = input_pack.get_pack(doc_id)
-            context_list.append(list(pack.get(entry))[0].text)
+            context_list.append(pack.get_single(self.configs.entry_type).text)
             doc_id_list.append(doc_id)
 
         question_pack = input_pack.get_pack(self.configs.question_pack_name)
-        first_question = list(question_pack.get(Sentence))[0]
+        first_question = question_pack.get_single(Sentence)
         question_list = [question_pack.text for i in range(len(context_list))]
         result_collection = self.extractor(
             context=context_list,

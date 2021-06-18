@@ -15,7 +15,6 @@
 Unit tests for QuestionAnswering processors.
 """
 import unittest
-
 from forte.pipeline import Pipeline
 from forte.data.caster import MultiPackBoxer
 from forte.data.readers import StringReader
@@ -90,9 +89,9 @@ class TestQuestionAnsweringMulti(unittest.TestCase):
         question = "Name synonym of Acrokeratosis paraneoplastica."
         packs: MultiPack = self.nlp.process(question)
         expected_ans = {
-            "doc_1": "(Bazex syndrome):",
+            "doc_1": "Bazex syndrome",
             "doc_2": "Bazex syndrome",
-            "doc_3": "(Bazex syndrome)",
+            "doc_3": "Bazex syndrome",
         }
         for doc_id in packs.pack_names:
             if doc_id == "question":
