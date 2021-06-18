@@ -156,7 +156,7 @@ class TextGenerationProcessor(MultiPackBatchProcessor):
         sentences = []
         complete_sentences = []
         for i in range(instance_num):
-            si = sample_id[i][context_length[i] :]
+            si = sample_id[i][context_length[i]:]
             sentences.append(self.word_processor.map_id_to_text(si.tolist()))
             si = sample_id[i]
             complete_sentences.append(
