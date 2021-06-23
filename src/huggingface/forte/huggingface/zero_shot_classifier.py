@@ -149,4 +149,7 @@ class ZeroShotClassifier(PackProcessor):
             record_meta: the field in the datapack for type record that need to
                 fill in for consistency checking.
         """
-        record_meta[self.configs.entry_type].add(self.configs.attribute_name)
+        if self.configs.entry_type in record_meta:
+            record_meta[self.configs.entry_type].add(self.configs.attribute_name)
+        else:
+            record_meta[self.configs.entry_type] = {self.configs.attribute_name}
