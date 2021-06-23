@@ -20,48 +20,57 @@ from forte.data.data_pack import DataPack
 from forte.pipeline import Pipeline
 from forte.data.readers import StringReader
 from forte.nltk import NLTKSentenceSegmenter
-from forte.huggingface.import ZeroShotClassifier
+from forte.huggingface import TokenClassification
 from ft.onto.base_ontology import Sentence
-from helpers.test_utils import get_top_scores_label
+
 
 
 class TestTokenClassification(unittest.TestCase):
-    def setUp(self):
-        self.nlp = Pipeline[DataPack](enforce_consistency=True)
-        self.nlp.set_reader(StringReader())
-        self.nlp.add(NLTKSentenceSegmenter())
-        self.nlp.add(ZeroShotClassifier())
-        self.nlp.initialize()
 
-    def test_huggingface_zero_shot_processor(self):
+
+    def test_huggingface_ner_token_classification(self):
+        nlp = Pipeline[DataPack](enforce_consistency=True)
+        nlp.set_reader(StringReader())
+        nlp.add(NLTKSentenceSegmenter())
+        token_config = {
+            "entry_type": "ft.onto.base_ontology.Sentence",
+            "output_entry_type": "ft.onto.base_ontology.EntityMention",
+            "attribute_name": "ner", # "pos"
+            'strategy': 'bio-merge', #'no_merge', # 'bio-merge'
+            "model_name": 'dslim/bert-base-NER',
+            "tokenizer": 'dslim/bert-base-NER',
+            "framework": "pt",
+        }
+        nlp.add(TokenClassification(), config=token_config)
+        nlp.initialize()
         sentences = [
-            "One day I will see the world.",
-            "I will try out all types of the delicious cuisine!",
+            "My name is Wolfgang and I live in Berlin. "
+            "His name is Chris and he lives in Hawaii Island."
         ]
-        document = " ".join(sentences)
-        pack = self.nlp.process(document)
+        # document = " ".join(sentences)
+        # pack = self.nlp.process(document)
+        pack = nlp.process(sentences)
 
-        # sentence: Sentence
-        expected_scores = [
-            {
-                "travel": 0.6254,
-                "exploration": 0.1733,
-                "cooking": 0.0009,
-                "dancing": 0.0008,
-            },
-            {
-                "exploration": 0.89,
-                "cooking": 0.5343,
-                "travel": 0.0069,
-                "dancing": 0.0016,
-            },
-        ]
-        expected_tops = [get_top_scores_label(x) for x in expected_scores]
-        for idx, sentence in enumerate(pack.get(Sentence)):
-            self.assertEqual(
-                get_top_scores_label(sentence.classification),
-                expected_tops[idx],
-            )
+        # expected_type = [['PER', 'LOC']]
+        # expected_index = [[(12, 17), (34, 47)]]
+        expected_type = [['PER', 'LOC'], ['PER', 'LOC']]
+        expected_index = [[(11, 19), (34, 40)], [(54, 59), (76, 89)]]
+
+        for entry_idx, entry in enumerate(pack.get(token_config["entry_type"])):
+            # print(entry.text)
+            for idx, token in enumerate(pack.get(entry_type=token_config["output_entry_type"], range_annotation=entry)):
+                # print(entry_idx, idx, token.ner_type, token.begin, token.end)
+
+
+                # print('=====', entry_idx, idx)
+                print(token.ner_type, expected_type[entry_idx][idx])
+                print(token.begin, expected_index[entry_idx][idx][0])
+                print(token.end, expected_index[entry_idx][idx][1])
+
+
+                self.assertEqual(token.ner_type, expected_type[entry_idx][idx])
+                self.assertEqual(token.begin, expected_index[entry_idx][idx][0])
+                self.assertEqual(token.end, expected_index[entry_idx][idx][1])
 
 
 if __name__ == "__main__":
