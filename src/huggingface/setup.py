@@ -18,7 +18,7 @@ setuptools.setup(
     install_requires=[
         "forte @ git+https://git@github.com/asyml/forte.git",
         "more-itertools>=8.0.0",
-        "transformers >= 3.1",
+        "transformers >= 4.2",
     ],
     classifiers=[
         "Intended Audience :: Developers",
