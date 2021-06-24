@@ -24,6 +24,7 @@ from forte.common import Resources
 from forte.common.configuration import Config
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
+from forte.common import ProcessorConfigError
 from forte.utils.tagging_scheme import bio_merge
 
 __all__ = [
@@ -69,7 +70,6 @@ class TokenClassification(PackProcessor):
         Returns:
         """
         input_path_str, input_module_str = self.configs.entry_type.rsplit(".", 1)
-
         mod = importlib.import_module(input_path_str)
         input_entry = getattr(mod, input_module_str)
 
@@ -93,11 +93,7 @@ class TokenClassification(PackProcessor):
                     result_types.append(token["entity"])
                     result_indices.append((start, end))
 
-            for idx in range(len(result_types)):
-                type = result_types[idx]
-                start = result_indices[idx][0]
-                end = result_indices[idx][1]
-
+            for type, (start, end) in zip(result_types, result_indices):
                 entity = output_entry(
                     pack=input_pack,
                     begin=entry_specified.span.begin + int(start),
@@ -110,22 +106,24 @@ class TokenClassification(PackProcessor):
                     else:
                         try:
                             entity.ner = type
-                        except:
-                            raise ValueError(
+                        except KeyError as exc:
+                            raise ProcessorConfigError(
                                 f"NER type was not stored in the given "
-                                f"'output_entry_type': {self.configs.output_entry_type}."
+                                f"'output_entry_type': "
+                                f"{self.configs.output_entry_type}."
                                 f"EntityMention or Token was recommended."
-                            )
+                            ) from exc
 
                 if self.configs.task == "pos":
                     try:
                         entity.pos = type
-                    except:
-                        raise ValueError(
+                    except KeyError as exc:
+                        raise ProcessorConfigError(
                             f"POS type was not stored in the given "
-                            f"'output_entry_type': {self.configs.output_entry_type}."
+                            f"'output_entry_type': "
+                            f"{self.configs.output_entry_type}."
                             f"Token was recommended."
-                        )
+                        ) from exc
 
     def _merge_bio_tokens(self, tokens):
         """Perform token merge on BIO tagging format.
