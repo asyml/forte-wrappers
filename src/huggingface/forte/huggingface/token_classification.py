@@ -69,15 +69,15 @@ class TokenClassification(PackProcessor):
             input_pack: Input pack to fill
         Returns:
         """
-        input_path_str, input_module_str = self.configs.entry_type.rsplit(".", 1)
-        mod = importlib.import_module(input_path_str)
-        input_entry = getattr(mod, input_module_str)
+        input_path, input_module = self.configs.entry_type.rsplit(".", 1)
+        mod = importlib.import_module(input_path)
+        input_entry = getattr(mod, input_module)
 
-        output_path_str, output_module_str = self.configs.output_entry_type.rsplit(
+        output_path, output_module = self.configs.output_entry_type.rsplit(
             ".", 1
         )
-        mod = importlib.import_module(output_path_str)
-        output_entry = getattr(mod, output_module_str)
+        mod = importlib.import_module(output_path)
+        output_entry = getattr(mod, output_module)
 
         for entry_specified in input_pack.get(entry_type=input_entry):
             result = self.classifier(entry_specified.text)
@@ -88,7 +88,7 @@ class TokenClassification(PackProcessor):
             else:
                 result_indices = []
                 result_types = []
-                for idx, token in enumerate(result):
+                for token in result:
                     start, end = token["start"], token["end"]
                     result_types.append(token["entity"])
                     result_indices.append((start, end))
@@ -101,7 +101,7 @@ class TokenClassification(PackProcessor):
                 )
 
                 if self.configs.task == "ner":
-                    if output_module_str == "EntityMention":
+                    if output_module == "EntityMention":
                         entity.ner_type = type
                     else:
                         try:

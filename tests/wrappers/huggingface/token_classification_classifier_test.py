@@ -52,7 +52,8 @@ class TestTokenClassification(unittest.TestCase):
         for entry_idx, entry in enumerate(pack.get(token_config["entry_type"])):
             for idx, token in enumerate(
                 pack.get(
-                    entry_type=token_config["output_entry_type"], range_annotation=entry
+                    entry_type=token_config["output_entry_type"],
+                    range_annotation=entry,
                 )
             ):
 
@@ -85,7 +86,8 @@ class TestTokenClassification(unittest.TestCase):
         for entry_idx, entry in enumerate(pack.get(token_config["entry_type"])):
             for idx, token in enumerate(
                 pack.get(
-                    entry_type=token_config["output_entry_type"], range_annotation=entry
+                    entry_type=token_config["output_entry_type"],
+                    range_annotation=entry,
                 )
             ):
 
@@ -148,7 +150,8 @@ class TestTokenClassification(unittest.TestCase):
         for entry_idx, entry in enumerate(pack.get(token_config["entry_type"])):
             for idx, token in enumerate(
                 pack.get(
-                    entry_type=token_config["output_entry_type"], range_annotation=entry
+                    entry_type=token_config["output_entry_type"],
+                    range_annotation=entry,
                 )
             ):
                 self.assertEqual(token.pos, expected_type[entry_idx][idx])
@@ -180,7 +183,8 @@ class TestTokenClassification(unittest.TestCase):
         for entry_idx, entry in enumerate(pack.get(token_config["entry_type"])):
             for idx, token in enumerate(
                 pack.get(
-                    entry_type=token_config["output_entry_type"], range_annotation=entry
+                    entry_type=token_config["output_entry_type"],
+                    range_annotation=entry,
                 )
             ):
                 self.assertEqual(token.ner_type, expected_type[entry_idx][idx])
@@ -224,7 +228,8 @@ class TestTokenClassification(unittest.TestCase):
         for entry_idx, entry in enumerate(pack.get(token_config["entry_type"])):
             for idx, token in enumerate(
                 pack.get(
-                    entry_type=token_config["output_entry_type"], range_annotation=entry
+                    entry_type=token_config["output_entry_type"],
+                    range_annotation=entry,
                 )
             ):
                 self.assertEqual(token.begin, expected_index[entry_idx][idx][0])
