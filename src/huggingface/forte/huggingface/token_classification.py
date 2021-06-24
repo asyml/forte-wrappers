@@ -93,8 +93,6 @@ class TokenClassification(PackProcessor):
                     result_types.append(token["entity"])
                     result_indices.append((start, end))
 
-            print(result_types, result_indices)
-
             for idx in range(len(result_types)):
                 type = result_types[idx]
                 start = result_indices[idx][0]
