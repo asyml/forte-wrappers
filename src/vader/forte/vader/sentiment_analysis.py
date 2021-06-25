@@ -105,4 +105,4 @@ class VaderSentimentProcessor(PackProcessor):
         :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
         the pipeline.
         """
-        return {self.default_configs()["entry_type"]: set()}
+        return {self.configs["entry_type"]: set()}
