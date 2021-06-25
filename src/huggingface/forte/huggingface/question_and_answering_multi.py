@@ -15,8 +15,6 @@
 Wrapper of the Question Answering models on HuggingFace platform (context
 understanding)
 """
-from typing import Dict, Set
-
 from transformers import pipeline
 from ft.onto.base_ontology import Phrase, Sentence
 
@@ -36,9 +34,9 @@ class QuestionAnsweringMulti(MultiPackProcessor):
     https://huggingface.co/models?pipeline_tag=question-answering
     This wrapper could take any model name on HuggingFace platform with pipeline
     tag of `question-answering` in configs to make prediction on the context of
-    user specified entry type in the input pack and the prediction result would
-    be annotated as `Phrase` in the output pack. User could input the question
-    in the config.
+    user specified entry type in the multiple input pack and the prediction
+    result would be annotated as `Phrase` in the output pack, which would be
+    linked to the question pack by `MultiPackLink`.
     """
 
     def __init__(self):
@@ -123,25 +121,3 @@ class QuestionAnsweringMulti(MultiPackProcessor):
         )
         return config
 
-    @classmethod
-    def expected_types_and_attributes(cls):
-        r"""Method to add user specified expected type which
-        would be checked before running the processor if
-        the pipeline is initialized with
-        `enforce_consistency=True` or
-        :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
-        the pipeline.
-        """
-        return {cls().default_configs()["entry_type"]: set()}
-
-    def record(self, record_meta: Dict[str, Set[str]]):
-        r"""Method to add output type record of `QuestionAnsweringSingle` which
-        is `"ft.onto.base_ontology.Phrase"`
-        to :attr:`forte.data.data_pack.Meta.record`.
-
-        Args:
-            record_meta: the field in the datapack for type record that need to
-                fill in for consistency checking.
-        """
-        if "ft.onto.base_ontology.Phrase" not in record_meta.keys():
-            record_meta["ft.onto.base_ontology.Phrase"] = set()

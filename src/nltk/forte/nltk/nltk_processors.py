@@ -89,8 +89,7 @@ class NLTKPOSTagger(PackProcessor):
         """
         record_meta["ft.onto.base_ontology.Token"].add("pos")
 
-    @classmethod
-    def expected_types_and_attributes(cls):
+    def expected_types_and_attributes(self):
         r"""Method to add expected type `ft.onto.base_ontology.Token` for input
         which would be checked before running the processor if
         the pipeline is initialized with
@@ -143,8 +142,7 @@ class NLTKLemmatizer(PackProcessor):
         """
         record_meta["ft.onto.base_ontology.Token"].add("lemma")
 
-    @classmethod
-    def expected_types_and_attributes(cls):
+    def expected_types_and_attributes(self):
         r"""Method to add expected type `ft.onto.base_ontology.Token` with
         attribute `pos` which
         would be checked before running the processor if
@@ -232,8 +230,7 @@ class NLTKChunker(PackProcessor):
         """
         record_meta["ft.onto.base_ontology.Phrase"] = {"phrase_type"}
 
-    @classmethod
-    def expected_types_and_attributes(cls):
+    def expected_types_and_attributes(self):
         r"""Method to add expected type ft.onto.base_ontology.Token` with
         attribute `pos` and `ft.onto.base_ontology.Sentence` which
         would be checked before running the processor if
@@ -325,8 +322,7 @@ class NLTKNER(PackProcessor):
         """
         record_meta["ft.onto.base_ontology.EntityMention"] = {"ner_type"}
 
-    @classmethod
-    def expected_types_and_attributes(cls):
+    def expected_types_and_attributes(self):
         r"""Method to add expected type ft.onto.base_ontology.Token` with
         attribute `pos` and `ft.onto.base_ontology.Sentence` which
         would be checked before running the processor if
