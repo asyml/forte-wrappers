@@ -32,7 +32,8 @@ class TestTokenClassification(unittest.TestCase):
             "entry_type": "ft.onto.base_ontology.Sentence",
             "output_entry_type": "ft.onto.base_ontology.EntityMention",
             "task": "ner",
-            "strategy": "bio-merge",
+            "attribute_name": "ner_type",
+            "tagging_scheme": "bio-merge",
             "model_name": "dslim/bert-base-NER",
             "tokenizer": "dslim/bert-base-NER",
             "framework": "pt",
@@ -57,7 +58,8 @@ class TestTokenClassification(unittest.TestCase):
                 )
             ):
 
-                self.assertEqual(token.ner_type, expected_type[entry_idx][idx])
+                token_type = getattr(token, token_config["attribute_name"])
+                self.assertEqual(token_type, expected_type[entry_idx][idx])
                 self.assertEqual(token.begin, expected_index[entry_idx][idx][0])
                 self.assertEqual(token.end, expected_index[entry_idx][idx][1])
 
@@ -69,7 +71,8 @@ class TestTokenClassification(unittest.TestCase):
             "entry_type": "ft.onto.base_ontology.Sentence",
             "output_entry_type": "ft.onto.base_ontology.EntityMention",
             "task": "ner",  # "pos"
-            "strategy": "no_merge",  # 'bio-merge'
+            "attribute_name": "ner_type",
+            "tagging_scheme": "no-merge",  # 'bio-merge'
             "model_name": "jplu/tf-xlm-r-ner-40-lang",
             "tokenizer": "jplu/tf-xlm-r-ner-40-lang",
             "framework": "tf",
@@ -91,19 +94,21 @@ class TestTokenClassification(unittest.TestCase):
                 )
             ):
 
-                self.assertEqual(token.ner_type, expected_type[entry_idx][idx])
+                token_type = getattr(token, token_config["attribute_name"])
+                self.assertEqual(token_type, expected_type[entry_idx][idx])
                 self.assertEqual(token.begin, expected_index[entry_idx][idx][0])
                 self.assertEqual(token.end, expected_index[entry_idx][idx][1])
 
     def test_huggingface_pos_token_classification(self):
-        nlp = Pipeline[DataPack]()
+        nlp = Pipeline[DataPack](enforce_consistency=True)
         nlp.set_reader(StringReader())
         nlp.add(NLTKSentenceSegmenter())
         token_config = {
             "entry_type": "ft.onto.base_ontology.Sentence",
             "output_entry_type": "ft.onto.base_ontology.Token",
             "task": "pos",
-            "strategy": "no_merge",
+            "attribute_name": "pos",
+            "tagging_scheme": "no-merge",
             "model_name": "vblagoje/bert-english-uncased-finetuned-pos",
             "tokenizer": "vblagoje/bert-english-uncased-finetuned-pos",
             "framework": "pt",
@@ -154,19 +159,21 @@ class TestTokenClassification(unittest.TestCase):
                     range_annotation=entry,
                 )
             ):
-                self.assertEqual(token.pos, expected_type[entry_idx][idx])
+                token_type = getattr(token, token_config["attribute_name"])
+                self.assertEqual(token_type, expected_type[entry_idx][idx])
                 self.assertEqual(token.begin, expected_index[entry_idx][idx][0])
                 self.assertEqual(token.end, expected_index[entry_idx][idx][1])
 
     def test_huggingface_ner_doc_token_classification(self):
-        nlp = Pipeline[DataPack]()
+        nlp = Pipeline[DataPack](enforce_consistency=True)
         nlp.set_reader(StringReader())
 
         token_config = {
             "entry_type": "ft.onto.base_ontology.Document",
             "output_entry_type": "ft.onto.base_ontology.EntityMention",
             "task": "ner",  # "pos"
-            "strategy": "no_merge",  # 'bio-merge'
+            "attribute_name": "ner_type",
+            "tagging_scheme": "no-merge",  # 'bio-merge'
             "model_name": "jplu/tf-xlm-r-ner-40-lang",
             "tokenizer": "jplu/tf-xlm-r-ner-40-lang",
             "framework": "tf",
@@ -187,19 +194,22 @@ class TestTokenClassification(unittest.TestCase):
                     range_annotation=entry,
                 )
             ):
-                self.assertEqual(token.ner_type, expected_type[entry_idx][idx])
+                # self.assertEqual(token.ner_type, expected_type[entry_idx][idx])
+                token_type = getattr(token, token_config["attribute_name"])
+                self.assertEqual(token_type, expected_type[entry_idx][idx])
                 self.assertEqual(token.begin, expected_index[entry_idx][idx][0])
                 self.assertEqual(token.end, expected_index[entry_idx][idx][1])
 
     def test_huggingface_ws_token_classification(self):
-        nlp = Pipeline[DataPack]()
+        nlp = Pipeline[DataPack](enforce_consistency=True)
         nlp.set_reader(StringReader())
         nlp.add(NLTKSentenceSegmenter())
         token_config = {
             "entry_type": "ft.onto.base_ontology.Sentence",
             "output_entry_type": "ft.onto.base_ontology.Token",
             "task": "ws",
-            "strategy": "bio-merge",
+            "attribute_name": "word_segment",
+            "tagging_scheme": "bio-merge",
             "model_name": "ckiplab/bert-base-chinese-ws",
             "tokenizer": "ckiplab/bert-base-chinese-ws",
             "framework": "pt",

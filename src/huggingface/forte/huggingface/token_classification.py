@@ -17,7 +17,7 @@ understanding)
 """
 import importlib
 import re
-from typing import Dict, Set
+from typing import Dict, Set, List, Optional, Tuple, Any
 from transformers import pipeline
 
 from forte.common import Resources
@@ -26,6 +26,7 @@ from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
 from forte.common import ProcessorConfigError
 from forte.utils.tagging_scheme import bio_merge
+from forte.utils import get_class
 
 __all__ = [
     "TokenClassification",
@@ -36,12 +37,13 @@ class TokenClassification(PackProcessor):
     r"""Wrapper of the models on HuggingFace platform with pipeline tag of
     `ner`.
     https://huggingface.co/models?pipeline_tag=token-classification
-    This wrapper could take any model name on HuggingFace platform with pipeline
-    tag of `ner` in configs to make prediction on the user
-    specified entry type in the input pack and the prediction result goes to the
-    user specified attribute name of that entry type in the output pack. User
-    could provide task and models in the config to perform NER, POS,
-    word segmentation task, etc.
+    This wrapper could take the models on HuggingFace platform with pipeline
+    tag of `ner` to make prediction on token classification tasks, for example,
+    NER, POS tagging, word segmentation, etc.
+    This processor takes user specified entry type in the input pack and the
+    prediction result goes to the user specified attribute name of that entry
+    type in the data pack. Please refer to the `default_config` function for
+    more information.
 
     """
 
@@ -49,7 +51,8 @@ class TokenClassification(PackProcessor):
         super().__init__()
         self.classifier = None
 
-    def set_up(self):
+    def initialize(self, resources: Resources, configs: Config):
+        super().initialize(resources, configs)
         self.classifier = pipeline(
             "ner",
             model=self.configs.model_name,
@@ -58,10 +61,6 @@ class TokenClassification(PackProcessor):
             device=self.configs.cuda_device,
         )
 
-    def initialize(self, resources: Resources, configs: Config):
-        super().initialize(resources, configs)
-        self.set_up()
-
     def _process(self, input_pack: DataPack):
         """Perform HuggingFace NER Pipeline on the input data pack.
 
@@ -69,29 +68,30 @@ class TokenClassification(PackProcessor):
             input_pack: Input pack to fill
         Returns:
         """
-        input_path, input_module = self.configs.entry_type.rsplit(".", 1)
-        mod = importlib.import_module(input_path)
-        input_entry = getattr(mod, input_module)
+        if not self.configs.entry_type:
+            raise ProcessorConfigError("Please specify an input entry type!")
 
-        output_path, output_module = self.configs.output_entry_type.rsplit(
-            ".", 1
-        )
-        mod = importlib.import_module(output_path)
-        output_entry = getattr(mod, output_module)
+        input_entry = get_class(self.configs.entry_type)
+        output_entry = get_class(self.configs.output_entry_type)
 
         for entry_specified in input_pack.get(entry_type=input_entry):
             result = self.classifier(entry_specified.text)
 
-            if self.configs.strategy == "bio-merge":  # Merge BIO tagging
+            if self.configs.tagging_scheme == "bio-merge":  # Merge BIO tagging
                 result_types, result_indices = self._merge_bio_tokens(result)
 
-            else:
+            elif self.configs.tagging_scheme == "no-merge":
                 result_indices = []
                 result_types = []
                 for token in result:
                     start, end = token["start"], token["end"]
                     result_types.append(token["entity"])
                     result_indices.append((start, end))
+            else:
+                raise ProcessorConfigError(
+                    f"The tagging_scheme strategy {self.configs.tagging_scheme}"
+                    f"was not defined. Please check your input config."
+                )
 
             for type, (start, end) in zip(result_types, result_indices):
                 entity = output_entry(
@@ -99,33 +99,11 @@ class TokenClassification(PackProcessor):
                     begin=entry_specified.span.begin + int(start),
                     end=entry_specified.span.begin + int(end),
                 )
+                setattr(entity, self.configs.attribute_name, type)
 
-                if self.configs.task == "ner":
-                    if output_module == "EntityMention":
-                        entity.ner_type = type
-                    else:
-                        try:
-                            entity.ner = type
-                        except KeyError as exc:
-                            raise ProcessorConfigError(
-                                f"NER type was not stored in the given "
-                                f"'output_entry_type': "
-                                f"{self.configs.output_entry_type}."
-                                f"EntityMention or Token was recommended."
-                            ) from exc
-
-                if self.configs.task == "pos":
-                    try:
-                        entity.pos = type
-                    except KeyError as exc:
-                        raise ProcessorConfigError(
-                            f"POS type was not stored in the given "
-                            f"'output_entry_type': "
-                            f"{self.configs.output_entry_type}."
-                            f"Token was recommended."
-                        ) from exc
-
-    def _merge_bio_tokens(self, tokens):
+    def _merge_bio_tokens(
+        self, tokens: List[Dict[str, Any]]
+    ) -> Tuple[List[Optional[str]], List[Tuple[int, int]]]:
         """Perform token merge on BIO tagging format.
 
         Args:
@@ -137,7 +115,8 @@ class TokenClassification(PackProcessor):
         """
         indices = [(token["start"], token["end"]) for token in tokens]
 
-        tags, types = [], []
+        tags: List[str] = []
+        types: List[str] = []
 
         for token in tokens:
             if re.match("^[B|I]-.*", token["entity"]):
@@ -150,12 +129,11 @@ class TokenClassification(PackProcessor):
             types.append(type)
 
         result_types, result_indices = bio_merge(tags, types, indices)
-
         return result_types, result_indices
 
     @classmethod
     def default_configs(cls):
-        r"""This defines a basic config structure for ZeroShotClassifier.
+        r"""This defines a basic config structure for TokenClassification.
 
         Following are the keys for this dictionary:
             - `entry_type`: defines which entry type in the input pack to make
@@ -165,19 +143,25 @@ class TokenClassification(PackProcessor):
               that the prediction should be saved as output. The default
               saves prediction on `Token` in the input pack.
             - `task`: defines the nlp task, for example, "ner", "pos", "ws".
-            - `strategy`: defines the result merged strategy, for example,
-              "no_merge" to output the original result, "bio-merge" to merge
-              the BIO tagging format result. The default is "no_merge".
+            - `attribute_name`: defines which attribute of the
+              `output_entry_type` in the input pack to save prediction to.
+              The default saves prediction to the `ner` attribute for each
+              `output_entry_type` in the input pack.
+            - `tagging_scheme`: defines the result merged tagging_scheme,
+              for example, "no-merge" to output the original result,
+              "bio-merge" to merge the BIO tagging format result.
+              The default is "no-merge".
             - `model_name`: language model, default is `"dslim/bert-base-NER"`.
               The wrapper supports HuggingFace models with pipeline tag of
               `ner`.
             - `tokenizer`: language model for tokenization, default is
               `"dslim/bert-base-NER"`.
             - `framework`: The framework of the model, should be `"pt"` or
-              `"tf"`.
+              `"tf"`. This information should be obtained from Huggingface
+              model hub.
             - `cuda_device`: Device ordinal for CPU/GPU supports. Setting
               this to -1 will leverage CPU, a positive will run the model
-              on the associated CUDA device id.
+              on the associated CUDA device id. Default is -1.
 
         Returns: A dictionary with the default config for this processor.
         """
@@ -187,7 +171,8 @@ class TokenClassification(PackProcessor):
                 "entry_type": "ft.onto.base_ontology.Sentence",
                 "output_entry_type": "ft.onto.base_ontology.Token",
                 "task": "ner",  # "pos", "ws"
-                "strategy": "no_merge",  # 'bio-merge'
+                "attribute_name": "ner",
+                "tagging_scheme": "no-merge",  # 'bio-merge'
                 "model_name": "dslim/bert-base-NER",
                 "tokenizer": "dslim/bert-base-NER",
                 "framework": "pt",
@@ -196,8 +181,7 @@ class TokenClassification(PackProcessor):
         )
         return config
 
-    @classmethod
-    def expected_types_and_attributes(cls):
+    def expected_types_and_attributes(self):
         r"""Method to add expected type `ft.onto.base_ontology.Sentence` which
         would be checked before running the processor if
         the pipeline is initialized with
@@ -205,7 +189,7 @@ class TokenClassification(PackProcessor):
         :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
         the pipeline.
         """
-        return {cls().default_configs()["entry_type"]: set()}
+        return {self.configs["entry_type"]: set()}
 
     def record(self, record_meta: Dict[str, Set[str]]):
         r"""Method to add output type record of `ner` which is
