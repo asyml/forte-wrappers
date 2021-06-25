@@ -120,4 +120,3 @@ class QuestionAnsweringMulti(MultiPackProcessor):
             }
         )
         return config
-
