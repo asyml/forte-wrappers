@@ -15,7 +15,6 @@
 Wrapper of the Token Classification models on HuggingFace platform (context
 understanding)
 """
-import importlib
 import re
 from typing import Dict, Set, List, Optional, Tuple, Any
 from transformers import pipeline
@@ -192,7 +191,7 @@ class TokenClassification(PackProcessor):
         return {self.configs["entry_type"]: set()}
 
     def record(self, record_meta: Dict[str, Set[str]]):
-        r"""Method to add output type record of `ner` which is
+        r"""Method to add output type record of `output_entry_type`, which is
         user specified entry type with user specified attribute name
         to :attr:`forte.data.data_pack.Meta.record`.
 
