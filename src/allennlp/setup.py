@@ -21,6 +21,7 @@ setuptools.setup(
         "allennlp==1.2.0",
         "allennlp-models==1.2.0",
         "torch>=1.5.0",
+        "pillow==8.2.0"
     ],
     classifiers=[
         "Intended Audience :: Developers",
