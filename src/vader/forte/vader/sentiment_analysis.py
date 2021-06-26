@@ -97,8 +97,7 @@ class VaderSentimentProcessor(PackProcessor):
         )
         return config
 
-    @classmethod
-    def expected_types_and_attributes(cls):
+    def expected_types_and_attributes(self):
         r"""Method to add expected type `ft.onto.base_ontology.Sentence` which
         would be checked before running the processor if
         the pipeline is initialized with
@@ -106,4 +105,4 @@ class VaderSentimentProcessor(PackProcessor):
         :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
         the pipeline.
         """
-        return {cls().default_configs()["entry_type"]: set()}
+        return {self.configs["entry_type"]: set()}

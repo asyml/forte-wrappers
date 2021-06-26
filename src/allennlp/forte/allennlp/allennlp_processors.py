@@ -278,8 +278,7 @@ class AllenNLPProcessor(PackProcessor):
                 link = PredicateLink(input_pack, pred, arg)
                 link.arg_type = label
 
-    @classmethod
-    def expected_types_and_attributes(cls) -> Dict[str, Set[str]]:
+    def expected_types_and_attributes(self) -> Dict[str, Set[str]]:
         r"""Method to add expected type for current processor input which
         would be checked before running the processor if
         the pipeline is initialized with

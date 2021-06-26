@@ -15,31 +15,28 @@
 Wrapper of the Question Answering models on HuggingFace platform (context
 understanding)
 """
-import importlib
-from typing import Dict, Set
-
 from transformers import pipeline
-from ft.onto.base_ontology import Phrase
+from ft.onto.base_ontology import Phrase, Sentence
 
 from forte.common import Resources
 from forte.common.configuration import Config
-from forte.data.data_pack import DataPack
-from forte.processors.base import PackProcessor
+from forte.data.multi_pack import MultiPack, MultiPackLink
+from forte.processors.base import MultiPackProcessor
 
 __all__ = [
-    "QuestionAnsweringSingle",
+    "QuestionAnsweringMulti",
 ]
 
 
-class QuestionAnsweringSingle(PackProcessor):
+class QuestionAnsweringMulti(MultiPackProcessor):
     r"""Wrapper of the models on HuggingFace platform with pipeline tag of
     `question-answering` (reading comprehension).
     https://huggingface.co/models?pipeline_tag=question-answering
     This wrapper could take any model name on HuggingFace platform with pipeline
     tag of `question-answering` in configs to make prediction on the context of
-    user specified entry type in the input pack and the prediction result would
-    be annotated as `Phrase` in the output pack. User could input the question
-    in the config.
+    user specified entry type in the multiple input pack and the prediction
+    result would be annotated as `Phrase` in the output pack, which would be
+    linked to the question pack by `MultiPackLink`.
     """
 
     def __init__(self):
@@ -60,21 +57,34 @@ class QuestionAnsweringSingle(PackProcessor):
         super().initialize(resources, configs)
         self.set_up()
 
-    def _process(self, input_pack: DataPack):
-        path_str, module_str = self.configs.entry_type.rsplit(".", 1)
+    def _process(self, input_pack: MultiPack):
+        context_list = list()
+        doc_id_list = list()
+        for doc_id in input_pack.pack_names:
+            if doc_id == self.configs.question_pack_name:
+                continue
 
-        mod = importlib.import_module(path_str)
-        entry = getattr(mod, module_str)
-        for entry_specified in input_pack.get(entry_type=entry):
-            result = self.extractor(
-                context=entry_specified.text,
-                question=self.configs.question,
-                max_answer_len=self.configs.max_answer_len,
-                handle_impossible_answer=self.configs.handle_impossible_answer,
-            )
+            pack = input_pack.get_pack(doc_id)
+            context_list.append(pack.get_single(self.configs.entry_type).text)
+            doc_id_list.append(doc_id)
+
+        question_pack = input_pack.get_pack(self.configs.question_pack_name)
+        first_question = question_pack.get_single(Sentence)
+        question_list = [question_pack.text for i in range(len(context_list))]
+        result_collection = self.extractor(
+            context=context_list,
+            question=question_list,
+            max_answer_len=self.configs.max_answer_len,
+            handle_impossible_answer=self.configs.handle_impossible_answer,
+        )
+        for i, result in enumerate(result_collection):
             start = result["start"]
             end = result["end"]
-            Phrase(pack=input_pack, begin=start, end=end)
+            doc_pack = input_pack.get_pack(doc_id_list[i])
+            ans_phrase = Phrase(pack=doc_pack, begin=start, end=end)
+            input_pack.add_entry(
+                MultiPackLink(input_pack, first_question, ans_phrase)
+            )
 
     @classmethod
     def default_configs(cls):
@@ -88,8 +98,6 @@ class QuestionAnsweringSingle(PackProcessor):
               `"ktrapeznikov/biobert_v1.1_pubmed_squad_v2"`.
               The wrapper supports Hugging Face models with pipeline tag of
               `question-answering`.
-            - `question`: One question to retrieve answer from the input pack
-              context.
             - `max_answer_len`: The maximum length of predicted answers (e.g.,
               only answers with a shorter length are considered).
             - `cuda_device`: Device ordinal for CPU/GPU supports. Setting
@@ -103,34 +111,12 @@ class QuestionAnsweringSingle(PackProcessor):
         config = super().default_configs()
         config.update(
             {
+                "question_pack_name": "question",
                 "entry_type": "ft.onto.base_ontology.Document",
                 "model_name": "ktrapeznikov/biobert_v1.1_pubmed_squad_v2",
-                "question": "Where do I live",
                 "max_answer_len": 15,
                 "cuda_devices": -1,
                 "handle_impossible_answer": False,
             }
         )
         return config
-
-    def expected_types_and_attributes(self):
-        r"""Method to add user specified expected type which
-        would be checked before running the processor if
-        the pipeline is initialized with
-        `enforce_consistency=True` or
-        :meth:`~forte.pipeline.Pipeline.enforce_consistency` was enabled for
-        the pipeline.
-        """
-        return {self.configs["entry_type"]: set()}
-
-    def record(self, record_meta: Dict[str, Set[str]]):
-        r"""Method to add output type record of `QuestionAnsweringSingle` which
-        is `"ft.onto.base_ontology.Phrase"`
-        to :attr:`forte.data.data_pack.Meta.record`.
-
-        Args:
-            record_meta: the field in the datapack for type record that need to
-                fill in for consistency checking.
-        """
-        if "ft.onto.base_ontology.Phrase" not in record_meta.keys():
-            record_meta["ft.onto.base_ontology.Phrase"] = set()
