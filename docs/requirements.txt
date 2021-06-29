@@ -25,7 +25,6 @@ git+https://git@github.com/asyml/forte-wrappers.git#egg=forte.elastic&subdirecto
 git+https://git@github.com/asyml/forte-wrappers.git#egg=forte.faiss&subdirectory=src/faiss
 git+https://git@github.com/asyml/forte-wrappers.git#egg=forte.gpt2&subdirectory=src/gpt2
 git+https://git@github.com/asyml/forte-wrappers.git#egg=forte.huggingface&subdirectory=src/huggingface
-git+https://git@github.com/asyml/forte-wrappers.git#egg=forte.allennlp&subdirectory=src/allennlp
 git+https://git@github.com/asyml/forte-wrappers.git#egg=forte.spacy&subdirectory=src/spacy
 git+https://git@github.com/asyml/forte-wrappers.git#egg=forte.stanza&subdirectory=src/stanza
 git+https://git@github.com/asyml/forte-wrappers.git#egg=forte.tweepy&subdirectory=src/tweepy
