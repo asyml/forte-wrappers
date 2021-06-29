@@ -19,17 +19,16 @@ import unittest
 from forte.data.data_pack import DataPack
 from forte.pipeline import Pipeline
 from forte.data.readers import StringReader
-from forte.nltk import NLTKSentenceSegmenter
-from forte.huggingface import TokenClassification
 from forte.processors.misc import PeriodSentenceSplitter
+from forte.huggingface import TokenClassification
 
 
 class TestTokenClassification(unittest.TestCase):
     def test_huggingface_ner_bio_classification(self):
-        nlp = Pipeline[DataPack](enforce_consistency=True)
+        nlp = Pipeline[DataPack]()
         nlp.set_reader(StringReader())
         nlp.add(PeriodSentenceSplitter())
-        # nlp.add(NLTKSentenceSegmenter())
+        # nlp.add(PeriodSentenceSplitter())
         token_config = {
             "entry_type": "ft.onto.base_ontology.Sentence",
             "output_entry_type": "ft.onto.base_ontology.EntityMention",
@@ -65,9 +64,9 @@ class TestTokenClassification(unittest.TestCase):
                 self.assertEqual(token.end, expected_index[entry_idx][idx][1])
 
     def test_huggingface_ner_token_classification(self):
-        nlp = Pipeline[DataPack](enforce_consistency=True)
+        nlp = Pipeline[DataPack]()
         nlp.set_reader(StringReader())
-        nlp.add(NLTKSentenceSegmenter())
+        nlp.add(PeriodSentenceSplitter())
         token_config = {
             "entry_type": "ft.onto.base_ontology.Sentence",
             "output_entry_type": "ft.onto.base_ontology.EntityMention",
@@ -100,9 +99,9 @@ class TestTokenClassification(unittest.TestCase):
                 self.assertEqual(token.end, expected_index[entry_idx][idx][1])
 
     def test_huggingface_pos_token_classification(self):
-        nlp = Pipeline[DataPack](enforce_consistency=True)
+        nlp = Pipeline[DataPack]()
         nlp.set_reader(StringReader())
-        nlp.add(NLTKSentenceSegmenter())
+        nlp.add(PeriodSentenceSplitter())
         token_config = {
             "entry_type": "ft.onto.base_ontology.Sentence",
             "output_entry_type": "ft.onto.base_ontology.Token",
@@ -164,7 +163,7 @@ class TestTokenClassification(unittest.TestCase):
                 self.assertEqual(token.end, expected_index[entry_idx][idx][1])
 
     def test_huggingface_ner_doc_token_classification(self):
-        nlp = Pipeline[DataPack](enforce_consistency=True)
+        nlp = Pipeline[DataPack]()
         nlp.set_reader(StringReader())
 
         token_config = {
@@ -199,9 +198,9 @@ class TestTokenClassification(unittest.TestCase):
                 self.assertEqual(token.end, expected_index[entry_idx][idx][1])
 
     def test_huggingface_ws_token_classification(self):
-        nlp = Pipeline[DataPack](enforce_consistency=True)
+        nlp = Pipeline[DataPack]()
         nlp.set_reader(StringReader())
-        nlp.add(NLTKSentenceSegmenter())
+        nlp.add(PeriodSentenceSplitter())
         token_config = {
             "entry_type": "ft.onto.base_ontology.Sentence",
             "output_entry_type": "ft.onto.base_ontology.Token",
