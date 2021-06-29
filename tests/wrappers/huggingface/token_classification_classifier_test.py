@@ -31,7 +31,6 @@ class TestTokenClassification(unittest.TestCase):
         token_config = {
             "entry_type": "ft.onto.base_ontology.Sentence",
             "output_entry_type": "ft.onto.base_ontology.EntityMention",
-            "task": "ner",
             "attribute_name": "ner_type",
             "tagging_scheme": "bio-merge",
             "model_name": "dslim/bert-base-NER",
@@ -41,11 +40,11 @@ class TestTokenClassification(unittest.TestCase):
         nlp.add(TokenClassification(), config=token_config)
         nlp.initialize()
         sentences = [
-            "My name is Wolfgang and I live in Berlin. "
-            "His name is Chris and he lives in Hawaii Island."
+            "My name is Wolfgang and I live in Berlin.",
+            "His name is Chris and he lives in Hawaii Island.",
         ]
-
-        pack = nlp.process(sentences)
+        document = " ".join(sentences)
+        pack = nlp.process(document)
 
         expected_type = [["PER", "LOC"], ["PER", "LOC"]]
         expected_index = [[(11, 19), (34, 40)], [(54, 59), (76, 89)]]
@@ -70,7 +69,6 @@ class TestTokenClassification(unittest.TestCase):
         token_config = {
             "entry_type": "ft.onto.base_ontology.Sentence",
             "output_entry_type": "ft.onto.base_ontology.EntityMention",
-            "task": "ner",  # "pos"
             "attribute_name": "ner_type",
             "tagging_scheme": "no-merge",  # 'bio-merge'
             "model_name": "jplu/tf-xlm-r-ner-40-lang",
@@ -106,7 +104,6 @@ class TestTokenClassification(unittest.TestCase):
         token_config = {
             "entry_type": "ft.onto.base_ontology.Sentence",
             "output_entry_type": "ft.onto.base_ontology.Token",
-            "task": "pos",
             "attribute_name": "pos",
             "tagging_scheme": "no-merge",
             "model_name": "vblagoje/bert-english-uncased-finetuned-pos",
@@ -171,7 +168,6 @@ class TestTokenClassification(unittest.TestCase):
         token_config = {
             "entry_type": "ft.onto.base_ontology.Document",
             "output_entry_type": "ft.onto.base_ontology.EntityMention",
-            "task": "ner",  # "pos"
             "attribute_name": "ner_type",
             "tagging_scheme": "no-merge",  # 'bio-merge'
             "model_name": "jplu/tf-xlm-r-ner-40-lang",
@@ -207,7 +203,6 @@ class TestTokenClassification(unittest.TestCase):
         token_config = {
             "entry_type": "ft.onto.base_ontology.Sentence",
             "output_entry_type": "ft.onto.base_ontology.Token",
-            "task": "ws",
             "attribute_name": "word_segment",
             "tagging_scheme": "bio-merge",
             "model_name": "ckiplab/bert-base-chinese-ws",

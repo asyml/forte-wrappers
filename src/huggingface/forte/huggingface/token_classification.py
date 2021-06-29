@@ -41,8 +41,35 @@ class TokenClassification(PackProcessor):
     NER, POS tagging, word segmentation, etc.
     This processor takes user specified entry type in the input pack and the
     prediction result goes to the user specified attribute name of that entry
-    type in the data pack. Please refer to the `default_config` function for
-    more information.
+    type in the data pack.
+
+    For example, if users want to do NER task on each sentence, and get BIO
+    tagging merged, and store results as the attribute `ner_type` in each
+    EntityMention, then the following config could be used:
+        "entry_type": "ft.onto.base_ontology.Sentence",
+        "output_entry_type": "ft.onto.base_ontology.EntityMention",
+        "attribute_name": "ner",
+        "tagging_scheme": "bio-merge"
+
+    If user want to do POS tagging on each sentence and store results
+    as the attribute `pos` in each Token, then the following config could
+    be used:
+        "entry_type": "ft.onto.base_ontology.Sentence",
+        "output_entry_type": "ft.onto.base_ontology.Token",
+        "attribute_name": "pos",
+        "tagging_scheme": "no-merge"
+
+
+    if user want to do word segmentation task on each sentence, and do BIO
+    tagging merged, and store the results as the attribute `word_segment` in
+    each Token, then the following config could be used:
+        "entry_type": "ft.onto.base_ontology.Sentence",
+        "output_entry_type": "ft.onto.base_ontology.Token",
+        "attribute_name": "word_segment",
+        "tagging_scheme": "bio-merge"
+
+    For other settings, please refer to the `default_config` function for more
+    information.
 
     """
 
@@ -70,10 +97,9 @@ class TokenClassification(PackProcessor):
         if not self.configs.entry_type:
             raise ProcessorConfigError("Please specify an input entry type!")
 
-        input_entry = get_class(self.configs.entry_type)
         output_entry = get_class(self.configs.output_entry_type)
 
-        for entry_specified in input_pack.get(entry_type=input_entry):
+        for entry_specified in input_pack.get(self.configs.entry_type):
             result = self.classifier(entry_specified.text)
 
             if self.configs.tagging_scheme == "bio-merge":  # Merge BIO tagging
@@ -141,7 +167,6 @@ class TokenClassification(PackProcessor):
             - `output_entry_type`: defines which entry type in the input pack
               that the prediction should be saved as output. The default
               saves prediction on `Token` in the input pack.
-            - `task`: defines the nlp task, for example, "ner", "pos", "ws".
             - `attribute_name`: defines which attribute of the
               `output_entry_type` in the input pack to save prediction to.
               The default saves prediction to the `ner` attribute for each
@@ -168,10 +193,9 @@ class TokenClassification(PackProcessor):
         config.update(
             {
                 "entry_type": "ft.onto.base_ontology.Sentence",
-                "output_entry_type": "ft.onto.base_ontology.Token",
-                "task": "ner",  # "pos", "ws"
+                "output_entry_type": "ft.onto.base_ontology.EntityMention",
                 "attribute_name": "ner",
-                "tagging_scheme": "no-merge",  # 'bio-merge'
+                "tagging_scheme": "bio-merge",  # "no-merge"
                 "model_name": "dslim/bert-base-NER",
                 "tokenizer": "dslim/bert-base-NER",
                 "framework": "pt",
