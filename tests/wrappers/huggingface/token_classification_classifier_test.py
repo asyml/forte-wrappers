@@ -21,13 +21,15 @@ from forte.pipeline import Pipeline
 from forte.data.readers import StringReader
 from forte.nltk import NLTKSentenceSegmenter
 from forte.huggingface import TokenClassification
+from forte.processors.misc import PeriodSentenceSplitter
 
 
 class TestTokenClassification(unittest.TestCase):
     def test_huggingface_ner_bio_classification(self):
         nlp = Pipeline[DataPack](enforce_consistency=True)
         nlp.set_reader(StringReader())
-        nlp.add(NLTKSentenceSegmenter())
+        nlp.add(PeriodSentenceSplitter())
+        # nlp.add(NLTKSentenceSegmenter())
         token_config = {
             "entry_type": "ft.onto.base_ontology.Sentence",
             "output_entry_type": "ft.onto.base_ontology.EntityMention",
