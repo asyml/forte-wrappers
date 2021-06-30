@@ -1,5 +1,3 @@
-import sys
-
 import os
 import sys
 from pathlib import Path
@@ -9,6 +7,7 @@ import setuptools
 long_description = (
     Path(os.path.realpath(__file__)).parent.parent.parent / "README.md"
 ).read_text()
+
 if sys.version_info < (3, 6):
     sys.exit("Python>=3.6 is required by Forte.")
 
