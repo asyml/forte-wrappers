@@ -1,0 +1,50 @@
+# This is a basic workflow to help you get started with Actions
+
+name: PYPI
+
+on:
+  push:
+    brances:
+      - main
+    tags:
+      - v*
+  # Trigger this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Upload to PYPI only on tagged commits.
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    strategy:
+      matrix:
+        wrapper: [ spacy allennlp elastic faiss gpt2 huggingface nltk spacy stanza tweepy vader ]
+
+    env:
+      python-version: 3.7
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ env.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.python-version }}
+      - name: Install pypa/build
+        run: |
+          python -m pip install build --user
+      - name: CD to repository directory
+        run: |
+          cd "src/"${{ matrix.wrapper }}
+      - name: Build a binary wheel and a source tarball
+        run: |
+          python -m build --sdist --wheel --outdir dist/ .
+      - name: Publish Python 🐍 distributions 📦 to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          repository_url: https://test.pypi.org/legacy/
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+      - name: Publish Python 🐍 distributions 📦 to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
