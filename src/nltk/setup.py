@@ -5,7 +5,8 @@ from pathlib import Path
 import setuptools
 
 long_description = (
-    Path(os.path.realpath(__file__)).parent.parent.parent / "README.md"
+    Path(os.path.abspath(os.path.realpath(__file__))).parent.parent.parent
+    / "README.md"
 ).read_text()
 
 if sys.version_info < (3, 6):
