@@ -18,7 +18,7 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     strategy:
       matrix:
-        wrapper: [ spacy allennlp elastic faiss gpt2 huggingface nltk spacy stanza tweepy vader ]
+        wrapper: [ spacy, allennlp, elastic, faiss, gpt2, huggingface, nltk, spacy, stanza, tweepy, vader ]
 
     env:
       python-version: 3.7
@@ -33,7 +33,7 @@ jobs:
           python -m pip install build --user
       - name: CD to repository directory
         run: |
-          cd "src/"${{ matrix.wrapper }}
+          cd src/${{ matrix.wrapper }}
       - name: Build a binary wheel and a source tarball
         run: |
           python -m build --sdist --wheel --outdir dist/ .
