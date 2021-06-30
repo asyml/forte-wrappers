@@ -27,7 +27,7 @@ setuptools.setup(
     include_package_data=True,
     platforms="any",
     install_requires=[
-        "forte @ git+https://git@github.com/asyml/forte.git",
+        "forte==0.1.1",
         "stanza==1.0.1",
     ],
     classifiers=[

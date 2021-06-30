@@ -27,7 +27,7 @@ setuptools.setup(
     include_package_data=True,
     platforms="any",
     install_requires=[
-        "forte @ git+https://git@github.com/asyml/forte.git",
+        "forte==0.1.1",
         "more-itertools>=8.0.0",
         "allennlp==1.2.0",
         "allennlp-models==1.2.0",
