@@ -4,6 +4,10 @@ from pathlib import Path
 
 import setuptools
 
+print(os.path.realpath(__file__))
+print(os.path.abspath(__file__))
+
+
 long_description = (
     Path(os.path.abspath(os.path.realpath(__file__))).parent.parent.parent
     / "README.md"
