@@ -126,7 +126,9 @@ class ElasticSearchIndexer:
                 new_document = deepcopy(document)
                 new_document.update(
                     {
-                        "_index": index_name if index_name else self.hparams.index_name,
+                        "_index": index_name
+                        if index_name
+                        else self.hparams.index_name,
                         "_type": "document",
                     }
                 )

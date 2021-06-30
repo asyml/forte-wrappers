@@ -95,7 +95,9 @@ class SpacyProcessor(PackProcessor):
 
             download_url = SCISPACYMODEL_URL[self.lang_model]
             command = [sys.executable, "-m", "pip", "install"] + [download_url]
-            subprocess.run(command, env=os.environ.copy(), encoding="utf8", check=False)
+            subprocess.run(
+                command, env=os.environ.copy(), encoding="utf8", check=False
+            )
 
             cls = importlib.import_module(self.lang_model)
             self.nlp = cls.load()
@@ -114,7 +116,9 @@ class SpacyProcessor(PackProcessor):
         if "pos" in configs.processors or "lemma" in configs.processors:
             if "tokenize" not in configs.processors:
                 raise ProcessorConfigError(
-                    "tokenize is necessary in " "configs.processors for " "pos or lemma"
+                    "tokenize is necessary in "
+                    "configs.processors for "
+                    "pos or lemma"
                 )
             else:
                 if "sentence" not in configs.processors:
@@ -219,7 +223,9 @@ class SpacyProcessor(PackProcessor):
 
         # get medical entity mentions and UMLS concepts
         for item in medical_entities:
-            entity = MedicalEntityMention(input_pack, item.start_char, item.end_char)
+            entity = MedicalEntityMention(
+                input_pack, item.start_char, item.end_char
+            )
             entity.ner_type = item.label_
 
             for umls_ent in item._.kb_ents:

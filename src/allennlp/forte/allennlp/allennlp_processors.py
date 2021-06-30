@@ -183,12 +183,19 @@ class AllenNLPProcessor(PackProcessor):
             batches = iter([input_pack.get(Sentence)])
             batches_copy = iter([input_pack.get(Sentence)])
         else:
-            batches = more_itertools.ichunked(input_pack.get(Sentence), batch_size)
-            batches_copy = more_itertools.ichunked(input_pack.get(Sentence), batch_size)
+            batches = more_itertools.ichunked(
+                input_pack.get(Sentence), batch_size
+            )
+            batches_copy = more_itertools.ichunked(
+                input_pack.get(Sentence), batch_size
+            )
         for sentences, sentences_copy in zip(batches, batches_copy):
-            inputs: List[Dict[str, str]] = [{"sentence": s.text} for s in sentences]
+            inputs: List[Dict[str, str]] = [
+                {"sentence": s.text} for s in sentences
+            ]
             results: Dict[str, List[Dict[str, Any]]] = {
-                k: p.predict_batch_json(inputs) for k, p in self.predictor.items()
+                k: p.predict_batch_json(inputs)
+                for k, p in self.predictor.items()
             }
             for i, sent in enumerate(sentences_copy):
                 result: Dict[str, List[str]] = {}
@@ -244,7 +251,9 @@ class AllenNLPProcessor(PackProcessor):
         deps = result["predicted_dependencies"]
         heads = result["predicted_heads"]
         for i, token in enumerate(tokens):
-            relation = Dependency(input_pack, parent=tokens[heads[i] - 1], child=token)
+            relation = Dependency(
+                input_pack, parent=tokens[heads[i] - 1], child=token
+            )
             relation.rel_type = deps[i]
 
     @staticmethod
@@ -299,4 +308,6 @@ class AllenNLPProcessor(PackProcessor):
             if "srl" in self.configs.processors:
                 record_meta["ft.onto.base_ontology.PredicateArgument"] = set()
                 record_meta["ft.onto.base_ontology.PredicateMention"] = set()
-                record_meta["ft.onto.base_ontology.PredicateLink"] = {"arg_type"}
+                record_meta["ft.onto.base_ontology.PredicateLink"] = {
+                    "arg_type"
+                }

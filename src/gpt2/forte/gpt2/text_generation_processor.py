@@ -92,7 +92,9 @@ class TextGenerationProcessor(MultiPackBatchProcessor):
             self.top_p = configs.top_p
             self.model = tx.modules.GPT2Decoder(configs.pretrained_model_name)
 
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device(
+            "cuda" if torch.cuda.is_available() else "cpu"
+        )
         self.model.to(device=self.device)
 
         resources.update(model=self.model)
@@ -157,7 +159,9 @@ class TextGenerationProcessor(MultiPackBatchProcessor):
             si = sample_id[i][context_length[i] :]
             sentences.append(self.word_processor.map_id_to_text(si.tolist()))
             si = sample_id[i]
-            complete_sentences.append(self.word_processor.map_id_to_text(si.tolist()))
+            complete_sentences.append(
+                self.word_processor.map_id_to_text(si.tolist())
+            )
         preds["output_sents"] += complete_sentences
         return preds
 
@@ -199,7 +203,9 @@ class TextGenerationProcessor(MultiPackBatchProcessor):
 
         """
         batch_size = len(data)
-        batch_tokens = [self.word_processor.map_text_to_token(sent) for sent in data]
+        batch_tokens = [
+            self.word_processor.map_text_to_token(sent) for sent in data
+        ]
 
         batch_length = max([len(d) for d in batch_tokens])
         wid_inputs = np.empty([batch_size, batch_length], dtype=np.int64)
@@ -210,7 +216,9 @@ class TextGenerationProcessor(MultiPackBatchProcessor):
             inst_size = len(wids)
             lengths[i] = inst_size
             # word ids
-            wid_inputs[i, :inst_size] = self.word_processor.map_token_to_id(wids)
+            wid_inputs[i, :inst_size] = self.word_processor.map_token_to_id(
+                wids
+            )
             wid_inputs[i, inst_size:] = 0
             # The existence of length will mask these padding positions out
             # So we just set the padding value as 0,

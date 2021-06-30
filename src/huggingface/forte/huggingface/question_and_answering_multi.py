@@ -82,7 +82,9 @@ class QuestionAnsweringMulti(MultiPackProcessor):
             end = result["end"]
             doc_pack = input_pack.get_pack(doc_id_list[i])
             ans_phrase = Phrase(pack=doc_pack, begin=start, end=end)
-            input_pack.add_entry(MultiPackLink(input_pack, first_question, ans_phrase))
+            input_pack.add_entry(
+                MultiPackLink(input_pack, first_question, ans_phrase)
+            )
 
     @classmethod
     def default_configs(cls):
