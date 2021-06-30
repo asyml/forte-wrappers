@@ -26,7 +26,7 @@ This project is part of the [CASL Open Source](http://casl-project.ai/) family.
 ```shell
 git clone https://github.com/asyml/forte-wrappers.git
 cd forte-wrappers
-pip install src/elastic
+pip install src/nltk
 ```
 
 ### License

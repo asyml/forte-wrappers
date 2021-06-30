@@ -1,17 +1,15 @@
-import os
 import sys
 from pathlib import Path
 
 import setuptools
 
-print(os.path.realpath(__file__))
-print(os.path.abspath(__file__))
-
-
-long_description = (
-    Path(os.path.abspath(os.path.realpath(__file__))).parent.parent.parent
-    / "README.md"
-).read_text()
+readme = Path("README.md")
+if readme.exists():
+    long_description = (Path("README.md")).read_text()
+else:
+    long_description = (
+        "Provide Forte implementations of a fantastic collection of NLP tools."
+    )
 
 if sys.version_info < (3, 6):
     sys.exit("Python>=3.6 is required by Forte.")
