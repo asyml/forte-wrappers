@@ -41,9 +41,9 @@ class BERTTokenizer(PackProcessor):
 
     def _process(self, input_pack: DataPack):
         inputs = self.tokenizer(input_pack.text, return_tensors="pt")
-        tokens = self.tokenizer.convert_ids_to_tokens(
-            inputs["input_ids"][0].tolist()
-        )[1:-1]
+        tokens = self.tokenizer.convert_ids_to_tokens(inputs["input_ids"][0].tolist())[
+            1:-1
+        ]
         tokens_clean = [
             token.replace("##", "") if token.startswith("##") else token
             for token in tokens

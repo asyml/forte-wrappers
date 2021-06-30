@@ -53,8 +53,7 @@ def main():
         print(colored("Sentence:", "red"), sent_text, "\n")
         # first method to get entry in a sentence
         subwords = [
-            (subword.text, subword.ner)
-            for subword in pack.get(Subword, sentence)
+            (subword.text, subword.ner) for subword in pack.get(Subword, sentence)
         ]
         entities = [
             (entity.text, entity.ner_type)

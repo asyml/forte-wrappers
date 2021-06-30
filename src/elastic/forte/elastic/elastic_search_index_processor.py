@@ -93,9 +93,7 @@ class ElasticSearchIndexerBase(IndexProcessor, ABC):
         return config
 
     def _bulk_process(self):
-        self.indexer.add_bulk(
-            self.documents, **self.configs.indexer.other_kwargs
-        )
+        self.indexer.add_bulk(self.documents, **self.configs.indexer.other_kwargs)
 
 
 class ElasticSearchTextIndexProcessor(ElasticSearchIndexerBase):

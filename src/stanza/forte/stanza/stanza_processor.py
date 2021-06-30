@@ -113,8 +113,7 @@ class StandfordNLPProcessor(PackProcessor):
 
                     if t_start < 0 or t_end < 0:
                         raise ValueError(
-                            "Cannot determine word start or end for "
-                            "stanfordnlp."
+                            "Cannot determine word start or end for " "stanfordnlp."
                         )
 
                     token = Token(input_pack, t_start, t_end)

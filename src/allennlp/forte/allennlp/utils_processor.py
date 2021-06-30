@@ -24,9 +24,7 @@ from forte.data.span import Span
 # from ft.onto.base_ontology import Token
 
 
-def parse_allennlp_srl_results(
-    results: List[Dict[str, Any]]
-) -> Dict[str, List[str]]:
+def parse_allennlp_srl_results(results: List[Dict[str, Any]]) -> Dict[str, List[str]]:
     r"""Convert SRL output into a dictionary
     of verbs and tags.
 

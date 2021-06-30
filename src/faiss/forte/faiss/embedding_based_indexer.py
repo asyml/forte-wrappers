@@ -46,9 +46,7 @@ class EmbeddingBasedIndexer:
 
     def __init__(self, config: Optional[Union[Dict, Config]] = None):
         super().__init__()
-        self._config = Config(
-            hparams=config, default_hparams=self.default_configs()
-        )
+        self._config = Config(hparams=config, default_hparams=self.default_configs())
         self._meta_data: Dict[int, str] = {}
 
         index_type = self._config.index_type
@@ -71,12 +69,8 @@ class EmbeddingBasedIndexer:
                     self._config.device,
                     faiss.get_num_gpus(),
                 )
-            config_class_name = self.INDEX_TYPE_TO_CONFIG.get(
-                index_class.__name__
-            )
-            config = utils.get_class(
-                config_class_name, module_paths=["faiss"]
-            )()
+            config_class_name = self.INDEX_TYPE_TO_CONFIG.get(index_class.__name__)
+            config = utils.get_class(config_class_name, module_paths=["faiss"])()
             config.device = gpu_id
             self._index = index_class(gpu_resource, dim, config)
 
@@ -164,9 +158,7 @@ class EmbeddingBasedIndexer:
         """
 
         _, indices = self._index.search(query, k)
-        return [
-            [(idx, self._meta_data[idx]) for idx in index] for index in indices
-        ]
+        return [[(idx, self._meta_data[idx]) for idx in index] for index in indices]
 
     def save(self, path: str) -> None:
         r"""Save the index and meta data in ``path`` directory. The index
@@ -207,9 +199,7 @@ class EmbeddingBasedIndexer:
         """
 
         if not os.path.exists(path):
-            raise ValueError(
-                f"Failed to load the index. {path} " f"does not exist."
-            )
+            raise ValueError(f"Failed to load the index. {path} " f"does not exist.")
 
         cpu_index = faiss.read_index(f"{path}/index.faiss")
 
@@ -228,9 +218,7 @@ class EmbeddingBasedIndexer:
                     device,
                     faiss.get_num_gpus(),
                 )
-            self._index = faiss.index_cpu_to_gpu(
-                gpu_resource, gpu_id, cpu_index
-            )
+            self._index = faiss.index_cpu_to_gpu(gpu_resource, gpu_id, cpu_index)
 
         else:
             self._index = cpu_index

@@ -137,12 +137,8 @@ class TweetSearchProcessor(MultiPackProcessor):
         credentials = yaml.safe_load(open(self.configs.credential_file, "r"))
         credentials = Config(credentials, default_hparams=None)
 
-        auth = tw.OAuthHandler(
-            credentials.consumer_key, credentials.consumer_secret
-        )
-        auth.set_access_token(
-            credentials.access_token, credentials.access_token_secret
-        )
+        auth = tw.OAuthHandler(credentials.consumer_key, credentials.consumer_secret)
+        auth.set_access_token(credentials.access_token, credentials.access_token_secret)
 
         api = tw.API(auth, wait_on_rate_limit=True)
 

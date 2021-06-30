@@ -134,10 +134,7 @@ class BioBERTNERPredictor(FixedSizeBatchProcessor):
 
         first_idx: int = subword_entities[0]["idx"]
         first_tid = subword_entities[0]["tid"]
-        while (
-            first_idx > 0
-            and not data_pack.get_entry(first_tid).is_first_segment
-        ):
+        while first_idx > 0 and not data_pack.get_entry(first_tid).is_first_segment:
             first_idx -= 1
             first_tid = tids[first_idx]
 
@@ -197,9 +194,7 @@ class BioBERTNERPredictor(FixedSizeBatchProcessor):
                 subword_entities.append(entity)
 
         if subword_entities:
-            complete_entity = self._complete_entity(
-                subword_entities, data_pack, tids
-            )
+            complete_entity = self._complete_entity(subword_entities, data_pack, tids)
             complete_entities.append(complete_entity)
 
         return complete_entities
