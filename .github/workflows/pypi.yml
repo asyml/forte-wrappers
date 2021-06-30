@@ -31,11 +31,9 @@ jobs:
       - name: Install pypa/build
         run: |
           python -m pip install build --user
-      - name: CD to repository directory
-        run: |
-          cd src/${{ matrix.wrapper }}
       - name: Build a binary wheel and a source tarball
         run: |
+          cd src/${{ matrix.wrapper }}
           python -m build --sdist --wheel --outdir dist/ .
       - name: Publish Python 🐍 distributions 📦 to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -43,8 +41,11 @@ jobs:
           user: __token__
           repository_url: https://test.pypi.org/legacy/
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          packages_dir: src/${{ matrix.wrapper }}/dist
       - name: Publish Python 🐍 distributions 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
+          packages_dir: src/${{ matrix.wrapper }}/dist
+
