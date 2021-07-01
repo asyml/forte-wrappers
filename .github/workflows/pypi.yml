@@ -4,7 +4,7 @@ name: PYPI
 
 on:
   push:
-    brances:
+    branches:
       - main
     tags:
       - v*
