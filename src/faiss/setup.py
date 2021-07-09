@@ -16,7 +16,7 @@ if sys.version_info < (3, 6):
 
 setuptools.setup(
     name="forte.faiss",
-    version="0.0.1",
+    version="0.0.1.post1",
     url="https://github.com/asyml/forte-wrappers/tree/main/src/faiss",
     description="Provide Forte implementations of a fantastic collection of "
     "NLP tools.",
