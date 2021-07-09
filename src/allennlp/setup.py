@@ -17,7 +17,7 @@ if sys.version_info < (3, 6):
 setuptools.setup(
     name="forte.allennlp",
     version="0.0.1",
-    url="https://github.com/asyml/forte_wrappers/allennlp",
+    url="https://github.com/asyml/forte-wrappers/tree/main/src/allennlp",
     description="Provide Forte implementations of a fantastic collection of "
     "NLP tools.",
     long_description=long_description,
