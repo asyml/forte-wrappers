@@ -16,7 +16,7 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     strategy:
       matrix:
-        wrapper: [ spacy, allennlp, elastic, faiss, gpt2, huggingface, nltk, spacy, stanza, tweepy, vader ]
+        wrapper: [ spacy, allennlp, elastic, faiss, gpt2, huggingface, nltk, stanza, tweepy, vader ]
 
     env:
       python-version: 3.7
