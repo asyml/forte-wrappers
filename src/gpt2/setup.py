@@ -16,7 +16,7 @@ if sys.version_info < (3, 6):
 
 setuptools.setup(
     name="forte.gpt2",
-    version="0.0.1.post1",
+    version="v0.0.1post2",
     url="https://github.com/asyml/forte-wrappers/tree/main/src/gpt2",
     description="Provide Forte implementations of a fantastic collection of "
     "NLP tools.",
