@@ -119,6 +119,14 @@ jobs:
           then
               pip install ${{ matrix.test-details.extra }}
           fi
+      - name: Install Forte
+        run: |
+          git clone https://github.com/asyml/forte.git
+          cd forte
+          pip install --progress-bar off .
+          cd ..
+          # Remove them to avoid confusing pytest.
+          rm -rf forte
       - name: Start elastic server if test elastic search
         if: ${{ matrix.test-details.dep == 'elastic' }}
         run: |
