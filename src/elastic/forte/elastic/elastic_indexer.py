@@ -22,7 +22,7 @@ from elasticsearch import logger as es_logger
 
 __all__ = ["ElasticSearchIndexer"]
 
-from forte.common.Configurable import Configurable
+from forte.common.configurable import Configurable
 from forte.common.configuration import Config
 
 # It seems that elastic search shows a lot of debug message, sometimes can
