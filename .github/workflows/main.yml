@@ -86,7 +86,7 @@ jobs:
           - { dep: "vader nltk ", testfile: tests/wrappers/sentiment_processor_test.py }
           - { dep: spacy, testfile: tests/wrappers/spacy_processors_test.py }
           - { dep: stanza, testfile: tests/wrappers/stanfordnlp_processor_test.py }
-          - { dep: "nltk gpt2", extra: "termcolor>=1.1.0", testfile: tests/wrappers/gpt2_test.py }
+          - { dep: "nltk gpt2", extra: "termcolor>=1.1.0", testfile: examples/gpt2_test.py }
           - { dep: elastic, testfile: tests/wrappers/elastic_indexers_test.py }
           - { dep: faiss, testfile: tests/wrappers/faiss_indexers_test.py }
           - { dep: "huggingface nltk", extra: "tensorflow>=2.5.0", testfile: tests/wrappers/huggingface }
