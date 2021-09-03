@@ -18,15 +18,7 @@
 
 - type: "forte.nltk.nltk_processors.NLTKWordTokenizer"
   configs:
-    selector:
-      type: "forte.data.selector.NameMatchSelector"
-      kwargs:
-        select_name: "output_tgt"
 
 - type: "forte.nltk.nltk_processors.NLTKPOSTagger"
   configs:
-    selector:
-      type: "forte.data.selector.NameMatchSelector"
-      kwargs:
-        select_name: "output_tgt"
 

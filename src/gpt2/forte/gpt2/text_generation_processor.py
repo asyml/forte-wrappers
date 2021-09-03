@@ -16,10 +16,8 @@ import logging
 from typing import Dict, List, Optional
 
 import numpy as np
-import torch
 import texar.torch as tx
-from ft.onto.base_ontology import Sentence
-
+import torch
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.batchers import (
@@ -27,15 +25,15 @@ from forte.data.batchers import (
     FixedSizeMultiPackProcessingBatcher,
 )
 from forte.data.multi_pack import MultiPack, MultiPackLink
-from forte.data.types import DataRequest
-from forte.processors.base.batch_processor import MultiPackBatchProcessor
+from forte.processors.base.batch_processor import PackingBatchProcessor
+from ft.onto.base_ontology import Sentence
 
 logger = logging.getLogger(__name__)
 
 __all__ = ["TextGenerationProcessor"]
 
 
-class TextGenerationProcessor(MultiPackBatchProcessor):
+class TextGenerationProcessor(PackingBatchProcessor[MultiPack]):
     def __init__(self):
         super().__init__()
         self.input_pack_name = None
@@ -52,16 +50,8 @@ class TextGenerationProcessor(MultiPackBatchProcessor):
         self.top_p = None
         self.device = None
 
-    @staticmethod
-    def _define_input_info() -> DataRequest:
-        return {}
-
-    @staticmethod
-    def _define_context():
-        return Sentence
-
-    @staticmethod
-    def define_batcher() -> ProcessingBatcher:
+    @classmethod
+    def define_batcher(cls) -> ProcessingBatcher:
         return FixedSizeMultiPackProcessingBatcher()
 
     def initialize(self, resources: Resources, configs: Optional[Config]):
@@ -240,9 +230,5 @@ class TextGenerationProcessor(MultiPackBatchProcessor):
             "checkpoint": None,
             "input_pack_name": None,
             "output_pack_name": None,
-            "selector": {
-                "type": "forte.data.selector.DummySelector",
-                "args": None,
-                "kwargs": {},
-            },
+            "batcher":  FixedSizeMultiPackProcessingBatcher.default_configs()
         }
