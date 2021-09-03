@@ -151,16 +151,16 @@ class AllenNLPProcessor(PackProcessor):
         Returns: A dictionary with the default config for this processor.
         """
         return {
-                "processors": "tokenize,pos,depparse",
-                "tag_formalism": "stanford",
-                "overwrite_entries": False,
-                "allow_parallel_entries": True,
-                "stanford_url": MODEL2URL["stanford"],
-                "srl_url": MODEL2URL["srl"],
-                "universal_url": MODEL2URL["universal"],
-                "cuda_devices": [-1],
-                "infer_batch_size": 0,
-            }
+            "processors": "tokenize,pos,depparse",
+            "tag_formalism": "stanford",
+            "overwrite_entries": False,
+            "allow_parallel_entries": True,
+            "stanford_url": MODEL2URL["stanford"],
+            "srl_url": MODEL2URL["srl"],
+            "universal_url": MODEL2URL["universal"],
+            "cuda_devices": [-1],
+            "infer_batch_size": 0,
+        }
 
     def _process(self, input_pack: DataPack):
         # handle existing entries

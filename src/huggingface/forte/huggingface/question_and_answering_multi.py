@@ -109,10 +109,10 @@ class QuestionAnsweringMulti(MultiPackProcessor):
         Returns: A dictionary with the default config for this processor.
         """
         return {
-                "question_pack_name": "question",
-                "entry_type": "ft.onto.base_ontology.Document",
-                "model_name": "ktrapeznikov/biobert_v1.1_pubmed_squad_v2",
-                "max_answer_len": 15,
-                "cuda_devices": -1,
-                "handle_impossible_answer": False,
-            }
+            "question_pack_name": "question",
+            "entry_type": "ft.onto.base_ontology.Document",
+            "model_name": "ktrapeznikov/biobert_v1.1_pubmed_squad_v2",
+            "max_answer_len": 15,
+            "cuda_devices": -1,
+            "handle_impossible_answer": False,
+        }

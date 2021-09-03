@@ -248,7 +248,7 @@ class BioBERTNERPredictor(FixedSizeBatchProcessor):
             "model_path": None,
             "ner_type": "BioEntity",
             "ignore_labels": ["O"],
-            "batcher":  {"batch_size": 10}
+            "batcher": {"batch_size": 10},
         }
 
     def record(self, record_meta: Dict[str, Set[str]]):

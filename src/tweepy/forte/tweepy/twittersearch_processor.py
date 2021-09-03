@@ -79,14 +79,14 @@ class TweetSearchProcessor(MultiPackProcessor):
         """
         # pylint: enable=line-too-long
         return {
-                "credential_file": "",
-                "num_tweets_returned": 5,
-                "lang": "en",
-                "date_since": "2020-01-01",
-                "result_type": "recent",
-                "query_pack_name": "query",
-                "response_pack_name_prefix": "passage",
-            }
+            "credential_file": "",
+            "num_tweets_returned": 5,
+            "lang": "en",
+            "date_since": "2020-01-01",
+            "result_type": "recent",
+            "query_pack_name": "query",
+            "response_pack_name_prefix": "passage",
+        }
 
     def _process(self, input_pack: MultiPack):
         r"""Search using Twitter API to fetch tweets for a query.

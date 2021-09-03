@@ -190,15 +190,15 @@ class TokenClassification(PackProcessor):
         Returns: A dictionary with the default config for this processor.
         """
         return {
-                "entry_type": "ft.onto.base_ontology.Sentence",
-                "output_entry_type": "ft.onto.base_ontology.EntityMention",
-                "attribute_name": "ner",
-                "tagging_scheme": "bio-merge",  # "no-merge"
-                "model_name": "dslim/bert-base-NER",
-                "tokenizer": "dslim/bert-base-NER",
-                "framework": "pt",
-                "cuda_device": -1,
-            }
+            "entry_type": "ft.onto.base_ontology.Sentence",
+            "output_entry_type": "ft.onto.base_ontology.EntityMention",
+            "attribute_name": "ner",
+            "tagging_scheme": "bio-merge",  # "no-merge"
+            "model_name": "dslim/bert-base-NER",
+            "tokenizer": "dslim/bert-base-NER",
+            "framework": "pt",
+            "cuda_device": -1,
+        }
 
     def expected_types_and_attributes(self):
         r"""Method to add expected type `ft.onto.base_ontology.Sentence` which

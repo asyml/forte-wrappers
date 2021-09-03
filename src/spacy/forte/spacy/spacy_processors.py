@@ -204,7 +204,7 @@ class SpacyPackProcessor(PackProcessor):
 
         Returns: A dictionary with the default config for this processor.
         """
-        return{
+        return {
             "processors": "sentence, tokenize, pos, lemma",
             "lang": "en_core_web_sm",
             # Language code for the language to build the Pipeline

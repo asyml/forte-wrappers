@@ -87,11 +87,11 @@ class VaderSentimentProcessor(PackProcessor):
             provided component name. If None, then all sentences will be
             processed.
         """
-        return  {
-                "entry_type": "ft.onto.base_ontology.Sentence",
-                "attribute_name": "sentiment",
-                "sentence_component": None,
-            }
+        return {
+            "entry_type": "ft.onto.base_ontology.Sentence",
+            "attribute_name": "sentiment",
+            "sentence_component": None,
+        }
 
     def expected_types_and_attributes(self):
         r"""Method to add expected type `ft.onto.base_ontology.Sentence` which

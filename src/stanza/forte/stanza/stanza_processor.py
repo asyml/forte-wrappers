@@ -67,12 +67,12 @@ class StandfordNLPProcessor(PackProcessor):
         This defines a basic config structure for StanfordNLP.
         """
         return {
-                "processors": "tokenize,pos,lemma,depparse",
-                "lang": "en",
-                # Language code for the language to build the Pipeline
-                "use_gpu": False,
-                "dir": ".",
-            }
+            "processors": "tokenize,pos,lemma,depparse",
+            "lang": "en",
+            # Language code for the language to build the Pipeline
+            "use_gpu": False,
+            "dir": ".",
+        }
 
     def _process(self, input_pack: DataPack):
         doc = input_pack.text

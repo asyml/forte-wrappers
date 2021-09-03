@@ -179,10 +179,10 @@ class NLTKChunker(PackProcessor):
     def default_configs(cls):
         r"""This defines a basic config structure for NLTKChunker."""
         return {
-                "pattern": "NP: {<DT>?<JJ>*<NN>}",
-                "token_component": None,
-                "sentence_component": None,
-            }
+            "pattern": "NP: {<DT>?<JJ>*<NN>}",
+            "token_component": None,
+            "sentence_component": None,
+        }
 
     def _process(self, input_pack: DataPack):
         for sentence in input_pack.get(

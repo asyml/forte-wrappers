@@ -80,13 +80,13 @@ class ElasticSearchIndexerBase(IndexProcessor, ABC):
 
         """
         return {
-                "fields": ["doc_id", "content"],
-                "indexer": {
-                    "name": "ElasticSearchIndexer",
-                    "hparams": ElasticSearchIndexer.default_configs(),
-                    "other_kwargs": {"request_timeout": 10, "refresh": False},
-                },
-            }
+            "fields": ["doc_id", "content"],
+            "indexer": {
+                "name": "ElasticSearchIndexer",
+                "hparams": ElasticSearchIndexer.default_configs(),
+                "other_kwargs": {"request_timeout": 10, "refresh": False},
+            },
+        }
 
     def _bulk_process(self):
         self.indexer.add_bulk(

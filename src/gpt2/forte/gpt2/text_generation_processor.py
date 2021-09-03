@@ -232,17 +232,17 @@ class TextGenerationProcessor(MultiPackBatchProcessor):
     @classmethod
     def default_configs(cls):
         return {
-                "max_decoding_length": 128,
-                "temperature": 0.7,
-                "top_p": None,
-                "top_k": 40,
-                "pretrained_model_name": "117M",
-                "checkpoint": None,
-                "input_pack_name": None,
-                "output_pack_name": None,
-                "selector": {
-                    "type": "forte.data.selector.DummySelector",
-                    "args": None,
-                    "kwargs": {},
-                },
-            }
+            "max_decoding_length": 128,
+            "temperature": 0.7,
+            "top_p": None,
+            "top_k": 40,
+            "pretrained_model_name": "117M",
+            "checkpoint": None,
+            "input_pack_name": None,
+            "output_pack_name": None,
+            "selector": {
+                "type": "forte.data.selector.DummySelector",
+                "args": None,
+                "kwargs": {},
+            },
+        }
