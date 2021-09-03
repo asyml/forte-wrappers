@@ -167,6 +167,11 @@ jobs:
             do
               pip install "src/"$dep
             done
+      - name: Install Forte from source to use the latest version.
+        run: |
+          git clone https://github.com/asyml/forte.git
+          cd forte
+          pip install --progress-bar off .
       - name: Build Docs
         run: |
           cd docs
