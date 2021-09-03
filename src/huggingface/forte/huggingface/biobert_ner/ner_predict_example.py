@@ -25,12 +25,8 @@ from forte.hugginface.transformers_processor import BERTTokenizer
 from forte.hugginface.bio_ner_predictor import BioBERTNERPredictor
 from forte.nltk.nltk_processors import NLTKSentenceSegmenter
 
-config = yaml.safe_load(open("config.yml", "r"))
 
-config = Config(config, default_hparams=None)
-
-
-def main():
+def main(config: Config):
     pl = Pipeline[DataPack]()
     pl.set_reader(StringReader())
     pl.add(NLTKSentenceSegmenter())
@@ -67,4 +63,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    with open("config.yml", "r", encoding="utf-8") as f:
+        main(Config(yaml.safe_load(f), default_hparams=None))

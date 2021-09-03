@@ -58,8 +58,8 @@ class QuestionAnsweringMulti(MultiPackProcessor):
         self.set_up()
 
     def _process(self, input_pack: MultiPack):
-        context_list = list()
-        doc_id_list = list()
+        context_list = []
+        doc_id_list = []
         for doc_id in input_pack.pack_names:
             if doc_id == self.configs.question_pack_name:
                 continue

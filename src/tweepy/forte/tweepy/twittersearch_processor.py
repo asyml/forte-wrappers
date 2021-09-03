@@ -130,26 +130,27 @@ class TweetSearchProcessor(MultiPackProcessor):
         Returns:
             List of tweets
         """
-        credentials = yaml.safe_load(open(self.configs.credential_file, "r"))
-        credentials = Config(credentials, default_hparams=None)
+        with open(self.configs.credential_file, "r", encoding="utf-8") as f:
+            credentials = yaml.safe_load(f)
+            credentials = Config(credentials, default_hparams=None)
 
-        auth = tw.OAuthHandler(
-            credentials.consumer_key, credentials.consumer_secret
-        )
-        auth.set_access_token(
-            credentials.access_token, credentials.access_token_secret
-        )
+            auth = tw.OAuthHandler(
+                credentials.consumer_key, credentials.consumer_secret
+            )
+            auth.set_access_token(
+                credentials.access_token, credentials.access_token_secret
+            )
 
-        api = tw.API(auth, wait_on_rate_limit=True)
+            api = tw.API(auth, wait_on_rate_limit=True)
 
-        # Collect tweets
-        tweets = tw.Cursor(
-            api.search,
-            q=query,
-            lang=self.configs.lang,
-            since=self.configs.date_since,
-            result_type=self.configs.result_type,
-            tweet_mode="extended",
-        ).items(self.configs.num_tweets_returned)
+            # Collect tweets
+            tweets = tw.Cursor(
+                api.search,
+                q=query,
+                lang=self.configs.lang,
+                since=self.configs.date_since,
+                result_type=self.configs.result_type,
+                tweet_mode="extended",
+            ).items(self.configs.num_tweets_returned)
 
-        return tweets
+            return tweets

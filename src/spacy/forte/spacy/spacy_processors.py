@@ -11,24 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Optional, Dict, Set, Type, List, Any
+from typing import Optional, Dict, Set, List, Any
 
 import spacy
-from spacy.language import Language
-from spacy.cli.download import download
-
-from forte.data.base_pack import PackType
-from forte.data.batchers import ProcessingBatcher, FixedSizeDataPackBatcher
-from forte.data.ontology import Annotation
-from forte.data.types import DataRequest
-from ft.onto.base_ontology import EntityMention, Sentence, Token
-
-from ftx.medical import MedicalEntityMention, UMLSConceptLink
 from forte.common import ProcessExecutionException, ProcessorConfigError
 from forte.common.configuration import Config
 from forte.common.resources import Resources
+from forte.data.base_pack import PackType
 from forte.data.data_pack import DataPack
+from forte.data.ontology import Annotation
 from forte.processors.base import PackProcessor, FixedSizeBatchPackingProcessor
+from ft.onto.base_ontology import EntityMention, Sentence, Token
+from ftx.medical import MedicalEntityMention, UMLSConceptLink
+from spacy.cli.download import download
+from spacy.language import Language
 
 __all__ = [
     "SpacyProcessor",
