@@ -54,7 +54,7 @@ class StandfordNLPProcessor(PackProcessor):
                     "pos or lemma or depparse"
                 )
         self.set_up()
-        self.nlp = stanza.Pipeline(
+        self.nlp = stanza.Pipeline(  # type: ignore
             lang=self.configs.lang,
             dir=self.configs.dir,
             use_gpu=self.configs.use_gpu,
