@@ -14,6 +14,9 @@
 from typing import Optional, Dict, Set, List, Any
 
 import spacy
+from spacy.cli.download import download
+from spacy.language import Language
+
 from forte.common import ProcessExecutionException, ProcessorConfigError
 from forte.common.configuration import Config
 from forte.common.resources import Resources
@@ -23,12 +26,10 @@ from forte.data.ontology import Annotation
 from forte.processors.base import PackProcessor, FixedSizeBatchPackingProcessor
 from ft.onto.base_ontology import EntityMention, Sentence, Token
 from ftx.medical import MedicalEntityMention, UMLSConceptLink
-from spacy.cli.download import download
-from spacy.language import Language
 
 __all__ = [
     "SpacyProcessor",
-    "SpacyPackProcessor",
+    "SpacyBatchedProcessor",
 ]
 
 SCISPACYMODEL_URL = {
@@ -50,7 +51,7 @@ SCISPACYMODEL_URL = {
 }
 
 
-class SpacyProcessor(FixedSizeBatchPackingProcessor):
+class SpacyBatchedProcessor(FixedSizeBatchPackingProcessor):
     """
     This processor wraps spaCy(v2.3.x) and ScispaCy(v0.3.0) models,
     providing most models included in the SpaCy pipeline, such as including
@@ -90,7 +91,7 @@ class SpacyProcessor(FixedSizeBatchPackingProcessor):
         pass
 
 
-class SpacyPackProcessor(PackProcessor):
+class SpacyProcessor(PackProcessor):
     """
     This processor wraps spaCy(v2.3.x) and ScispaCy(v0.3.0) models,
     providing functions including sentence parsing, tokenize, POS tagging,
@@ -299,7 +300,7 @@ class SpacyPackProcessor(PackProcessor):
                 "The SpaCy pipeline is not initialized, maybe you "
                 "haven't called the initialization function."
             )
-        result = next(self.nlp.pipe(doc))
+        result = self.nlp(doc)
 
         # Record NER results.
         if "ner" in self.processors:
