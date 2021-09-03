@@ -25,7 +25,7 @@ import numpy as np
 
 import torch
 import faiss
-from forte.common.Configurable import Configurable
+from forte.common.configurable import Configurable
 
 from forte.common.configuration import Config
 from forte import utils
