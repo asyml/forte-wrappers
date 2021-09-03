@@ -37,7 +37,7 @@ class ElasticSearchProcessor(MultiPackProcessor):
 
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
-        self.index = ElasticSearchIndexer(config=self.configs.index_config)
+        self.index = ElasticSearchIndexer(configs=self.configs.index_config)
 
     @classmethod
     def default_configs(cls) -> Dict[str, Any]:
@@ -59,17 +59,13 @@ class ElasticSearchProcessor(MultiPackProcessor):
                 returned data pack will be created by deserialization.
                 Default is True.
         """
-        config = super().default_configs()
-        config.update(
-            {
-                "query_pack_name": "query",
-                "index_config": ElasticSearchIndexer.default_configs(),
-                "field": "content",
-                "response_pack_name_prefix": "passage",
-                "indexed_text_only": True,
-            }
-        )
-        return config
+        return {
+            "query_pack_name": "query",
+            "index_config": ElasticSearchIndexer.default_configs(),
+            "field": "content",
+            "response_pack_name_prefix": "passage",
+            "indexed_text_only": True,
+        }
 
     def _process(self, input_pack: MultiPack):
         r"""Searches `Elasticsearch` indexer to fetch documents for a query.

@@ -11,6 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# type: ignore
+# There are many `Module has no attribute` errors during mypy, this may
+#  relate to this issue: https://github.com/python/mypy/issues/7030,
+#  we currently skip mypy test on this file.
+
 import os
 import logging
 import pickle
@@ -19,6 +25,7 @@ import numpy as np
 
 import torch
 import faiss
+from forte.common.configurable import Configurable
 
 from forte.common.configuration import Config
 from forte import utils
@@ -26,7 +33,7 @@ from forte import utils
 __all__ = ["EmbeddingBasedIndexer"]
 
 
-class EmbeddingBasedIndexer:
+class EmbeddingBasedIndexer(Configurable):
     r"""This class is used for indexing documents represented as vectors. For
     example, each document can be passed through a neural embedding models and
     the vectors are indexed using this class.
@@ -46,9 +53,7 @@ class EmbeddingBasedIndexer:
 
     def __init__(self, config: Optional[Union[Dict, Config]] = None):
         super().__init__()
-        self._config = Config(
-            hparams=config, default_hparams=self.default_configs()
-        )
+        self._config = self.make_configs(config)
         self._meta_data: Dict[int, str] = {}
 
         index_type = self._config.index_type

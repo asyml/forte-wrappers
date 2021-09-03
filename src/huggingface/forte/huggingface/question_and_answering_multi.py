@@ -58,8 +58,8 @@ class QuestionAnsweringMulti(MultiPackProcessor):
         self.set_up()
 
     def _process(self, input_pack: MultiPack):
-        context_list = list()
-        doc_id_list = list()
+        context_list = []
+        doc_id_list = []
         for doc_id in input_pack.pack_names:
             if doc_id == self.configs.question_pack_name:
                 continue
@@ -108,15 +108,11 @@ class QuestionAnsweringMulti(MultiPackProcessor):
 
         Returns: A dictionary with the default config for this processor.
         """
-        config = super().default_configs()
-        config.update(
-            {
-                "question_pack_name": "question",
-                "entry_type": "ft.onto.base_ontology.Document",
-                "model_name": "ktrapeznikov/biobert_v1.1_pubmed_squad_v2",
-                "max_answer_len": 15,
-                "cuda_devices": -1,
-                "handle_impossible_answer": False,
-            }
-        )
-        return config
+        return {
+            "question_pack_name": "question",
+            "entry_type": "ft.onto.base_ontology.Document",
+            "model_name": "ktrapeznikov/biobert_v1.1_pubmed_squad_v2",
+            "max_answer_len": 15,
+            "cuda_devices": -1,
+            "handle_impossible_answer": False,
+        }

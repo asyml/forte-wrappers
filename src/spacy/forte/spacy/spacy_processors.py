@@ -11,37 +11,86 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Optional, Dict, Set
+from typing import Optional, Dict, Set, List, Any
 
 import spacy
-from spacy.language import Language
 from spacy.cli.download import download
-from ft.onto.base_ontology import EntityMention, Sentence, Token
+from spacy.language import Language
 
-from ftx.medical import MedicalEntityMention, UMLSConceptLink
 from forte.common import ProcessExecutionException, ProcessorConfigError
 from forte.common.configuration import Config
 from forte.common.resources import Resources
+from forte.data.base_pack import PackType
 from forte.data.data_pack import DataPack
-from forte.processors.base import PackProcessor
+from forte.data.ontology import Annotation
+from forte.processors.base import PackProcessor, FixedSizeBatchPackingProcessor
+from ft.onto.base_ontology import EntityMention, Sentence, Token
+from ftx.medical import MedicalEntityMention, UMLSConceptLink
 
 __all__ = [
     "SpacyProcessor",
+    "SpacyBatchedProcessor",
 ]
 
-# pylint: disable=line-too-long
 SCISPACYMODEL_URL = {
-    "en_core_sci_sm": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_core_sci_sm-0.3.0.tar.gz",
-    "en_core_sci_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_core_sci_md-0.3.0.tar.gz",
-    "en_core_sci_lg": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_core_sci_lg-0.3.0.tar.gz",
-    "en_ner_craft_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_ner_craft_md-0.3.0.tar.gz",
-    "en_ner_jnlpba_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_ner_jnlpba_md-0.3.0.tar.gz",
-    "en_ner_bc5cdr_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_ner_bc5cdr_md-0.3.0.tar.gz",
-    "en_ner_bionlp13cg_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_ner_bionlp13cg_md-0.3.0.tar.gz",
+    "en_core_sci_sm": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy"
+    "/releases/v0.3.0/en_core_sci_sm-0.3.0.tar.gz",
+    "en_core_sci_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy"
+    "/releases/v0.3.0/en_core_sci_md-0.3.0.tar.gz",
+    "en_core_sci_lg": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy"
+    "/releases/v0.3.0/en_core_sci_lg-0.3.0.tar.gz",
+    "en_ner_craft_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy"
+    "/releases/v0.3.0/en_ner_craft_md-0.3.0.tar.gz",
+    "en_ner_jnlpba_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy"
+    "/releases/v0.3.0/en_ner_jnlpba_md-0.3.0.tar.gz",
+    "en_ner_bc5cdr_md": "https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy"
+    "/releases/v0.3.0/en_ner_bc5cdr_md-0.3.0.tar.gz",
+    "en_ner_bionlp13cg_md": "https://s3-us-west-2.amazonaws.com/ai2-s2"
+    "-scispacy/releases/v0.3.0/en_ner_bionlp13cg_md-0"
+    ".3.0.tar.gz",
 }
 
 
-# pylint: enable=line-too-long
+class SpacyBatchedProcessor(FixedSizeBatchPackingProcessor):
+    """
+    This processor wraps spaCy(v2.3.x) and ScispaCy(v0.3.0) models,
+    providing most models included in the SpaCy pipeline, such as including
+    sentence parsing, tokenize, POS tagging, lemmatization, NER, and medical
+    entity linking. This is the batch processing version for
+    :class:`~spacy.forte.spacy.PackSpacyProcessor`, where it supports to
+    batching across different data packs.
+
+    This processor will do user defined tasks according to configs.
+    The supported tasks includes:
+
+    - `sentence`: sentence segmentation
+
+    - `tokenize`: word tokenize
+
+    - `pos`: Part-of-speech tagging
+
+    - `lemma`: word lemmatization
+
+    - `ner`: named entity recognition
+
+    - `umls_link`: medical entity linking to UMLS concepts
+
+    Citation: ScispaCy: Fast and Robust Models for Biomedical Natural Language
+    Processing.
+    """
+
+    def predict(self, data_batch: Dict) -> Dict[str, List[Any]]:
+        pass
+
+    def pack(
+        self,
+        pack: PackType,
+        predict_results: Dict[str, List[Any]],
+        context: Optional[Annotation] = None,
+    ):
+        pass
+
+
 class SpacyProcessor(PackProcessor):
     """
     This processor wraps spaCy(v2.3.x) and ScispaCy(v0.3.0) models,
@@ -142,6 +191,7 @@ class SpacyProcessor(PackProcessor):
             - `processors`: defines what operations to be done on the
               sentence, default value is `"sentence, tokenize,pos,lemma"`
               which performs all the basic operations.
+
             - `lang`: language model, default is spaCy `en_core_web_sm` model.
               The pipeline support spaCy and ScispaCy models.
               A list of available spaCy models could be found at
@@ -150,20 +200,17 @@ class SpacyProcessor(PackProcessor):
               biomedical dataset is preferred. A list of available models
               could be found at
               https://github.com/allenai/scispacy/tree/v0.3.0.
+
             - `use_gpu`: use gpu or not, default value is False.
 
         Returns: A dictionary with the default config for this processor.
         """
-        config = super().default_configs()
-        config.update(
-            {
-                "processors": "sentence, tokenize, pos, lemma",
-                "lang": "en_core_web_sm",
-                # Language code for the language to build the Pipeline
-                "use_gpu": False,
-            }
-        )
-        return config
+        return {
+            "processors": "sentence, tokenize, pos, lemma",
+            "lang": "en_core_web_sm",
+            # Language code for the language to build the Pipeline
+            "use_gpu": False,
+        }
 
     def _process_parser(self, sentences, input_pack: DataPack):
         """Parse the sentence. Default behaviour is to segment sentence, POSTag

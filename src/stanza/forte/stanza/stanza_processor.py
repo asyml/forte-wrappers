@@ -54,7 +54,7 @@ class StandfordNLPProcessor(PackProcessor):
                     "pos or lemma or depparse"
                 )
         self.set_up()
-        self.nlp = stanza.Pipeline(
+        self.nlp = stanza.Pipeline(  # type: ignore
             lang=self.configs.lang,
             dir=self.configs.dir,
             use_gpu=self.configs.use_gpu,
@@ -65,19 +65,14 @@ class StandfordNLPProcessor(PackProcessor):
     def default_configs(cls) -> Dict[str, Any]:
         """
         This defines a basic config structure for StanfordNLP.
-        :return:
         """
-        config = super().default_configs()
-        config.update(
-            {
-                "processors": "tokenize,pos,lemma,depparse",
-                "lang": "en",
-                # Language code for the language to build the Pipeline
-                "use_gpu": False,
-                "dir": ".",
-            }
-        )
-        return config
+        return {
+            "processors": "tokenize,pos,lemma,depparse",
+            "lang": "en",
+            # Language code for the language to build the Pipeline
+            "use_gpu": False,
+            "dir": ".",
+        }
 
     def _process(self, input_pack: DataPack):
         doc = input_pack.text

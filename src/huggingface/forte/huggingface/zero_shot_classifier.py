@@ -110,24 +110,20 @@ class ZeroShotClassifier(PackProcessor):
 
         Returns: A dictionary with the default config for this processor.
         """
-        config = super().default_configs()
-        config.update(
-            {
-                "entry_type": "ft.onto.base_ontology.Sentence",
-                "attribute_name": "classification",
-                "multi_class": True,
-                "model_name": "valhalla/distilbart-mnli-12-1",
-                "candidate_labels": [
-                    "travel",
-                    "cooking",
-                    "dancing",
-                    "exploration",
-                ],
-                "hypothesis_template": "This example is {}.",
-                "cuda_device": -1,
-            }
-        )
-        return config
+        return {
+            "entry_type": "ft.onto.base_ontology.Sentence",
+            "attribute_name": "classification",
+            "multi_class": True,
+            "model_name": "valhalla/distilbart-mnli-12-1",
+            "candidate_labels": [
+                "travel",
+                "cooking",
+                "dancing",
+                "exploration",
+            ],
+            "hypothesis_template": "This example is {}.",
+            "cuda_device": -1,
+        }
 
     def expected_types_and_attributes(self):
         r"""Method to add expected type `ft.onto.base_ontology.Sentence` which

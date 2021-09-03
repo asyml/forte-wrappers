@@ -75,22 +75,18 @@ class TweetSearchProcessor(MultiPackProcessor):
                 The query pack's name, default is "query".
 
             - `"response_pack_name_prefix"`:
-                The pack name prefix to be used in response datapacks.
+                The pack name prefix to be used in response data packs.
         """
         # pylint: enable=line-too-long
-        config = super().default_configs()
-        config.update(
-            {
-                "credential_file": "",
-                "num_tweets_returned": 5,
-                "lang": "en",
-                "date_since": "2020-01-01",
-                "result_type": "recent",
-                "query_pack_name": "query",
-                "response_pack_name_prefix": "passage",
-            }
-        )
-        return config
+        return {
+            "credential_file": "",
+            "num_tweets_returned": 5,
+            "lang": "en",
+            "date_since": "2020-01-01",
+            "result_type": "recent",
+            "query_pack_name": "query",
+            "response_pack_name_prefix": "passage",
+        }
 
     def _process(self, input_pack: MultiPack):
         r"""Search using Twitter API to fetch tweets for a query.
@@ -134,26 +130,27 @@ class TweetSearchProcessor(MultiPackProcessor):
         Returns:
             List of tweets
         """
-        credentials = yaml.safe_load(open(self.configs.credential_file, "r"))
-        credentials = Config(credentials, default_hparams=None)
+        with open(self.configs.credential_file, "r", encoding="utf-8") as f:
+            credentials = yaml.safe_load(f)
+            credentials = Config(credentials, default_hparams=None)
 
-        auth = tw.OAuthHandler(
-            credentials.consumer_key, credentials.consumer_secret
-        )
-        auth.set_access_token(
-            credentials.access_token, credentials.access_token_secret
-        )
+            auth = tw.OAuthHandler(  # type: ignore
+                credentials.consumer_key, credentials.consumer_secret
+            )
+            auth.set_access_token(
+                credentials.access_token, credentials.access_token_secret
+            )
 
-        api = tw.API(auth, wait_on_rate_limit=True)
+            api = tw.API(auth, wait_on_rate_limit=True)  # type: ignore
 
-        # Collect tweets
-        tweets = tw.Cursor(
-            api.search,
-            q=query,
-            lang=self.configs.lang,
-            since=self.configs.date_since,
-            result_type=self.configs.result_type,
-            tweet_mode="extended",
-        ).items(self.configs.num_tweets_returned)
+            # Collect tweets
+            tweets = tw.Cursor(  # type: ignore
+                api.search,
+                q=query,
+                lang=self.configs.lang,
+                since=self.configs.date_since,
+                result_type=self.configs.result_type,
+                tweet_mode="extended",
+            ).items(self.configs.num_tweets_returned)
 
-        return tweets
+            return tweets

@@ -16,7 +16,7 @@ from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.data.ontology import Annotation
 from forte.data.types import DataRequest
-from forte.processors.base.batch_processor import FixedSizeBatchProcessor
+from forte.processors.base.batch_processor import FixedSizeBatchPackingProcessor
 
 
 __all__ = [
@@ -24,7 +24,7 @@ __all__ = [
 ]
 
 
-class BioBERTNERPredictor(FixedSizeBatchProcessor):
+class BioBERTNERPredictor(FixedSizeBatchPackingProcessor):
     """
     An Named Entity Recognizer fine-tuned on BioBERT
 
@@ -244,19 +244,12 @@ class BioBERTNERPredictor(FixedSizeBatchProcessor):
     @classmethod
     def default_configs(cls):
         r"""Default config for NER Predictor"""
-
-        configs = super().default_configs()
-        # TODO: Batcher in NER need to be update to use the sytem one.
-        configs["batcher"] = {"batch_size": 10}
-
-        more_configs = {
+        return {
             "model_path": None,
             "ner_type": "BioEntity",
             "ignore_labels": ["O"],
+            "batcher": {"batch_size": 10},
         }
-
-        configs.update(more_configs)
-        return configs
 
     def record(self, record_meta: Dict[str, Set[str]]):
         r"""Method to add output type record of current processor

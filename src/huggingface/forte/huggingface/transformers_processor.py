@@ -61,9 +61,7 @@ class BERTTokenizer(PackProcessor):
         values. Used to replace the missing values of input ``configs`` during
         pipeline construction.
         """
-        config = super().default_configs()
-        config.update({"model_path": None})
-        return config
+        return {"model_path": None}
 
     def record(self, record_meta: Dict[str, Set[str]]):
         r"""Method to add output type `ft.onto.base_ontology.Subword`

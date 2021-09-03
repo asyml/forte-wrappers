@@ -30,7 +30,9 @@ class TestElasticSearchIndexer(unittest.TestCase):
     r"""Tests Elastic Indexer."""
 
     def setUp(self):
-        self.indexer = ElasticSearchIndexer(config={"index_name": "test_index"})
+        self.indexer = ElasticSearchIndexer(
+            configs={"index_name": "test_index"}
+        )
 
     def tearDown(self):
         self.indexer.elasticsearch.indices.delete(

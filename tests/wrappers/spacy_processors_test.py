@@ -17,11 +17,11 @@ Unit tests for spaCy processors.
 import unittest
 from typing import List
 
-from ddt import ddt, data
 import spacy
 from spacy.language import Language
 
-from forte.common import ProcessExecutionException, ProcessorConfigError
+from ddt import ddt, data
+from forte.common import ProcessorConfigError
 from forte.data.data_pack import DataPack
 from forte.data.readers import StringReader
 from forte.pipeline import Pipeline
@@ -59,7 +59,7 @@ class TestSpacyProcessor(unittest.TestCase):
         self.assertEqual(pack.text, document)
 
         # Check tokens
-        tokens = [x.text for x in pack.annotations if isinstance(x, Token)]
+        tokens = [x.text for x in pack.get(Token)]
         document = document.replace(".", " .")
         self.assertEqual(tokens, document.split())
 
