@@ -230,5 +230,5 @@ class TextGenerationProcessor(PackingBatchProcessor[MultiPack]):
             "checkpoint": None,
             "input_pack_name": None,
             "output_pack_name": None,
-            "batcher":  FixedSizeMultiPackProcessingBatcher.default_configs()
+            "batcher": FixedSizeMultiPackProcessingBatcher.default_configs(),
         }
