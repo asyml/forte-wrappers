@@ -16,7 +16,7 @@ from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.data.ontology import Annotation
 from forte.data.types import DataRequest
-from forte.processors.base.batch_processor import FixedSizeBatchProcessor
+from forte.processors.base.batch_processor import FixedSizeBatchPackingProcessor
 
 
 __all__ = [
@@ -24,7 +24,7 @@ __all__ = [
 ]
 
 
-class BioBERTNERPredictor(FixedSizeBatchProcessor):
+class BioBERTNERPredictor(FixedSizeBatchPackingProcessor):
     """
     An Named Entity Recognizer fine-tuned on BioBERT
 
