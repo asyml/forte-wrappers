@@ -100,9 +100,7 @@ class QuestionAnsweringSingle(PackProcessor):
 
         Returns: A dictionary with the default config for this processor.
         """
-        config = super().default_configs()
-        config.update(
-            {
+        return {
                 "entry_type": "ft.onto.base_ontology.Document",
                 "model_name": "ktrapeznikov/biobert_v1.1_pubmed_squad_v2",
                 "question": "Where do I live",
@@ -110,8 +108,6 @@ class QuestionAnsweringSingle(PackProcessor):
                 "cuda_devices": -1,
                 "handle_impossible_answer": False,
             }
-        )
-        return config
 
     def expected_types_and_attributes(self):
         r"""Method to add user specified expected type which

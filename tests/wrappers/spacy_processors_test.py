@@ -25,7 +25,7 @@ from forte.common import ProcessExecutionException, ProcessorConfigError
 from forte.data.data_pack import DataPack
 from forte.data.readers import StringReader
 from forte.pipeline import Pipeline
-from forte.spacy import SpacyProcessor
+from forte.spacy import SpacyProcessor, SpacyPackProcessor
 from ft.onto.base_ontology import Token, EntityMention
 
 
@@ -41,7 +41,7 @@ class TestSpacyProcessor(unittest.TestCase):
             # Language code for the language to build the Pipeline
             "use_gpu": False,
         }
-        self.spacy.add(SpacyProcessor(), config=config)
+        self.spacy.add(SpacyPackProcessor(), config=config)
         self.spacy.initialize()
 
         self.nlp: Language = spacy.load(config["lang"])

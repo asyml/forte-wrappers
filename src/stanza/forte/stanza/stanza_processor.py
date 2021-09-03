@@ -65,19 +65,14 @@ class StandfordNLPProcessor(PackProcessor):
     def default_configs(cls) -> Dict[str, Any]:
         """
         This defines a basic config structure for StanfordNLP.
-        :return:
         """
-        config = super().default_configs()
-        config.update(
-            {
+        return {
                 "processors": "tokenize,pos,lemma,depparse",
                 "lang": "en",
                 # Language code for the language to build the Pipeline
                 "use_gpu": False,
                 "dir": ".",
             }
-        )
-        return config
 
     def _process(self, input_pack: DataPack):
         doc = input_pack.text

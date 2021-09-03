@@ -231,9 +231,7 @@ class TextGenerationProcessor(MultiPackBatchProcessor):
 
     @classmethod
     def default_configs(cls):
-        config = super().default_configs()
-        config.update(
-            {
+        return {
                 "max_decoding_length": 128,
                 "temperature": 0.7,
                 "top_p": None,
@@ -248,5 +246,3 @@ class TextGenerationProcessor(MultiPackBatchProcessor):
                     "kwargs": {},
                 },
             }
-        )
-        return config

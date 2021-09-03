@@ -79,9 +79,7 @@ class ElasticSearchIndexerBase(IndexProcessor, ABC):
                 :meth:`ElasticSearchIndexer.add_bulk` API
 
         """
-        config = super().default_configs()
-        config.update(
-            {
+        return {
                 "fields": ["doc_id", "content"],
                 "indexer": {
                     "name": "ElasticSearchIndexer",
@@ -89,8 +87,6 @@ class ElasticSearchIndexerBase(IndexProcessor, ABC):
                     "other_kwargs": {"request_timeout": 10, "refresh": False},
                 },
             }
-        )
-        return config
 
     def _bulk_process(self):
         self.indexer.add_bulk(

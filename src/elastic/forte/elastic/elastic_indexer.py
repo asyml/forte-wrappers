@@ -22,6 +22,7 @@ from elasticsearch import logger as es_logger
 
 __all__ = ["ElasticSearchIndexer"]
 
+from forte.common.Configurable import Configurable
 from forte.common.configuration import Config
 
 # It seems that elastic search shows a lot of debug message, sometimes can
@@ -29,13 +30,13 @@ from forte.common.configuration import Config
 es_logger.setLevel(logging.INFO)
 
 
-class ElasticSearchIndexer:
+class ElasticSearchIndexer(Configurable):
     r"""Indexer class for `Elasticsearch`."""
 
-    def __init__(self, config: Optional[Union[Dict, Config]] = None):
+    def __init__(self, configs: Optional[Union[Dict, Config]] = None):
         super().__init__()
-        self._config = Config(config, self.default_configs())
-        self.elasticsearch = Elasticsearch(hosts=self._config.hosts)
+        self._configs = self.make_configs(configs)
+        self.elasticsearch = Elasticsearch(hosts=self._configs.hosts)
 
     def index(
         self,
@@ -88,7 +89,7 @@ class ElasticSearchIndexer:
                 `https://www.elastic.co/guide/en/elasticsearch/reference/master/docs-refresh.html`
                 for more information on "refresh"
         """
-        index_name = index_name if index_name else self._config.index_name
+        index_name = index_name if index_name else self._configs.index_name
         self.elasticsearch.index(  # pylint: disable=unexpected-keyword-arg
             index=index_name, body=document, refresh=refresh
         )
@@ -171,10 +172,10 @@ class ElasticSearchIndexer:
 
     @property
     def hparams(self):
-        return self._config
+        return self._configs
 
-    @staticmethod
-    def default_configs() -> Dict[str, Any]:
+    @classmethod
+    def default_configs(cls) -> Dict[str, Any]:
         r"""Returns a dictionary of default hyperparameters.
 
         .. code-block:: python

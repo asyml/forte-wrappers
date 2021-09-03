@@ -75,12 +75,10 @@ class TweetSearchProcessor(MultiPackProcessor):
                 The query pack's name, default is "query".
 
             - `"response_pack_name_prefix"`:
-                The pack name prefix to be used in response datapacks.
+                The pack name prefix to be used in response data packs.
         """
         # pylint: enable=line-too-long
-        config = super().default_configs()
-        config.update(
-            {
+        return {
                 "credential_file": "",
                 "num_tweets_returned": 5,
                 "lang": "en",
@@ -89,8 +87,6 @@ class TweetSearchProcessor(MultiPackProcessor):
                 "query_pack_name": "query",
                 "response_pack_name_prefix": "passage",
             }
-        )
-        return config
 
     def _process(self, input_pack: MultiPack):
         r"""Search using Twitter API to fetch tweets for a query.

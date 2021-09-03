@@ -150,9 +150,7 @@ class AllenNLPProcessor(PackProcessor):
 
         Returns: A dictionary with the default config for this processor.
         """
-        config = super().default_configs()
-        config.update(
-            {
+        return {
                 "processors": "tokenize,pos,depparse",
                 "tag_formalism": "stanford",
                 "overwrite_entries": False,
@@ -163,8 +161,6 @@ class AllenNLPProcessor(PackProcessor):
                 "cuda_devices": [-1],
                 "infer_batch_size": 0,
             }
-        )
-        return config
 
     def _process(self, input_pack: DataPack):
         # handle existing entries

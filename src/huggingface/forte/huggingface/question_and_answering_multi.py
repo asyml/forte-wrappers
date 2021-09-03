@@ -108,9 +108,7 @@ class QuestionAnsweringMulti(MultiPackProcessor):
 
         Returns: A dictionary with the default config for this processor.
         """
-        config = super().default_configs()
-        config.update(
-            {
+        return {
                 "question_pack_name": "question",
                 "entry_type": "ft.onto.base_ontology.Document",
                 "model_name": "ktrapeznikov/biobert_v1.1_pubmed_squad_v2",
@@ -118,5 +116,3 @@ class QuestionAnsweringMulti(MultiPackProcessor):
                 "cuda_devices": -1,
                 "handle_impossible_answer": False,
             }
-        )
-        return config

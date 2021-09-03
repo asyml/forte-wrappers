@@ -59,17 +59,13 @@ class ElasticSearchProcessor(MultiPackProcessor):
                 returned data pack will be created by deserialization.
                 Default is True.
         """
-        config = super().default_configs()
-        config.update(
-            {
+        return  {
                 "query_pack_name": "query",
                 "index_config": ElasticSearchIndexer.default_configs(),
                 "field": "content",
                 "response_pack_name_prefix": "passage",
                 "indexed_text_only": True,
             }
-        )
-        return config
 
     def _process(self, input_pack: MultiPack):
         r"""Searches `Elasticsearch` indexer to fetch documents for a query.
