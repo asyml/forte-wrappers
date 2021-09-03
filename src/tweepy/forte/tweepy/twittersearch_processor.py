@@ -134,17 +134,17 @@ class TweetSearchProcessor(MultiPackProcessor):
             credentials = yaml.safe_load(f)
             credentials = Config(credentials, default_hparams=None)
 
-            auth = tw.OAuthHandler(
+            auth = tw.OAuthHandler(  # type: ignore
                 credentials.consumer_key, credentials.consumer_secret
             )
             auth.set_access_token(
                 credentials.access_token, credentials.access_token_secret
             )
 
-            api = tw.API(auth, wait_on_rate_limit=True)
+            api = tw.API(auth, wait_on_rate_limit=True)  # type: ignore
 
             # Collect tweets
-            tweets = tw.Cursor(
+            tweets = tw.Cursor(  # type: ignore
                 api.search,
                 q=query,
                 lang=self.configs.lang,

@@ -11,6 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# type: ignore
+# There are many `Module has no attribute` errors during mypy, this may
+#  relate to this issue: https://github.com/python/mypy/issues/7030,
+#  we currently skip mypy test on this file.
+
 import os
 import logging
 import pickle

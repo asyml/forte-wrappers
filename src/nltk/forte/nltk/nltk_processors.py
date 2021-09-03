@@ -13,17 +13,20 @@
 # limitations under the License.
 from typing import List, Dict, Set
 
-import nltk
-from nltk import pos_tag, ne_chunk, PunktSentenceTokenizer
-from nltk.chunk import RegexpParser
-from nltk.stem import WordNetLemmatizer
-from nltk.tokenize.treebank import TreebankWordTokenizer
-from ft.onto.base_ontology import EntityMention, Token, Sentence, Phrase
-
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
+from ft.onto.base_ontology import EntityMention, Token, Sentence, Phrase
+from nltk import (  # type: ignore
+    pos_tag,
+    ne_chunk,
+    PunktSentenceTokenizer,
+    download,
+)
+from nltk.chunk import RegexpParser
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize.treebank import TreebankWordTokenizer
 
 __all__ = [
     "NLTKPOSTagger",
@@ -63,7 +66,7 @@ class NLTKPOSTagger(PackProcessor):
 
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
-        nltk.download("averaged_perceptron_tagger")
+        download("averaged_perceptron_tagger")
 
     def __init__(self):
         super().__init__()
@@ -105,7 +108,7 @@ class NLTKLemmatizer(PackProcessor):
 
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
-        nltk.download("wordnet")
+        download("wordnet")
 
     def __init__(self):
         super().__init__()
@@ -172,7 +175,7 @@ class NLTKChunker(PackProcessor):
 
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
-        nltk.download("maxent_ne_chunker")
+        download("maxent_ne_chunker")
         self.chunker = RegexpParser(configs.pattern)
 
     @classmethod
@@ -246,7 +249,7 @@ class NLTKSentenceSegmenter(PackProcessor):
 
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
-        nltk.download("punkt")
+        download("punkt")
 
     def __init__(self):
         super().__init__()
@@ -273,8 +276,8 @@ class NLTKNER(PackProcessor):
 
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
-        nltk.download("maxent_ne_chunker")
-        nltk.download("words")
+        download("maxent_ne_chunker")
+        download("words")
 
     def __init__(self):
         super().__init__()
