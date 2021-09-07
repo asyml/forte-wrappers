@@ -35,7 +35,7 @@ __all__ = [
 ]
 
 IS_SPACY_3 = False
-if version.parse(spacy.__version__) >= version.parse("3.0.0"): # type: ignore
+if version.parse(spacy.__version__) >= version.parse("3.0.0"):  # type: ignore
     IS_SPACY_3 = True
 
 CUSTOM_SPACYMODEL_URL = {
