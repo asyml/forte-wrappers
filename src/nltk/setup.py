@@ -23,7 +23,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="Apache License Version 2.0",
-    packages=["forte.nltk"],
+    packages=["fortex.nltk"],
     include_package_data=True,
     platforms="any",
     install_requires=[
