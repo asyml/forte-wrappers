@@ -214,7 +214,7 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
         self,
         pack: PackType,
         predict_results: Dict[str, Any],
-        context: Optional[Annotation] = None,
+        _: Optional[Annotation] = None,
     ):
         for result in predict_results["results"]:
             # Record NER results.
