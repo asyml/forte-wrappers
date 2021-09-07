@@ -25,35 +25,34 @@ from forte.common import ProcessorConfigError
 from forte.data.data_pack import DataPack
 from forte.data.readers import StringReader
 from forte.pipeline import Pipeline
-from forte.spacy import SpacyProcessor
-from ft.onto.base_ontology import Token, EntityMention
+from ft.onto.base_ontology import Token, EntityMention, Dependency
+
+from fortex.spacy import SpacyProcessor, SpacyBatchedProcessor
+from fortex.spacy.spacy_processors import set_up_pipe
 
 
 @ddt
 class TestSpacyProcessor(unittest.TestCase):
-    def setUp(self):
-        self.spacy = Pipeline[DataPack]()
-        self.spacy.set_reader(StringReader())
+    def test_spacy_processor(self):
+        pipeline = Pipeline[DataPack]()
+        pipeline.set_reader(StringReader())
 
         config = {
-            "processors": "sentence, tokenize",
+            "processors": ["sentence", "tokenize"],
             "lang": "en_core_web_sm",
             # Language code for the language to build the Pipeline
             "use_gpu": False,
         }
-        self.spacy.add(SpacyProcessor(), config=config)
-        self.spacy.initialize()
+        pipeline.add(SpacyProcessor(), config=config)
+        pipeline.initialize()
 
-        self.nlp: Language = spacy.load(config["lang"])
-
-    def test_spacy_processor(self):
         sentences = [
             "This tool is called Forte.",
             "The goal of this project to help you build NLP " "pipelines.",
             "NLP has never been made this easy before.",
         ]
         document = " ".join(sentences)
-        pack = self.spacy.process(document)
+        pack = pipeline.process(document)
 
         # Check document
         self.assertEqual(pack.text, document)
@@ -63,80 +62,67 @@ class TestSpacyProcessor(unittest.TestCase):
         document = document.replace(".", " .")
         self.assertEqual(tokens, document.split())
 
-    @data(
-        "sentence, tokenize",
-        "sentence, tokenize, pos",
-        "sentence, tokenize, pos, lemma",
-        "sentence, tokenize, lemma",
-        "sentence, ner, tokenize, lemma, pos",
-        "ner",
-    )
-    def test_spacy_variation_pipeline(self, value):
-        spacy = Pipeline[DataPack]()
-        spacy.set_reader(StringReader())
+    def check_results(self, processors, raw_results, data_pack):
+        forte_tokens: List[Token] = list(data_pack.get(Token))  # type: ignore
 
-        config = {
-            "processors": value,
-            "lang": "en_core_web_sm",
-            # Language code for the language to build the Pipeline
-            "use_gpu": False,
-        }
-        spacy.add(SpacyProcessor(), config=config)
-        spacy.initialize()
-
-        sentences = [
-            "This tool is called Forte.",
-            "The goal of this project to help you build NLP " "pipelines.",
-            "NLP has never been made this easy before.",
-        ]
-        document = " ".join(sentences)
-        pack: DataPack = spacy.process(document)
-        tokens: List[Token] = list(pack.get(Token))  # type: ignore
-
-        raw_results = self.nlp(document)
-        sentences = raw_results.sents
-
-        if "tokenize" in value:
+        if "tokenize" in processors:
             exp_pos = []
             exp_lemma = []
-            for s in sentences:
+            exp_deps = []
+            for s in raw_results.sents:
                 for w in s:
                     exp_lemma.append(w.lemma_)
                     exp_pos.append(w.tag_)
 
-            tokens_text = [x.text for x in tokens]
-            self.assertEqual(tokens_text, document.replace(".", " .").split())
+                    if not w.dep_ == "ROOT":
+                        exp_deps.append(
+                            (raw_results[w.head.i].text, w.text, w.dep_)
+                        )
 
-            pos = [x.pos for x in tokens]
-            lemma = [x.lemma for x in tokens]
+            tokens_text = [x.text for x in forte_tokens]
+            self.assertEqual(
+                tokens_text, data_pack.text.replace(".", " .").split()
+            )
+
+            pos = [x.pos for x in forte_tokens]
+            lemma = [x.lemma for x in forte_tokens]
+
+            dependencies = [
+                (dep.get_parent().text, dep.get_child().text, dep.rel_type)
+                for dep in data_pack.get(Dependency)
+            ]
 
             # Check token texts
-            for token, text in zip(tokens, tokens_text):
+            for token, text in zip(forte_tokens, tokens_text):
                 start, end = token.span.begin, token.span.end
-                self.assertEqual(document[start:end], text)
+                self.assertEqual(data_pack.text[start:end], text)
 
-            if "pos" in value:
+            if "pos" in processors:
                 self.assertListEqual(pos, exp_pos)
             else:
                 none_pos = [None] * len(pos)
                 self.assertListEqual(pos, none_pos)
 
-            if "lemma" in value:
+            if "lemma" in processors:
                 self.assertListEqual(lemma, exp_lemma)
             else:
                 none_lemma = [None] * len(lemma)
                 self.assertListEqual(lemma, none_lemma)
-        else:
-            self.assertListEqual(tokens, [])
 
-        if "ner" in value:
-            pack_ents: List[EntityMention] = list(pack.get(EntityMention))
+            if "dep" in processors:
+                self.assertListEqual(dependencies, exp_deps)
+        else:
+            self.assertListEqual(forte_tokens, [])
+
+        if "ner" in processors:
+            pack_ents: List[EntityMention] = list(data_pack.get(EntityMention))
             entities_text = [x.text for x in pack_ents]
             entities_type = [x.ner_type for x in pack_ents]
 
             raw_ents = raw_results.ents
             exp_ent_text = [
-                document[ent.start_char : ent.end_char] for ent in raw_ents
+                data_pack.text[ent.start_char : ent.end_char]
+                for ent in raw_ents
             ]
             exp_ent_types = [ent.label_ for ent in raw_ents]
 
@@ -144,12 +130,85 @@ class TestSpacyProcessor(unittest.TestCase):
             self.assertEqual(entities_type, exp_ent_types)
 
     @data(
-        "sentence, lemma",  # tokenize is required for lemma
-        "tokenize, pos",  # sentence is required for pos
+        ["sentence", "tokenize", "dep"],
+        ["sentence", "tokenize", "pos"],
+        ["sentence", "tokenize", "lemma"],
+        ["sentence", "tokenize", "pos", "lemma"],
+        ["sentence", "ner", "tokenize", "lemma", "pos"],
+        ["ner"],
+        ["sentence", "tokenize", "dep"],
+    )
+    def test_spacy_batch_pipeline(self, value):
+        pipeline = Pipeline[DataPack]()
+        pipeline.set_reader(StringReader())
+        config = {
+            "processors": value,
+            "lang": "en_core_web_sm",
+            # Language code for the language to build the Pipeline
+            "use_gpu": False,
+            "batcher": {"batch_size": 2},
+        }
+        pipeline.add(SpacyBatchedProcessor(), config)
+        pipeline.initialize()
+
+        sentences = [
+            "This tool is called Forte.",
+            "The goal of this project to help you build NLP pipelines.",
+            "NLP has never been made this easy before.",
+        ]
+
+        spacy_pipe: Language = spacy.load(config["lang"])
+        set_up_pipe(spacy_pipe, pipeline.component_configs[0])
+
+        for raw_results, pack in zip(
+            spacy_pipe.pipe(sentences), pipeline.process_dataset(sentences)
+        ):
+            self.check_results(value, raw_results, pack)
+
+    @data(
+        ["sentence", "tokenize"],
+        ["sentence", "tokenize", "pos"],
+        ["sentence", "tokenize", "lemma"],
+        ["sentence", "tokenize", "pos", "lemma"],
+        ["sentence", "ner", "tokenize", "lemma", "pos"],
+        ["ner"],
+        ["sentence", "tokenize", "dep"],
+    )
+    def test_spacy_variation_pipeline(self, value):
+        pipeline = Pipeline[DataPack]()
+        pipeline.set_reader(StringReader())
+
+        config = {
+            "processors": value,
+            "lang": "en_core_web_sm",
+            # Language code for the language to build the Pipeline
+            "use_gpu": False,
+        }
+        pipeline.add(SpacyProcessor(), config=config)
+        pipeline.initialize()
+
+        sentences = [
+            "This tool is called Forte.",
+            "The goal of this project to help you build NLP pipelines.",
+            "NLP has never been made this easy before.",
+        ]
+        document = " ".join(sentences)
+        pack: DataPack = pipeline.process(document)
+
+        spacy_pipe: Language = spacy.load(config["lang"])
+        set_up_pipe(spacy_pipe, pipeline.component_configs[0])
+        raw_results = spacy_pipe(document)
+
+        self.check_results(value, raw_results, pack)
+
+    @data(
+        ["lemma"],  # tokenize is required for lemma
+        ["tokenize"],  # sentence is required for tokenize
+        ["pos"],  # sentence, tokenize is required for pos
     )
     def test_spacy_processor_with_invalid_config(self, processor):
-        spacy = Pipeline[DataPack]()
-        spacy.set_reader(StringReader())
+        pipeline = Pipeline[DataPack]()
+        pipeline.set_reader(StringReader())
 
         config = {
             "processors": processor,
@@ -157,10 +216,10 @@ class TestSpacyProcessor(unittest.TestCase):
             # Language code for the language to build the Pipeline
             "use_gpu": False,
         }
-        spacy.add(SpacyProcessor(), config=config)
+        pipeline.add(SpacyProcessor(), config=config)
 
         with self.assertRaises(ProcessorConfigError):
-            spacy.initialize()
+            pipeline.initialize()
 
 
 if __name__ == "__main__":
