@@ -236,7 +236,7 @@ class BioBERTNERPredictor(RequestPackingProcessor):
                 "context_type": "ft.onto.base_ontology.Sentence",
                 "requests": {
                     "ft.onto.base_ontology.Subword": [],
-                    "ft.onto.base_ontology.Sentence": []
+                    "ft.onto.base_ontology.Sentence": [],
                 },
             },
         }
