@@ -1,30 +1,25 @@
 # pylint: disable=logging-fstring-interpolation
-from typing import Dict, List, Optional, Type, Tuple, Any, Set
+from typing import Dict, List, Optional, Tuple, Any, Set
 
 import numpy as np
 import torch
+from forte.common.configuration import Config
+from forte.common.resources import Resources
+from forte.data.data_pack import DataPack
+from forte.processors.base.batch_processor import RequestPackingProcessor
+from ft.onto.base_ontology import EntityMention, Subword
 from transformers import (
     AutoConfig,
     AutoModelForTokenClassification,
     AutoTokenizer,
 )
-from ft.onto.base_ontology import Sentence, EntityMention, Subword
-
-
-from forte.common.configuration import Config
-from forte.common.resources import Resources
-from forte.data.data_pack import DataPack
-from forte.data.ontology import Annotation
-from forte.data.types import DataRequest
-from forte.processors.base.batch_processor import FixedSizeBatchPackingProcessor
-
 
 __all__ = [
     "BioBERTNERPredictor",
 ]
 
 
-class BioBERTNERPredictor(FixedSizeBatchPackingProcessor):
+class BioBERTNERPredictor(RequestPackingProcessor):
     """
     An Named Entity Recognizer fine-tuned on BioBERT
 
@@ -42,18 +37,6 @@ class BioBERTNERPredictor(FixedSizeBatchPackingProcessor):
         self.model_config = None
         self.model = None
         self.tokenizer = None
-
-    @staticmethod
-    def _define_context() -> Type[Annotation]:
-        return Sentence
-
-    @staticmethod
-    def _define_input_info() -> DataRequest:
-        input_info: DataRequest = {
-            Subword: [],
-            Sentence: [],
-        }
-        return input_info
 
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
@@ -248,8 +231,27 @@ class BioBERTNERPredictor(FixedSizeBatchPackingProcessor):
             "model_path": None,
             "ner_type": "BioEntity",
             "ignore_labels": ["O"],
-            "batcher": {"batch_size": 10},
+            "batcher": {
+                "batch_size": 10,
+                "context_type": "ft.onto.base_ontology.Sentence",
+                "requests": {
+                    "ft.onto.base_ontology.Subword": [],
+                    "ft.onto.base_ontology.Sentence": []
+                },
+            },
         }
+
+    # @staticmethod
+    # def _define_context() -> Type[Annotation]:
+    #     return Sentence
+    #
+    # @staticmethod
+    # def _define_input_info() -> DataRequest:
+    #     input_info: DataRequest = {
+    #         Subword: [],
+    #         Sentence: [],
+    #     }
+    #     return input_info
 
     def record(self, record_meta: Dict[str, Set[str]]):
         r"""Method to add output type record of current processor
