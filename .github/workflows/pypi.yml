@@ -12,6 +12,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Only run PyPI publish on main repo.
+    if: github.repository == ‘asyml/forte’
     strategy:
       matrix:
         wrapper: [ spacy, allennlp, elastic, faiss, gpt2, huggingface, nltk, stanza, tweepy, vader ]

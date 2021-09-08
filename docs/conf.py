@@ -16,7 +16,7 @@ import os
 import sys
 
 # We should be in the `docs` directory, so the VERSION is one step up.
-with open(os.path.join("..", 'VERSION')) as version_file:
+with open(os.path.join("..", "scripts", "VERSION")) as version_file:
     version = version_file.read().strip()
 
 # from unittest.mock import MagicMock
