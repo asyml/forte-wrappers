@@ -1,1 +1,1 @@
-from forte.stanza.stanza_processor import *
+from fortex.stanza.stanza_processor import *

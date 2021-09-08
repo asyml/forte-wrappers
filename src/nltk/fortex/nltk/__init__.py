@@ -1,1 +1,1 @@
-from forte.nltk.nltk_processors import *
+from fortex.nltk.nltk_processors import *

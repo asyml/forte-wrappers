@@ -1,1 +1,1 @@
-from forte.vader.sentiment_analysis import *
+from fortex.vader.sentiment_analysis import *

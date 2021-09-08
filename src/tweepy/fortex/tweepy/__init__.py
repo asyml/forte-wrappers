@@ -1,1 +1,1 @@
-from forte.tweepy.twittersearch_processor import *
+from fortex.tweepy.twittersearch_processor import *

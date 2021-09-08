@@ -1,1 +1,1 @@
-from forte.gpt2.text_generation_processor import *
+from fortex.gpt2.text_generation_processor import *
