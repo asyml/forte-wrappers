@@ -20,8 +20,8 @@ from forte.data.caster import MultiPackBoxer
 from forte.data.readers import StringReader
 from forte.data.multi_pack import MultiPack, MultiPackLink
 from forte.processors.base import MultiPackProcessor
-from forte.nltk import NLTKSentenceSegmenter
-from forte.huggingface.question_and_answering_multi import (
+from fortex.nltk import NLTKSentenceSegmenter
+from fortex.huggingface.question_and_answering_multi import (
     QuestionAnsweringMulti,
 )
 from ft.onto.base_ontology import Phrase, Document

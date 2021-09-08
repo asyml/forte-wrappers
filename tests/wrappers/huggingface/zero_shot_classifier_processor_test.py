@@ -19,8 +19,8 @@ import unittest
 from forte.data.data_pack import DataPack
 from forte.pipeline import Pipeline
 from forte.data.readers import StringReader
-from forte.nltk import NLTKSentenceSegmenter
-from forte.huggingface.zero_shot_classifier import ZeroShotClassifier
+from fortex.nltk import NLTKSentenceSegmenter
+from fortex.huggingface.zero_shot_classifier import ZeroShotClassifier
 from ft.onto.base_ontology import Sentence
 from helpers.test_utils import get_top_scores_label
 

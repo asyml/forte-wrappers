@@ -20,7 +20,7 @@ from forte.data.data_pack import DataPack
 from forte.pipeline import Pipeline
 from forte.data.readers import StringReader
 from forte.processors.misc import PeriodSentenceSplitter
-from forte.huggingface import TokenClassification
+from fortex.huggingface import TokenClassification
 
 
 class TestTokenClassification(unittest.TestCase):

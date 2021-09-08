@@ -20,7 +20,7 @@ import unittest
 from forte.data.data_pack import DataPack
 from forte.pipeline import Pipeline
 from forte.data.readers import StringReader
-from forte.stanza import StandfordNLPProcessor
+from fortex.stanza import StandfordNLPProcessor
 
 
 class TestStanfordNLPProcessor(unittest.TestCase):

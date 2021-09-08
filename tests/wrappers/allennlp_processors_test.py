@@ -5,16 +5,16 @@ from typing import List
 from ddt import ddt, data, unpack
 
 from allennlp.predictors import Predictor
-from forte.allennlp.utils_processor import (
-    parse_allennlp_srl_tags,
-    parse_allennlp_srl_results,
-)
 
 from forte.data.data_pack import DataPack
 from forte.pipeline import Pipeline
 from forte.data.readers import StringReader
-from forte.allennlp.allennlp_processors import AllenNLPProcessor, MODEL2URL
-from forte.nltk import NLTKSentenceSegmenter
+from fortex.allennlp.utils_processor import (
+    parse_allennlp_srl_tags,
+    parse_allennlp_srl_results,
+)
+from fortex.allennlp.allennlp_processors import AllenNLPProcessor, MODEL2URL
+from fortex.nltk import NLTKSentenceSegmenter
 from ft.onto.base_ontology import (
     Sentence,
     Token,
