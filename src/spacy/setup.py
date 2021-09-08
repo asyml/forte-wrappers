@@ -18,7 +18,7 @@ supported_spacey_version = ">=2.3.0, <=2.3.5"
 
 setuptools.setup(
     name="forte.spacy",
-    version="v0.0.1post2",
+    version="0.0.2",
     url="https://github.com/asyml/forte-wrappers/tree/main/src/spacy",
     description="Provide Forte implementations of a fantastic collection of "
     "NLP tools.",
@@ -30,7 +30,7 @@ setuptools.setup(
     include_package_data=True,
     platforms="any",
     install_requires=[
-        "forte==0.1.1",
+        "forte==0.1.2",
         f"spacy{supported_spacey_version}",
         "scispacy==0.3.0",
     ],
