@@ -41,7 +41,6 @@ class TestSpacyProcessor(unittest.TestCase):
             "processors": ["sentence", "tokenize"],
             "lang": "en_core_web_sm",
             # Language code for the language to build the Pipeline
-            "use_gpu": False,
         }
         pipeline.add(SpacyProcessor(), config=config)
         pipeline.initialize()
@@ -145,7 +144,6 @@ class TestSpacyProcessor(unittest.TestCase):
             "processors": value,
             "lang": "en_core_web_sm",
             # Language code for the language to build the Pipeline
-            "use_gpu": False,
             "batcher": {"batch_size": 2},
         }
         pipeline.add(SpacyBatchedProcessor(), config)
@@ -182,7 +180,6 @@ class TestSpacyProcessor(unittest.TestCase):
             "processors": value,
             "lang": "en_core_web_sm",
             # Language code for the language to build the Pipeline
-            "use_gpu": False,
         }
         pipeline.add(SpacyProcessor(), config=config)
         pipeline.initialize()
@@ -214,7 +211,6 @@ class TestSpacyProcessor(unittest.TestCase):
             "processors": processor,
             "lang": "en_core_web_sm",
             # Language code for the language to build the Pipeline
-            "use_gpu": False,
         }
         pipeline.add(SpacyProcessor(), config=config)
 
