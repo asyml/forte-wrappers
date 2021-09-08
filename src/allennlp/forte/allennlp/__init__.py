@@ -1,1 +1,0 @@
-from forte.allennlp.allennlp_processors import AllenNLPProcessor

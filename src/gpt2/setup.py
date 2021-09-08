@@ -23,7 +23,8 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="Apache License Version 2.0",
-    packages=["forte.gpt2"],
+    packages=["fortex.gpt2"],
+    namespace_packages=["fortex"],
     include_package_data=True,
     platforms="any",
     install_requires=[

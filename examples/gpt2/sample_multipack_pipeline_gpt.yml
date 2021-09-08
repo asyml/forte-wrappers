@@ -5,7 +5,7 @@
     input_pack_name: "input_src"
     output_pack_name: "output_tgt"
 
-- type: "forte.gpt2.text_generation_processor.TextGenerationProcessor"
+- type: "fortex.gpt2.text_generation_processor.TextGenerationProcessor"
   configs:
     max_decoding_length: 128
     temperature: 0.7
@@ -16,9 +16,9 @@
     batcher:
       batch_size: 64
 
-- type: "forte.nltk.nltk_processors.NLTKWordTokenizer"
+- type: "fortex.nltk.nltk_processors.NLTKWordTokenizer"
   configs:
 
-- type: "forte.nltk.nltk_processors.NLTKPOSTagger"
+- type: "fortex.nltk.nltk_processors.NLTKPOSTagger"
   configs:
 

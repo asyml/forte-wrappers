@@ -21,7 +21,7 @@ import unittest
 from ddt import ddt, data, unpack
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
-from forte.elastic import ElasticSearchIndexer
+from fortex.elastic import ElasticSearchIndexer
 from helpers.test_utils import performance_test
 
 
