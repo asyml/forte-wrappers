@@ -19,7 +19,7 @@ from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.processors.base import IndexProcessor
 
-from forte.elastic.elastic_indexer import ElasticSearchIndexer
+from fortex.elastic.elastic_indexer import ElasticSearchIndexer
 
 __all__ = [
     "ElasticSearchTextIndexProcessor",

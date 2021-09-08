@@ -23,7 +23,8 @@ from forte.data.data_pack import DataPack
 from forte.data.multi_pack import MultiPack
 from forte.data.ontology.top import Query
 from forte.processors.base import MultiPackProcessor
-from forte.elastic.elastic_indexer import ElasticSearchIndexer
+
+from fortex.elastic.elastic_indexer import ElasticSearchIndexer
 
 __all__ = ["ElasticSearchProcessor"]
 
