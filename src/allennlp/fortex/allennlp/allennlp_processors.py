@@ -17,7 +17,7 @@ import logging
 from typing import Any, Dict, Iterator, List, Set
 import more_itertools
 
-from allennlp.predictors import Predictor
+from allennlpx.predictors import Predictor
 from ft.onto.base_ontology import (
     Token,
     Sentence,
