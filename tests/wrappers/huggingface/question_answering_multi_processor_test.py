@@ -28,45 +28,44 @@ from ft.onto.base_ontology import Phrase, Document
 
 docs = {
     "doc_1": "Acrokeratosis paraneoplastica (Bazex syndrome): report of a case "
-             "associated with small cell lung carcinoma and review of the "
-             "literature. Acrokeratosis paraneoplastic (Bazex syndrome) is "
-             "a rare, but distinctive paraneoplastic dermatosis characterized "
-             "by erythematosquamous lesions located at the acral sites and "
-             "is most commonly associated with carcinomas of the upper "
-             "aerodigestive tract. We report a 58-year-old female with a "
-             "history of a pigmented rash on her extremities, thick keratotic "
-             "plaques on her hands, and brittle nails. Chest imaging revealed "
-             "a right upper lobe mass that was proven to be small cell lung "
-             "carcinoma. While Bazex syndrome has been described in the "
-             "dermatology literature, it is also important for the radiologist "
-             "to be aware of this entity and its common presentations.",
+    "associated with small cell lung carcinoma and review of the "
+    "literature. Acrokeratosis paraneoplastic (Bazex syndrome) is "
+    "a rare, but distinctive paraneoplastic dermatosis characterized "
+    "by erythematosquamous lesions located at the acral sites and "
+    "is most commonly associated with carcinomas of the upper "
+    "aerodigestive tract. We report a 58-year-old female with a "
+    "history of a pigmented rash on her extremities, thick keratotic "
+    "plaques on her hands, and brittle nails. Chest imaging revealed "
+    "a right upper lobe mass that was proven to be small cell lung "
+    "carcinoma. While Bazex syndrome has been described in the "
+    "dermatology literature, it is also important for the radiologist "
+    "to be aware of this entity and its common presentations.",
     "doc_2": "Bazex syndrome (acrokeratosis paraneoplastica): persistence of "
-             "cutaneous lesions after successful treatment of an associated "
-             "oropharyngeal neoplasm. Acrokeratosis paraneoplastica is a rare "
-             "paraneoplastic syndrome commonly affecting males over 40 years "
-             "of age. There exists a strong association with squamous cell "
-             "carcinoma (SCC) of the upper aerodigestive tract or cervical "
-             "metastatic disease originating from an unknown primary. We "
-             "report a case associated with SCC of the right tonsil with "
-             "persistent paraneoplastic cutaneous lesions 2 years after "
-             "successful treatment of the underlying neoplasm.",
+    "cutaneous lesions after successful treatment of an associated "
+    "oropharyngeal neoplasm. Acrokeratosis paraneoplastica is a rare "
+    "paraneoplastic syndrome commonly affecting males over 40 years "
+    "of age. There exists a strong association with squamous cell "
+    "carcinoma (SCC) of the upper aerodigestive tract or cervical "
+    "metastatic disease originating from an unknown primary. We "
+    "report a case associated with SCC of the right tonsil with "
+    "persistent paraneoplastic cutaneous lesions 2 years after "
+    "successful treatment of the underlying neoplasm.",
     "doc_3": "Acrokeratosis paraneoplastica (Bazex syndrome) with oropharyngeal"
-             " squamous cell carcinoma. A 65-year-old white man presented with "
-             "all the clinical features of acrokeratosis paraneoplastica of"
-             " Bazex, characterized by violaceous erythema and scaling of "
-             "the nose, aural helices, fingers, and toes, with keratoderma "
-             "and severe nail dystrophy. Examination of the patient for "
-             "possible associated malignancy disclosed an asymptomatic "
-             "squamous cell carcinoma at the oropharyngeal region. The skin "
-             "lesions resolved almost completely following radiation therapy "
-             "of the neoplasm, but the onychodystrophy persisted. This case "
-             "report illustrates the importance of early recognition of Bazex "
-             "syndrome.",
+    " squamous cell carcinoma. A 65-year-old white man presented with "
+    "all the clinical features of acrokeratosis paraneoplastica of"
+    " Bazex, characterized by violaceous erythema and scaling of "
+    "the nose, aural helices, fingers, and toes, with keratoderma "
+    "and severe nail dystrophy. Examination of the patient for "
+    "possible associated malignancy disclosed an asymptomatic "
+    "squamous cell carcinoma at the oropharyngeal region. The skin "
+    "lesions resolved almost completely following radiation therapy "
+    "of the neoplasm, but the onychodystrophy persisted. This case "
+    "report illustrates the importance of early recognition of Bazex "
+    "syndrome.",
 }
 
 
 class MutliDocPackAdder(MultiPackProcessor):
-
     def _process(self, input_pack: MultiPack):
         for doc_i in docs:
             pack = input_pack.add_pack(ref_name=doc_i)
