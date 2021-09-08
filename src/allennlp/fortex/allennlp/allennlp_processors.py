@@ -17,7 +17,7 @@ import logging
 from typing import Any, Dict, Iterator, List, Set
 import more_itertools
 
-from allennlpx.predictors import Predictor
+from allennlp.predictors import Predictor
 from ft.onto.base_ontology import (
     Token,
     Sentence,
@@ -26,13 +26,13 @@ from ft.onto.base_ontology import (
     PredicateArgument,
     PredicateMention,
 )
-
 from forte.common import ProcessorConfigError
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
-from forte.allennlp.utils_processor import (
+
+from fortex.allennlp.utils_processor import (
     parse_allennlp_srl_tags,
     parse_allennlp_srl_results,
 )
