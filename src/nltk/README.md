@@ -20,8 +20,7 @@ This project is part of the [CASL Open Source](http://casl-project.ai/) family.
 
 ### Get Started
 
-- First, install the library along with the desired tools. Let's take AllenNLP
-  as an example:
+- First, install the library along with the NLTK toolkit:
 
 ```shell
 git clone https://github.com/asyml/forte-wrappers.git

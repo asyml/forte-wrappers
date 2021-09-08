@@ -24,6 +24,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     license="Apache License Version 2.0",
     packages=["fortex.vader"],
+    namespace_packages=['fortex'],
     include_package_data=True,
     platforms="any",
     install_requires=[

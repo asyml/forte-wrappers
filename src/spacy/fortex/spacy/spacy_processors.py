@@ -205,9 +205,9 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
         super().initialize(resources, configs)
         validate_spacy_configs(configs)
         if self.configs.require_gpu:
-            spacy.require_gpu(self.configs.gpu_id)
+            spacy.require_gpu(self.configs.gpu_id)  # type: ignore
         if self.configs.prefer_gpu:
-            spacy.prefer_gpu(self.configs.gpu_id)
+            spacy.prefer_gpu(self.configs.gpu_id)  # type: ignore
         self.nlp = load_lang_model(self.configs.lang)
         set_up_pipe(self.nlp, configs)
 
@@ -360,9 +360,9 @@ class SpacyProcessor(PackProcessor):
         super().initialize(resources, configs)
         validate_spacy_configs(configs)
         if self.configs.require_gpu:
-            spacy.require_gpu(self.configs.gpu_id)
+            spacy.require_gpu(self.configs.gpu_id)  # type: ignore
         if self.configs.prefer_gpu:
-            spacy.prefer_gpu(self.configs.gpu_id)
+            spacy.prefer_gpu(self.configs.gpu_id)  # type: ignore
         self.nlp = load_lang_model(self.configs.lang)
         set_up_pipe(self.nlp, configs)
 
