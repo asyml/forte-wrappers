@@ -12,12 +12,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # Upload to PYPI only on tagged commits.
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     strategy:
       matrix:
         wrapper: [ spacy, allennlp, elastic, faiss, gpt2, huggingface, nltk, stanza, tweepy, vader ]
-
     env:
       python-version: 3.7
     steps:
