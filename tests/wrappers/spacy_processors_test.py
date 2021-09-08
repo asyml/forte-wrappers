@@ -88,7 +88,7 @@ class TestSpacyProcessor(unittest.TestCase):
             lemma = [x.lemma for x in forte_tokens]
 
             dependencies = [
-                (dep.get_parent().text, dep.get_child().text, dep.rel_type)
+                (dep.get_parent().text, dep.get_child().text, dep.dep_label)
                 for dep in data_pack.get(Dependency)
             ]
 

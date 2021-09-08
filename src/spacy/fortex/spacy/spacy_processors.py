@@ -168,7 +168,7 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
     providing most models included in the SpaCy pipeline, such as including
     sentence parsing, tokenize, POS tagging, lemmatization, NER, and medical
     entity linking. This is the batch processing version for
-    :class:`~spacy.forte.spacy.PackSpacyProcessor`, where it supports to
+    :class:`~fortex.spacy.SpacyProcessor`, where it supports to
     batching across different data packs.
 
     This processor will do user defined tasks according to configs.
@@ -184,10 +184,16 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
 
     - `ner`: named entity recognition
 
+    - `dep`: dependency parsing
+
     - `umls_link`: medical entity linking to UMLS concepts
 
-    Citation: ScispaCy: Fast and Robust Models for Biomedical Natural Language
-    Processing.
+    Citation:
+
+    - spaCy: Industrial-strength Natural Language Processing in Python
+
+    - ScispaCy: Fast and Robust Models for Biomedical Natural Language
+      Processing.
     """
 
     def __init__(self):
@@ -198,11 +204,18 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
         validate_spacy_configs(configs)
+        if self.configs.require_gpu:
+            spacy.require_gpu(self.configs.gpu_id)
+        if self.configs.prefer_gpu:
+            spacy.prefer_gpu(self.configs.gpu_id)
         self.nlp = load_lang_model(self.configs.lang)
         set_up_pipe(self.nlp, configs)
 
     @classmethod
     def define_batcher(cls) -> ProcessingBatcher:
+        """
+        The batcher take raw text from a fixed number of data packs.
+        """
         return TextOnlyDataPackBatcher()
 
     def predict(self, data_batch: Dict) -> Dict[str, List[Any]]:
@@ -223,7 +236,7 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
 
             # Process sentence and tokenize.
             if "sentence" in self.configs.processors:
-                indexed_tokens = _process_tokens(
+                indexed_tokens = process_tokens(
                     self.configs.processors, result.sents, pack
                 )
 
@@ -236,6 +249,17 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
                 linker = self.nlp.get_pipe("EntityLinker")  # type: ignore
                 process_umls_entity_linking(linker, result, pack)
 
+    def record(self, record_meta: Dict[str, Set[str]]):
+        r"""Method to add output type record of current processor
+        to :attr:`forte.data.data_pack.Meta.record`. The processor produce
+        different types with different settings of `processors` in config.
+
+        Args:
+            record_meta: the field in the data pack for type record that need to
+                fill in for consistency checking.
+        """
+        set_records(record_meta, self.configs)
+
     @classmethod
     def default_configs(cls) -> Dict[str, Any]:
         """
@@ -243,16 +267,48 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
 
         The available parameters are:
 
-        -
+        - `batcher.batch_size`: max size of the batch (in terms of number of
+           data packs).
+
+        - `processors`: List of strings that defines which components
+          will be included and will be performed on the input pack,
+          default value is `["sentence", "tokenize", "pos", "lemma"]`
+          which performs the basic operations included in spaCy models like
+          `en_core_web_sm`, `sentence` performs segmentation, `tokenize`
+          will perform tokenization and pos tagging, `ner` will perform
+          named entity recognition, `lemma` will perform lemmatization.
+          Additional values for this list further includes:
+          `ner` for named entity and `dep` for dependency parsing.
+
+        - `lang`: language model, default is spaCy `en_core_web_sm` model.
+          The pipeline support spaCy and ScispaCy models.
+          A list of available spaCy models could be found at
+          https://spacy.io/models.
+          For UMLS entity linking task, ScispaCy model trained on
+          biomedical dataset is preferred. A list of available models
+          could be found at
+          https://github.com/allenai/scispacy/tree/v0.3.0
+
+        - `require_gpu`: whether GPU is required, default value is False.
+          This value is directly used by
+          https://spacy.io/api/top-level#spacy.require_gpu
+
+        - `prefer_gpu`: whether gpu is preferred, default value is False.
+          This value is directly used by
+          https://spacy.io/api/top-level#spacy.prefer_gpu
+
+        - `gpu_id`: the GPU device index to use when GPU is enabled. Default
+          is 0.
+
         """
         return {
             "batcher": {
                 "batch_size": 1000,
             },
-            "num_processes": 1,
             "processors": ["sentence", "tokenize", "pos", "lemma"],
             "lang": "en_core_web_sm",
-            "use_gpu": False,
+            "require_gpu": False,
+            "prefer_gpu": False,
         }
 
 
@@ -264,12 +320,20 @@ class SpacyProcessor(PackProcessor):
 
     This processor will do user defined tasks according to configs.
     The supported tasks includes:
-    `"sentence"`: sentence segmentation
-    `"tokenize"`: word tokenize
-    `"pos"`: Part-of-speech tagging
-    `"lemma"`: word lemmatization
-    `"ner"`: named entity recognition
-    `"umls_link"`: medical entity linking to UMLS concepts
+
+    - `sentence`: sentence segmentation
+
+    - `tokenize`: word tokenize
+
+    - `pos`: Part-of-speech tagging
+
+    - `lemma`: word lemmatization
+
+    - `ner`: named entity recognition
+
+    - `dep`: dependency parsing
+
+    - `umls_link`: medical entity linking to UMLS concepts
 
     spaCy is a library for advanced Natural Language Processing in Python
     and Cython.
@@ -279,8 +343,13 @@ class SpacyProcessor(PackProcessor):
     biomedical, scientific or clinical text.
     ScispaCy github page: https://github.com/allenai/scispacy/tree/v0.3.0
 
-    Citation: ScispaCy: Fast and Robust Models for Biomedical Natural Language
-    Processing.
+    Citation:
+
+    - spaCy: Industrial-strength Natural Language Processing in Python
+
+    - ScispaCy: Fast and Robust Models for Biomedical Natural Language
+      Processing.
+
     """
 
     def __init__(self):
@@ -290,6 +359,10 @@ class SpacyProcessor(PackProcessor):
     def initialize(self, resources: Resources, configs: Config):
         super().initialize(resources, configs)
         validate_spacy_configs(configs)
+        if self.configs.require_gpu:
+            spacy.require_gpu(self.configs.gpu_id)
+        if self.configs.prefer_gpu:
+            spacy.prefer_gpu(self.configs.gpu_id)
         self.nlp = load_lang_model(self.configs.lang)
         set_up_pipe(self.nlp, configs)
 
@@ -300,35 +373,45 @@ class SpacyProcessor(PackProcessor):
 
         Following are the keys for this dictionary:
 
-            - `processors`: List of strings that defines which components
-              will be included and will be performed on the input pack,
-              default value is `["sentence", "tokenize", "pos", "lemma"]`
-              which performs the basic operations included in Spacy's
-              `en_core_web_sm`, `sentence` performs segmentation, `tokenize`
-              will perform tokenization an dpos tagging, `ner` will perform
-              named entity recognition, `lemma` will perform lemmatization.
+        - `processors`: List of strings that defines which components
+          will be included and will be performed on the input pack,
+          default value is `["sentence", "tokenize", "pos", "lemma"]`
+          which performs the basic operations included in spaCy models like
+          `en_core_web_sm`, `sentence` performs segmentation, `tokenize`
+          will perform tokenization and pos tagging, `ner` will perform
+          named entity recognition, `lemma` will perform lemmatization.
 
-              Additional values for this list further includes:
-              "ner" for named entity and "dep" for dependency parsing.
+          Additional values for this list further includes:
+          `ner` for named entity and `dep` for dependency parsing.
 
-            - `lang`: language model, default is spaCy `en_core_web_sm` model.
-              The pipeline support spaCy and ScispaCy models.
-              A list of available spaCy models could be found at
-              https://spacy.io/models.
-              For UMLS entity linking task, ScispaCy model trained on
-              biomedical dataset is preferred. A list of available models
-              could be found at
-              https://github.com/allenai/scispacy/tree/v0.3.0.
+        - `lang`: language model, default is spaCy `en_core_web_sm` model.
+          The pipeline support spaCy and ScispaCy models.
+          A list of available spaCy models could be found at
+          https://spacy.io/models.
+          For UMLS entity linking task, ScispaCy model trained on
+          biomedical dataset is preferred. A list of available models
+          could be found at
+          https://github.com/allenai/scispacy/tree/v0.3.0.
 
-            - `use_gpu`: use gpu or not, default value is False.
+        - `require_gpu`: whether GPU is required, default value is False.
+          This value is directly used by
+          https://spacy.io/api/top-level#spacy.require_gpu
+
+        - `prefer_gpu`: whether gpu is preferred, default value is False.
+          This value is directly used by
+          https://spacy.io/api/top-level#spacy.prefer_gpu
+
+        - `gpu_id`: the GPU device index to use when GPU is enabled. Default
+          is 0.
 
         Returns: A dictionary with the default config for this processor.
         """
         return {
             "processors": ["sentence", "tokenize", "pos", "lemma"],
             "lang": "en_core_web_sm",
-            # Language code for the language to build the Pipeline
-            "use_gpu": False,
+            "require_gpu": False,
+            "prefer_gpu": False,
+            "gpu_id": 0,
         }
 
     def _process(self, input_pack: DataPack):
@@ -348,7 +431,7 @@ class SpacyProcessor(PackProcessor):
 
         # Process sentence and tokenize.
         if "sentence" in self.configs.processors:
-            indexed_tokens = _process_tokens(
+            indexed_tokens = process_tokens(
                 self.configs.processors, result.sents, input_pack
             )
 
@@ -367,37 +450,44 @@ class SpacyProcessor(PackProcessor):
         different types with different settings of `processors` in config.
 
         Args:
-            record_meta: the field in the datapack for type record that need to
+            record_meta: the field in the data pack for type record that need to
                 fill in for consistency checking.
         """
-        if "sentence" in self.configs.processors:
-            record_meta["ft.onto.base_ontology.Sentence"] = set()
-            if "tokenize" in self.configs.processors:
-                record_meta["ft.onto.base_ontology.Token"] = set()
-                if "pos" in self.configs.processors:
-                    record_meta["ft.onto.base_ontology.Token"].add("pos")
-                if "lemma" in self.configs.processors:
-                    record_meta["ft.onto.base_ontology.Token"].add("lemma")
-        if "ner" in self.configs.processors:
-            record_meta["ft.onto.base_ontology.EntityMention"] = {"ner_type"}
-        if "umls_link" in self.configs.processors:
-            record_meta["onto.medical.MedicalEntityMention"] = {"ner_type"}
-            record_meta["onto.medical.UMLSConceptLink"] = {
-                "cui",
-                "score",
-                "name",
-                "definition",
-                "tuis",
-                "aliases",
-            }
+        set_records(record_meta, self.configs)
 
 
-def _process_tokens(
+def set_records(record_meta: Dict[str, Set[str]], configs: Config):
+    if "sentence" in configs.processors:
+        record_meta["ft.onto.base_ontology.Sentence"] = set()
+        if "tokenize" in configs.processors:
+            record_meta["ft.onto.base_ontology.Token"] = set()
+            if "pos" in configs.processors:
+                record_meta["ft.onto.base_ontology.Token"].add("pos")
+            if "lemma" in configs.processors:
+                record_meta["ft.onto.base_ontology.Token"].add("lemma")
+    if "ner" in configs.processors:
+        record_meta["ft.onto.base_ontology.EntityMention"] = {"ner_type"}
+    if "dep" in configs.processors:
+        record_meta["ft.onto.base_ontology.Dependency"] = {"dep_label"}
+    if "umls_link" in configs.processors:
+        record_meta["onto.medical.MedicalEntityMention"] = {"ner_type"}
+        record_meta["onto.medical.UMLSConceptLink"] = {
+            "cui",
+            "score",
+            "name",
+            "definition",
+            "tuis",
+            "aliases",
+        }
+
+
+def process_tokens(
     processors, sentences, input_pack: DataPack
 ) -> Dict[int, Token]:
     """Basic tokenization and post tagging of the sentence.
 
     Args:
+        processors: List of processor names.
         sentences: Generator object which yields sentences in document.
         input_pack: input pack which needs to be modified.
 
@@ -443,7 +533,7 @@ def process_parse(
         if not token.head.i == token.i:
             # We don't store the self dep, which is ROOT in SpaCy.
             dep = Dependency(input_pack, head_token, child_token)
-            dep.rel_type = token.dep_
+            dep.dep_label = token.dep_
 
 
 def process_ner(result, input_pack: DataPack):
@@ -464,6 +554,7 @@ def process_umls_entity_linking(linker, result, input_pack: DataPack):
     entity mentions and UMLS concepts.
 
     Args:
+        linker: A Scispacy EntityLinker instance.
         result: SpaCy results.
         input_pack: Input data pack.
 
