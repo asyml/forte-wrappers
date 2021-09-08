@@ -8,14 +8,14 @@ AllenNLP
 ========
 :hidden:`AllenNLP Processors`
 -----------------------------
-.. autoclass:: forte.allennlp.AllenNLPProcessor
+.. autoclass:: fortex.allennlp.AllenNLPProcessor
     :members:
 
 SpaCy
 =====
 :hidden:`SpaCy Processors`
 ----------------------------
-.. autoclass:: forte.spacy.SpacyProcessor
+.. autoclass:: fortex.spacy.SpacyProcessor
     :members:
 
 
@@ -23,54 +23,54 @@ NLTK
 =====
 :hidden:`NLTK Processors`
 ----------------------------
-.. autoclass:: forte.nltk.NLTKPOSTagger
+.. autoclass:: fortex.nltk.NLTKPOSTagger
     :members:
 
-.. autoclass:: forte.nltk.NLTKSentenceSegmenter
+.. autoclass:: fortex.nltk.NLTKSentenceSegmenter
     :members:
 
-.. autoclass:: forte.nltk.NLTKWordTokenizer
+.. autoclass:: fortex.nltk.NLTKWordTokenizer
     :members:
 
-.. autoclass:: forte.nltk.NLTKLemmatizer
+.. autoclass:: fortex.nltk.NLTKLemmatizer
     :members:
 
-.. autoclass:: forte.nltk.NLTKChunker
+.. autoclass:: fortex.nltk.NLTKChunker
     :members:
 
-.. autoclass:: forte.nltk.NLTKNER
+.. autoclass:: fortex.nltk.NLTKNER
     :members:
 
 Stanza
 ======
 :hidden:`Stanza Processors`
 ----------------------------
-.. autoclass:: forte.stanza.StandfordNLPProcessor
+.. autoclass:: fortex.stanza.StandfordNLPProcessor
     :members:
 
 HuggingFace
 ===========
 :hidden:`HuggingFace Processors`
 --------------------------------
-.. autoclass:: forte.huggingface.ZeroShotClassifier
+.. autoclass:: fortex.huggingface.ZeroShotClassifier
     :members:
-.. autoclass:: forte.huggingface.QuestionAnsweringSingle
+.. autoclass:: fortex.huggingface.QuestionAnsweringSingle
     :members:
-.. autoclass:: forte.huggingface.BERTTokenizer
+.. autoclass:: fortex.huggingface.BERTTokenizer
     :members:
-.. autoclass:: forte.huggingface.BioBERTNERPredictor
+.. autoclass:: fortex.huggingface.BioBERTNERPredictor
     :members:
 
 Twitter
 =======
 :hidden:`Twitter Processors`
 ----------------------------
-.. autoclass:: forte.tweepy.TweetSearchProcessor
+.. autoclass:: fortex.tweepy.TweetSearchProcessor
     :members:
 
 Vader
 =====
 :hidden:`Vader Processors`
 ----------------------------
-.. autoclass:: forte.vader.VaderSentimentProcessor
+.. autoclass:: fortex.vader.VaderSentimentProcessor
     :members:
