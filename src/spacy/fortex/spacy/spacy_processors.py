@@ -15,6 +15,10 @@ from copy import deepcopy
 from typing import Optional, Dict, Set, List, Any, Iterator
 
 import spacy
+from packaging import version
+from spacy.cli.download import download
+from spacy.language import Language
+
 from forte.common import ProcessExecutionException, ProcessorConfigError
 from forte.common.configuration import Config
 from forte.common.resources import Resources
@@ -25,9 +29,6 @@ from forte.data.ontology import Annotation
 from forte.processors.base import PackProcessor, FixedSizeBatchProcessor
 from ft.onto.base_ontology import EntityMention, Sentence, Token, Dependency
 from ftx.medical import MedicalEntityMention, UMLSConceptLink
-from packaging import version
-from spacy.cli.download import download
-from spacy.language import Language
 
 __all__ = [
     "SpacyProcessor",
@@ -67,7 +68,7 @@ SPACY3_DEFAULT_CONFIG2COMPONENT = deepcopy(SPACY2_DEFAULT_CONFIG2COMPONENT)
 
 SPACY3_DEFAULT_CONFIG2COMPONENT.update(
     {
-        "sentence": "senter",
+        "sentence": "sentencizer",
         "lemma": "lemmatizer",
     }
 )
@@ -125,8 +126,8 @@ def set_up_pipe(nlp: Language, configs: Config):
 
     # Remove some components to save some time.
     if configs.lang.startswith("en_core_web_sm"):
-        for p in "pos", "ner", "dep", "sentence":
-            if p not in configs.processors:
+        for p in "lemma", "pos", "ner", "dep", "sentence":
+            if p not in configs.processors and p in config2component:
                 if nlp.has_pipe(config2component[p]):
                     nlp.remove_pipe(config2component[p])
 
@@ -220,7 +221,11 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
 
     def predict(self, data_batch: Dict) -> Dict[str, List[Any]]:
         return {
-            "results": list(self.nlp.pipe(data_batch["text"]))  # type: ignore
+            "results": list(
+                self.nlp.pipe(  # type: ignore
+                    data_batch["text"], n_process=self.configs.num_processes
+                )
+            )
         }
 
     def pack(
@@ -300,6 +305,9 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
         - `gpu_id`: the GPU device index to use when GPU is enabled. Default
           is 0.
 
+        - `num_processes`: number of processes to run when using `spacy.pipe`.
+          Default is 1. This will be passed directly to the `n_process` option.
+
         """
         return {
             "batcher": {
@@ -309,6 +317,8 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
             "lang": "en_core_web_sm",
             "require_gpu": False,
             "prefer_gpu": False,
+            "gpu_id": 0,
+            "num_processes": 1,
         }
 
 
