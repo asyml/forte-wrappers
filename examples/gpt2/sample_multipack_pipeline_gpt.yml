@@ -4,7 +4,7 @@ forte_ir_version: "0.0.1"
 
 components:
 
-  - type: "fortex.data.readers.MultiPackSentenceReader"
+  - type: "forte.data.readers.MultiPackSentenceReader"
     configs:
       input_pack_name: "input_src"
       output_pack_name: "output_tgt"
