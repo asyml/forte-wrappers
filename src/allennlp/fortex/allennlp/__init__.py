@@ -1,0 +1,1 @@
+from fortex.allennlp.allennlp_processors import AllenNLPProcessor

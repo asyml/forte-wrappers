@@ -20,8 +20,8 @@ import unittest
 from forte.data.data_pack import DataPack
 from forte.pipeline import Pipeline
 from forte.data.readers import StringReader
-from forte.nltk import NLTKSentenceSegmenter
-from forte.vader import VaderSentimentProcessor
+from fortex.nltk import NLTKSentenceSegmenter
+from fortex.vader import VaderSentimentProcessor
 from ft.onto.base_ontology import Sentence
 
 

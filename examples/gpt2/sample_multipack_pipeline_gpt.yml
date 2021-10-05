@@ -4,12 +4,12 @@ forte_ir_version: "0.0.1"
 
 components:
 
-  - type: "forte.data.readers.MultiPackSentenceReader"
+  - type: "fortex.data.readers.MultiPackSentenceReader"
     configs:
       input_pack_name: "input_src"
       output_pack_name: "output_tgt"
 
-  - type: "forte.gpt2.text_generation_processor.TextGenerationProcessor"
+  - type: "fortex.gpt2.text_generation_processor.TextGenerationProcessor"
     configs:
       max_decoding_length: 128
       temperature: 0.7
@@ -20,17 +20,16 @@ components:
       batcher:
         batch_size: 64
 
-  - type: "forte.nltk.nltk_processors.NLTKWordTokenizer"
+  - type: "fortex.nltk.nltk_processors.NLTKWordTokenizer"
     configs:
     selector:
       type: "forte.data.selector.NameMatchSelector"
       kwargs:
         select_name: "output_tgt"
 
-  - type: "forte.nltk.nltk_processors.NLTKPOSTagger"
+  - type: "fortex.nltk.nltk_processors.NLTKPOSTagger"
     configs:
     selector:
       type: "forte.data.selector.NameMatchSelector"
       kwargs:
         select_name: "output_tgt"
-

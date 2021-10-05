@@ -16,18 +16,19 @@ if sys.version_info < (3, 6):
 
 setuptools.setup(
     name="forte.vader",
-    version="v0.0.1post2",
+    version="0.0.2",
     url="https://github.com/asyml/forte-wrappers/tree/main/src/vader",
     description="Provide Forte implementations of a fantastic collection of "
     "NLP tools.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="Apache License Version 2.0",
-    packages=["forte.vader"],
+    packages=["fortex.vader"],
+    namespace_packages=["fortex"],
     include_package_data=True,
     platforms="any",
     install_requires=[
-        "forte==0.1.1",
+        "forte==0.1.2",
         "vaderSentiment==3.2.1",
     ],
     classifiers=[
