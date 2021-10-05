@@ -15,6 +15,10 @@ from copy import deepcopy
 from typing import Optional, Dict, Set, List, Any, Iterator
 
 import spacy
+from packaging import version
+from spacy.cli.download import download
+from spacy.language import Language
+
 from forte.common import ProcessExecutionException, ProcessorConfigError
 from forte.common.configuration import Config
 from forte.common.resources import Resources
@@ -25,9 +29,6 @@ from forte.data.ontology import Annotation
 from forte.processors.base import PackProcessor, FixedSizeBatchProcessor
 from ft.onto.base_ontology import EntityMention, Sentence, Token, Dependency
 from ftx.medical import MedicalEntityMention, UMLSConceptLink
-from packaging import version
-from spacy.cli.download import download
-from spacy.language import Language
 
 __all__ = [
     "SpacyProcessor",
@@ -126,7 +127,7 @@ def set_up_pipe(nlp: Language, configs: Config):
     # Remove some components to save some time.
     if configs.lang.startswith("en_core_web_sm"):
         for p in "lemma", "pos", "ner", "dep", "sentence":
-            if p not in configs.processors:
+            if p not in configs.processors and p in config2component:
                 if nlp.has_pipe(config2component[p]):
                     nlp.remove_pipe(config2component[p])
 
