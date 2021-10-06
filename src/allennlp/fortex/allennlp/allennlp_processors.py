@@ -202,15 +202,28 @@ class AllenNLPProcessor(PackProcessor):
             batches_copy = more_itertools.ichunked(
                 input_pack.get(self._sentence_type), batch_size
             )
+
         for sentences, sentences_copy in zip(batches, batches_copy):
-            inputs: List[Dict[str, str]] = [
-                {"sentence": s.text} for s in sentences
-            ]
+            inputs: List[Dict[str, str]] = []
+            skips = []
+
+            for s in sentences:
+                t = s.text.strip()
+                if not t == "":
+                    inputs.append({"sentence": t})
+                    skips.append(True)
+                else:
+                    inputs.append({"sentence": "skip"})
+                    skips.append(False)
+
             results: Dict[str, List[Dict[str, Any]]] = {
                 k: p.predict_batch_json(inputs)
                 for k, p in self.predictor.items()
             }
             for i, sent in enumerate(sentences_copy):
+                if skips[i]:
+                    continue
+
                 result: Dict[str, List[str]] = {}
                 for key in self.predictor:
                     if key == "srl":

@@ -262,8 +262,6 @@ class TestAllenNLPProcessor(unittest.TestCase):
                 parent: PredicateMention = srl_links[index].get_parent()
                 child: PredicateArgument = srl_links[index].get_child()
 
-                print(parent.text, child.text, srl_links[index].arg_type)
-
                 self.assertEqual(srl_links[index].arg_type, argument)
                 self.assertEqual(
                     parent.text,
