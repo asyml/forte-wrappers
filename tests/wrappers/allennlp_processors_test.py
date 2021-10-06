@@ -96,6 +96,16 @@ class TestAllenNLPProcessor(unittest.TestCase):
         self._check_results(pack, processors, tag_format)
 
     @data(
+        "tokenize",
+        "tokenize,depparse",
+        "srl",
+        "tokenize,srl",
+    )
+    def test_empty_input(self, processors):
+        nlp = self._create_pipeline({"processors": processors})
+        pack = nlp.process(" \n ")
+
+    @data(
         "stanford",
         # "universal",  # TODO: Current download model is wrong on Allennlp.
         "random_dependencies",
