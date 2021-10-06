@@ -82,6 +82,8 @@ class TestAllenNLPProcessor(unittest.TestCase):
         "tokenize,pos,depparse",
         "tokenize,depparse",
         "",
+        "srl",
+        "tokenize,srl",
     )
     def test_allennlp_processor_with_different_processors(self, processors):
         nlp = self._create_pipeline({"processors": processors})
@@ -259,6 +261,9 @@ class TestAllenNLPProcessor(unittest.TestCase):
             for arg_span, argument in arguments:
                 parent: PredicateMention = srl_links[index].get_parent()
                 child: PredicateArgument = srl_links[index].get_child()
+
+                print(parent.text, child.text, srl_links[index].arg_type)
+
                 self.assertEqual(srl_links[index].arg_type, argument)
                 self.assertEqual(
                     parent.text,
