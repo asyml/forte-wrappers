@@ -68,6 +68,7 @@ class AllenNLPProcessor(PackProcessor):
             "pos" in configs.processors
             or "depparse" in configs.processors
             or "depparse" in configs.processors
+            or "srl" in configs.processors
         ):
             if "tokenize" not in self.configs.processors:
                 raise ProcessorConfigError(
