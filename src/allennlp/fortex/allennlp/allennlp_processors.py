@@ -176,7 +176,7 @@ class AllenNLPProcessor(PackProcessor):
             "universal_url": MODEL2URL["universal"],
             "cuda_devices": [-1],
             "infer_batch_size": 0,
-            "sentence_type": "ft.onto.base_ontology.Sentence"
+            "sentence_type": "ft.onto.base_ontology.Sentence",
         }
 
     def _process(self, input_pack: DataPack):
