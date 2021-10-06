@@ -212,10 +212,15 @@ class AllenNLPProcessor(PackProcessor):
                 t = s.text.strip()
                 if not t == "":
                     inputs.append({"sentence": t})
-                    skips.append(True)
-                else:
-                    inputs.append({"sentence": "skip"})
                     skips.append(False)
+                else:
+                    # Use placeholder the same as original length.
+                    inputs.append({"sentence": "." * len(s.text)})
+                    skips.append(True)
+
+            # Handle when the data is empty.
+            if len(inputs) == 0:
+                continue
 
             results: Dict[str, List[Dict[str, Any]]] = {
                 k: p.predict_batch_json(inputs)
