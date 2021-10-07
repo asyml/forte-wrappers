@@ -82,7 +82,6 @@ class TestAllenNLPProcessor(unittest.TestCase):
         "tokenize,pos,depparse",
         "tokenize,depparse",
         "",
-        "srl",
         "tokenize,srl",
     )
     def test_allennlp_processor_with_different_processors(self, processors):
@@ -98,7 +97,6 @@ class TestAllenNLPProcessor(unittest.TestCase):
     @data(
         "tokenize",
         "tokenize,depparse",
-        "srl",
         "tokenize,srl",
     )
     def test_empty_input(self, processors):
