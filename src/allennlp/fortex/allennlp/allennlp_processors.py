@@ -53,9 +53,10 @@ MODEL2URL = {
 
 class AllenNLPProcessor(PackProcessor):
     """
-    Processor for AllenNLP predictors. It currently supports POS tagging (pos),
-    Dependency Parsing (depparse), Semantic Role Labeling (srl). Check the
-    `default_config` method on how to specify the behavior of this processor.
+    Processor for AllenNLP predictors. It currently supports POS tagging
+    (`pos`), Dependency Parsing (`depparse`), Semantic Role Labeling (`srl`).
+    Check the `default_config` method on how to specify the behavior of this
+    processor.
 
     Note that this processor assume sentences are provided in the data pack
     before running this.
