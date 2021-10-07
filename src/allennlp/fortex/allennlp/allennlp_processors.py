@@ -20,7 +20,6 @@ import more_itertools
 from allennlp.predictors import Predictor
 from ft.onto.base_ontology import (
     Token,
-    Sentence,
     Dependency,
     PredicateLink,
     PredicateArgument,
@@ -29,7 +28,7 @@ from ft.onto.base_ontology import (
 from forte.common import ProcessorConfigError
 from forte.common.configuration import Config
 from forte.common.resources import Resources
-from forte.data.data_pack import DataPack
+from forte.data.data_pack import DataPack, as_entry_type
 from forte.processors.base import PackProcessor
 
 from fortex.allennlp.utils_processor import (
@@ -53,6 +52,15 @@ MODEL2URL = {
 
 
 class AllenNLPProcessor(PackProcessor):
+    """
+    Processor for AllenNLP predictors. It currently supports POS tagging
+    (`pos`), Dependency Parsing (`depparse`), Semantic Role Labeling (`srl`).
+    Check the `default_config` method on how to specify the behavior of this
+    processor.
+
+    Note that this processor assume sentences are provided in the data pack
+    before running this.
+    """
 
     # pylint: disable=attribute-defined-outside-init,unused-argument
     def initialize(self, resources: Resources, configs: Config):
@@ -61,6 +69,7 @@ class AllenNLPProcessor(PackProcessor):
             "pos" in configs.processors
             or "depparse" in configs.processors
             or "depparse" in configs.processors
+            or "srl" in configs.processors
         ):
             if "tokenize" not in self.configs.processors:
                 raise ProcessorConfigError(
@@ -71,6 +80,8 @@ class AllenNLPProcessor(PackProcessor):
         cuda_devices = itertools.cycle(configs["cuda_devices"])
         if configs.tag_formalism not in MODEL2URL:
             raise ProcessorConfigError("Incorrect value for tag_formalism")
+
+        self.predictor = {}
         if configs.tag_formalism == "stanford":
             self.predictor = {
                 "stanford": Predictor.from_path(
@@ -78,14 +89,14 @@ class AllenNLPProcessor(PackProcessor):
                 )
             }
         if "srl" in configs.processors:
-            self.predictor = {
-                "stanford": Predictor.from_path(
+            # A parser seems to be needed for SRL.
+            if "stanford" not in self.predictor:
+                self.predictor["stanford"] = Predictor.from_path(
                     configs["stanford_url"], cuda_device=next(cuda_devices)
-                ),
-                "srl": Predictor.from_path(
-                    configs["srl_url"], cuda_device=next(cuda_devices)
-                ),
-            }
+                )
+            self.predictor["srl"] = Predictor.from_path(
+                configs["srl_url"], cuda_device=next(cuda_devices)
+            )
 
         if configs.overwrite_entries:
             logger.warning(
@@ -115,6 +126,8 @@ class AllenNLPProcessor(PackProcessor):
                     "are no existing conflicting entries."
                 )
 
+        self._sentence_type = as_entry_type(self.configs.sentence_type)
+
     @classmethod
     def default_configs(cls):
         """
@@ -122,9 +135,10 @@ class AllenNLPProcessor(PackProcessor):
 
         Following are the keys for this dictionary:
 
-            - processors: defines what operations to be done on the sentence,
-              default value is `tokenize,pos,depparse` which performs all the
-              three operations.
+            - processors: a comma separated string defines what operations to
+              be done on the sentences, supported predictors include `tokenize`,
+              `pos`, `depparse` and `srl`.
+              The default value is `tokenize,pos,depparse`.
 
             - tag_formalism: format of the POS tags and dependency parsing,
               can be `universal` or `stanford`, default value is `stanford`.
@@ -148,6 +162,10 @@ class AllenNLPProcessor(PackProcessor):
             - infer_batch_size: maximum number of sentences passed in as a
               batch to model's predict function. A value <= 0 means no limit.
 
+            - sentence_type: the entry type that represent the sentences. The
+              processor will look for this entry type to conduct processing.
+              Default is `ft.onto.base_ontology.Sentence`.
+
         Returns: A dictionary with the default config for this processor.
         """
         return {
@@ -160,6 +178,7 @@ class AllenNLPProcessor(PackProcessor):
             "universal_url": MODEL2URL["universal"],
             "cuda_devices": [-1],
             "infer_batch_size": 0,
+            "sentence_type": "ft.onto.base_ontology.Sentence",
         }
 
     def _process(self, input_pack: DataPack):
@@ -167,33 +186,51 @@ class AllenNLPProcessor(PackProcessor):
         self._process_existing_entries(input_pack)
 
         batch_size: int = self.configs["infer_batch_size"]
-        batches: Iterator[Iterator[Sentence]]
+        batches: Iterator[Iterator]
         # Need a copy of the one-pass iterators to support a second loop on
         # them. All other ways around it like using `itertools.tee` and `list`
         # would require extra storage conflicting with the idea of using
         # iterators in the first place. `more_itertools.ichunked` uses
         # `itertools.tee` under the hood but our usage (reading iterators
         # in order) does not cause memory issues.
-        batches_copy: Iterator[Iterator[Sentence]]
+        batches_copy: Iterator[Iterator]
         if batch_size <= 0:
-            batches = iter([input_pack.get(Sentence)])
-            batches_copy = iter([input_pack.get(Sentence)])
+            batches = iter([input_pack.get(self._sentence_type)])
+            batches_copy = iter([input_pack.get(self._sentence_type)])
         else:
             batches = more_itertools.ichunked(
-                input_pack.get(Sentence), batch_size
+                input_pack.get(self._sentence_type), batch_size
             )
             batches_copy = more_itertools.ichunked(
-                input_pack.get(Sentence), batch_size
+                input_pack.get(self._sentence_type), batch_size
             )
+
         for sentences, sentences_copy in zip(batches, batches_copy):
-            inputs: List[Dict[str, str]] = [
-                {"sentence": s.text} for s in sentences
-            ]
+            inputs: List[Dict[str, str]] = []
+            skips = []
+
+            for s in sentences:
+                t = s.text.strip()
+                if not t == "":
+                    inputs.append({"sentence": t})
+                    skips.append(False)
+                else:
+                    # Use placeholder the same as original length.
+                    inputs.append({"sentence": "." * len(s.text)})
+                    skips.append(True)
+
+            # Handle when the data is empty.
+            if len(inputs) == 0:
+                continue
+
             results: Dict[str, List[Dict[str, Any]]] = {
                 k: p.predict_batch_json(inputs)
                 for k, p in self.predictor.items()
             }
             for i, sent in enumerate(sentences_copy):
+                if skips[i]:
+                    continue
+
                 result: Dict[str, List[str]] = {}
                 for key in self.predictor:
                     if key == "srl":
@@ -283,7 +320,7 @@ class AllenNLPProcessor(PackProcessor):
         the pipeline.
         """
         expectation_dict: Dict[str, Set[str]] = {
-            "ft.onto.base_ontology.Sentence": set()
+            self.configs.sentence_type: set()
         }
         return expectation_dict
 
