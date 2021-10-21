@@ -131,7 +131,7 @@ class ElasticSearchPackIndexProcessor(ElasticSearchIndexerBase):
         return [
             str(input_pack.pack_id),
             input_pack.text,
-            input_pack.serialize(True),
+            input_pack.to_string(True),
         ]
 
     def _field_names(self) -> List[str]:

@@ -109,7 +109,7 @@ class ElasticSearchProcessor(MultiPackProcessor):
                 Document(pack=pack, begin=0, end=len(content))
 
             else:
-                pack = DataPack.deserialize(document["pack_info"])
+                pack = DataPack.from_string(document["pack_info"])
                 input_pack.add_pack_(
                     pack, f"{self.configs.response_pack_name_prefix}_{idx}"
                 )
