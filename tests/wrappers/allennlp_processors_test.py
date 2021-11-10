@@ -100,8 +100,47 @@ class TestAllenNLPProcessor(unittest.TestCase):
         "tokenize,srl",
     )
     def test_empty_input(self, processors):
+        """
+        Simply making sure that it won't break for white space only text.
+        """
         nlp = self._create_pipeline({"processors": processors})
         pack = nlp.process(" \n ")
+
+    @data(
+        "tokenize,depparse",
+        "tokenize,srl",
+    )
+    def test_long_input(self, processors):
+        """
+        Simply making sure that it won't break for long sentences.
+        """
+        nlp = self._create_pipeline({"processors": processors})
+        pack = nlp.process(
+            '<img src="http://www.worldaffairsboard.com/images/darksmiles'
+            '/biggrin.gif"/>\n\nWow, that was an easy one <img '
+            'src="http://www.worldaffairsboard.com/images/smilies/smiles.gif'
+            '"/> )\n\n</quote>\n\nI was referring to nymphomanic fem teachers '
+            'in general, and it was a matter of mere curiosity, tsk tsk, '
+            'get your mind out of the gutter, pervert :P\n</post>\n<post '
+            'author="tankie" datetime="2009-09-21T19:19:00" id="p6">\n<quote '
+            'orig_author="Knaur Amarsh">\nI was referring to nymphomanic fem '
+            'teachers in general, and it was a matter of mere curiosity, '
+            'tsk tsk, get your mind out of the gutter, '
+            ':P\n\n</quote>\n\nOhhhhhhhhh yea <img '
+            'src="http://www.worldaffairsboard.com/images/darksmiles/rolleyes'
+            '.gif"/> <img src="http://www.worldaffairsboard.com/images'
+            '/darksmiles/rolleyes.gif"/>\n</post>\n<post author="Knaur '
+            'Amarsh" datetime="2009-09-21T19:26:00" id="p7">\n<quote '
+            'orig_author="tankie">\nOhhhhhhhhh yea <img '
+            'src="http://www.worldaffairsboard.com/images/darksmiles/rolleyes'
+            '.gif"/> <img src="http://www.worldaffairsboard.com/images'
+            '/darksmiles/rolleyes.gif"/>\n\n</quote>\n\nIts Monday <img '
+            'src="http://www.worldaffairsboard.com/images/darksmiles/rolleyes'
+            '.gif"/> How did the sanitorium lads let you out alone.'
+            ''
+            'The previous sentence is very long.'
+            'Here are some sort ones.'
+        )
 
     @data(
         "stanford",
@@ -146,7 +185,7 @@ class TestAllenNLPProcessor(unittest.TestCase):
     )
     @unpack
     def test_allennlp_processor_with_existing_entries(
-        self, overwrite_entries, allow_parallel_entries
+            self, overwrite_entries, allow_parallel_entries
     ):
         config = {
             "overwrite_entries": overwrite_entries,
@@ -233,7 +272,7 @@ class TestAllenNLPProcessor(unittest.TestCase):
     def _test_tokenizer(self, pack, sentence, sent_idx, processors, tag_format):
         tokens = []
         for j, token in enumerate(
-            pack.get(entry_type=Token, range_annotation=sentence)
+                pack.get(entry_type=Token, range_annotation=sentence)
         ):
             self.assertEqual(
                 token.text, self.results[tag_format]["tokens"][sent_idx][j]
@@ -261,7 +300,8 @@ class TestAllenNLPProcessor(unittest.TestCase):
             )
 
     def _test_srls(
-        self, sent_idx: int, tokens: List[Token], srl_links: List[PredicateLink]
+            self, sent_idx: int, tokens: List[Token],
+            srl_links: List[PredicateLink]
     ) -> None:
         index = 0
         for tag in self.results["srl"]["srl_tags"][sent_idx]:
@@ -277,8 +317,8 @@ class TestAllenNLPProcessor(unittest.TestCase):
                         [
                             token.text
                             for token in tokens[
-                                pred_span.begin : pred_span.end + 1
-                            ]
+                                         pred_span.begin: pred_span.end + 1
+                                         ]
                         ]
                     ),
                 )
@@ -288,8 +328,8 @@ class TestAllenNLPProcessor(unittest.TestCase):
                         [
                             token.text
                             for token in tokens[
-                                arg_span.begin : arg_span.end + 1
-                            ]
+                                         arg_span.begin: arg_span.end + 1
+                                         ]
                         ]
                     ),
                 )
