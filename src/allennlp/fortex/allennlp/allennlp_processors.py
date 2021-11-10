@@ -66,7 +66,7 @@ class AllenNLPProcessor(PackProcessor):
       - Sentences should be pre-annotated. The sentences can be stored in the
           provided type via the "sentence_type" configuration.
       - Long sentences will be skipped if they exceed the Bert model limit.
-      - If un-handled run time exception happens during predicting a batch, the
+      - If unknown run time exception happens during predicting a batch, the
           results of the whole batch may be discarded.
     """
 
