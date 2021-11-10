@@ -17,6 +17,7 @@ import logging
 from typing import Any, Dict, Iterator, List, Set
 import more_itertools
 
+from transformers import BertTokenizer
 from allennlp.predictors import Predictor
 from ft.onto.base_ontology import (
     Token,
@@ -44,10 +45,13 @@ __all__ = [
 
 # pylint: disable=line-too-long
 MODEL2URL = {
-    "stanford": "https://storage.googleapis.com/allennlp-public-models/biaffine-dependency-parser-ptb-2020.04.06.tar.gz",
-    "srl": "https://storage.googleapis.com/allennlp-public-models/bert-base-srl-2020.11.19.tar.gz",
+    "stanford": "https://storage.googleapis.com/allennlp-public-models"
+    "/biaffine-dependency-parser-ptb-2020.04.06.tar.gz",
+    "srl": "https://storage.googleapis.com/allennlp-public-models/bert-base"
+    "-srl-2020.11.19.tar.gz",
     # TODO: The UD model seems to be broken at this moment.
-    "universal": "https://storage.googleapis.com/allennlp-public-models/biaffine-dependency-parser-ud-2020.02.10.tar.gz",
+    "universal": "https://storage.googleapis.com/allennlp-public-models"
+    "/biaffine-dependency-parser-ud-2020.02.10.tar.gz",
 }
 
 
@@ -55,11 +59,15 @@ class AllenNLPProcessor(PackProcessor):
     """
     Processor for AllenNLP predictors. It currently supports POS tagging
     (`pos`), Dependency Parsing (`depparse`), Semantic Role Labeling (`srl`).
-    Check the `default_config` method on how to specify the behavior of this
+    Check the `default_configs` method on how to specify the behavior of this
     processor.
 
-    Note that this processor assume sentences are provided in the data pack
-    before running this.
+    There are a few assumptions for this processor:
+      - Sentences should be pre-annotated. The sentences can be stored in the
+          provided type via the "sentence_type" configuration.
+      - Long sentences will be skipped if they exceed the Bert model limit.
+      - If unknown run time exception happens during predicting a batch, the
+          results of the whole batch may be discarded.
     """
 
     # pylint: disable=attribute-defined-outside-init,unused-argument
@@ -127,6 +135,10 @@ class AllenNLPProcessor(PackProcessor):
                 )
 
         self._sentence_type = as_entry_type(self.configs.sentence_type)
+
+        # Use to estimate the length of the input sentence to avoid sub-word
+        # go out of bound. Will be lazy initialized.
+        self._subword_tokenizer = None
 
     @classmethod
     def default_configs(cls):
@@ -215,30 +227,47 @@ class AllenNLPProcessor(PackProcessor):
                     inputs.append({"sentence": t})
                     skips.append(False)
                 else:
-                    # Use placeholder the same as original length.
+                    # Use placeholder, replace white space with dot.
                     inputs.append({"sentence": "." * len(s.text)})
+                    # This result is useless, skip it.
                     skips.append(True)
 
             # Handle when the data is empty.
             if len(inputs) == 0:
                 continue
 
-            results: Dict[str, List[Dict[str, Any]]] = {
-                k: p.predict_batch_json(inputs)
-                for k, p in self.predictor.items()
-            }
+            try:
+                raw_results: Dict[str, List[Dict[str, Any]]] = {
+                    k: self._predict_with_exception_retry(k, p, inputs)
+                    for k, p in self.predictor.items()
+                }
+            except RuntimeError:
+                for i, s in enumerate(skips):
+                    skips[i] = True
+                logging.exception(
+                    "Encounter RuntimeError while performing prediction. "
+                    "This batch will be skipped."
+                )
+                continue
+
             for i, sent in enumerate(sentences_copy):
                 if skips[i]:
                     continue
 
                 result: Dict[str, List[str]] = {}
                 for key in self.predictor:
-                    if key == "srl":
-                        result.update(
-                            parse_allennlp_srl_results(results[key][i]["verbs"])
-                        )
-                    else:
-                        result.update(results[key][i])
+                    raw_result = raw_results[key]
+
+                    if raw_result is not None:
+                        if key == "srl":
+                            result.update(
+                                parse_allennlp_srl_results(
+                                    raw_result[i]["verbs"]
+                                )
+                            )
+                        else:
+                            result.update(raw_result[i])
+
                 if "tokenize" in self.configs.processors:
                     # creating new tokens and dependencies
                     tokens = self._create_tokens(input_pack, sent, result)
@@ -246,6 +275,45 @@ class AllenNLPProcessor(PackProcessor):
                         self._create_dependencies(input_pack, tokens, result)
                     if "srl" in self.configs.processors:
                         self._create_srl(input_pack, tokens, result)
+
+    def _predict_with_exception_retry(
+        self, model_name: str, predictor: Predictor, inputs
+    ):
+        """
+        Run the predictor on the inputs. If a RuntimeError is thrown, try to
+        check if it is caused by long sentences in SRL models. Try to remove
+        those sentence and run again. But this step may still fail if there
+        are other causes.
+        """
+        try:
+            return predictor.predict_batch_json(inputs)
+        except RuntimeError:
+            if model_name == "srl":
+                if self._subword_tokenizer is None:
+                    self._subword_tokenizer = BertTokenizer.from_pretrained(
+                        "bert-base-uncased"
+                    )
+
+                # One possible cause of RuntimeError is the input is too long,
+                # See if we can fix this by retrying.
+                for item in inputs:
+                    assert self._subword_tokenizer is not None
+                    subword_length = len(
+                        self._subword_tokenizer(item["sentence"]).data[
+                            "input_ids"
+                        ]
+                    )
+
+                    if subword_length > 450:
+                        # Remove long sentences that could create problems.
+                        # Since the AllenNLP SRL uses Bert with a limit of 512,
+                        # but we choose a smaller number to ensure we can get
+                        # through it.
+                        # We make this sentence to empty and skip it.
+                        item["sentence"] = "."
+
+                # Try again with the new input, hopefully it can pass.
+                return predictor.predict_batch_json(inputs)
 
     def _process_existing_entries(self, input_pack):
         tokens_exist = any(True for _ in input_pack.get(Token))
