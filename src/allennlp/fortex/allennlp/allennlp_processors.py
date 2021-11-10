@@ -287,7 +287,7 @@ class AllenNLPProcessor(PackProcessor):
         """
         try:
             return predictor.predict_batch_json(inputs)
-        except RuntimeError as e:
+        except RuntimeError:
             if model_name == "srl":
                 if self._subword_tokenizer is None:
                     self._subword_tokenizer = BertTokenizer.from_pretrained(
@@ -296,7 +296,7 @@ class AllenNLPProcessor(PackProcessor):
 
                 # One possible cause of RuntimeError is the input is too long,
                 # See if we can fix this by retrying.
-                for index, item in enumerate(inputs):
+                for item in inputs:
                     subword_length = len(
                         self._subword_tokenizer(item["sentence"]).data[
                             "input_ids"
