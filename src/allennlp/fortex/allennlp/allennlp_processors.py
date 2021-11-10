@@ -297,6 +297,7 @@ class AllenNLPProcessor(PackProcessor):
                 # One possible cause of RuntimeError is the input is too long,
                 # See if we can fix this by retrying.
                 for item in inputs:
+                    assert self._subword_tokenizer is not None
                     subword_length = len(
                         self._subword_tokenizer(item["sentence"]).data[
                             "input_ids"
