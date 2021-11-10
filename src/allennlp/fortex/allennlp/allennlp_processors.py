@@ -222,9 +222,6 @@ class AllenNLPProcessor(PackProcessor):
             skips = []
 
             for s in sentences:
-                print(s)
-                import pdb; pdb.set_trace()
-
                 t = s.text.strip()
                 if not t == "":
                     inputs.append({"sentence": t})
