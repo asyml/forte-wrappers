@@ -205,7 +205,7 @@ class BioBERTNERPredictor(RequestPackingProcessor):
         makes sense in a word-by-word segmentation
         """
         if context is not None:
-            logging.warn("context parameter is not used in pack methods.")
+            logging.warn("context parameter is not used in pack() method.")
 
         for i in range(len(output_dict["Subword"]["tid"])):
             tids = output_dict["Subword"]["tid"][i]
