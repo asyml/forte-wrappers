@@ -1,16 +1,19 @@
 # pylint: disable=logging-fstring-interpolation
 from typing import Dict, List, Optional, Tuple, Any, Set
+from urllib import request
 from forte.common.exception import ProcessorConfigError
+from forte.utils.utils import get_class
 
 import numpy as np
 import torch
-import import_module
+import logging
+from importlib import import_module
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.data.ontology.top import Annotation
 from forte.processors.base.batch_processor import RequestPackingProcessor
-from ft.onto.base_ontology import EntityMention, Subword
+from ft.onto.base_ontology import EntityMention, Subword, Token, Sentence
 from transformers import (
     AutoConfig,
     AutoModelForTokenClassification,
@@ -194,44 +197,19 @@ class BioBERTNERPredictor(RequestPackingProcessor):
         self,
         data_pack: DataPack,
         output_dict: Optional[Dict[str, Dict[str, List[Any]]]] = None,
-        context: Optional[Annotation] = Subword,
+        context: Optional[Annotation] = None,
     ):
-        """Write the prediction results back to datapack. by writing the predicted
+        """
+        Write the prediction results back to datapack. by writing the predicted
         ner to the context and convert predictions to something that
         makes sense in a word-by-word segmentation
-        
-
-        Args:
-            data_pack (DataPack): [description]
-            output_dict (Optional[Dict[str, Dict[str, List[Any]]]], optional): [description]. Defaults to None.
-            context (Optional[Annotation], optional): [description]. Defaults to Subword.
         """
-        if output_dict is None:
-            return
-        
-        context_name = context.__name__
-        def get_module_class(module_class_path):
-            module_class_path_l = module_class_path.split(".")
-            moduel_path, class_name = ".".join(module_class_path_l[:-1]),\
-                module_class_path_l[-1]
-            return getattr(import_module(moduel_path), class_name)
-        request_classes = [get_module_class(p) for p in self.ft_configs.batcher.requests]
-        if not any([context == r_class for r_class in request_classes]):
-            raise ProcessorConfigError(
-                f"context({context_name}) data that predictor predicts on"
-                " is not available in batcher's requests. Please add "
-                f"{context_name} to batcher's requests in the config."
-                )
-        if not any([context_name in output_dict.keys()]):
-            raise ProcessorConfigError(
-                f"context({context_name}) data that predictor predicts on"
-                f" is not available in output_dict keys({output_dict.keys})."
-                f"Please check batcher's config."
-                )
+        if context is not None:
+            logging.warn("context parameter is not used in pack methods.")
 
-        for i in range(len(output_dict[context_name]["tid"])):
-            tids = output_dict[context_name]["tid"][i]
-            labels = output_dict[context_name]["ner"][i]
+        for i in range(len(output_dict["Subword"]["tid"])):
+            tids = output_dict["Subword"]["tid"][i]
+            labels = output_dict["Subword"]["ner"][i]
 
             # Filter to labels not in `self.ft_configs.ignore_labels`
             entities = [
@@ -239,7 +217,6 @@ class BioBERTNERPredictor(RequestPackingProcessor):
                 for idx, (label, tid) in enumerate(zip(labels, tids))
                 if label not in self.ft_configs.ignore_labels
             ]
-
             entity_groups = self._compose_entities(entities, data_pack, tids)
             # Add NER tags and create EntityMention ontologies.
             for first_idx, last_idx in entity_groups:
@@ -248,7 +225,6 @@ class BioBERTNERPredictor(RequestPackingProcessor):
 
                 last_token = data_pack.get_entry(tids[last_idx])
                 end = last_token.span.end
-
                 entity = EntityMention(data_pack, begin, end)
                 entity.ner_type = self.ft_configs.ner_type
 
