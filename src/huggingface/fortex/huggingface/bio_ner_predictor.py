@@ -200,6 +200,8 @@ class BioBERTNERPredictor(RequestPackingProcessor):
         ner to the context and convert predictions to something that
         makes sense in a word-by-word segmentation
         """
+        if output_dict is None:
+            return
         if context is not None:
             logging.warning("context parameter is not used in pack() method.")
 
