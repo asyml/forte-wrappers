@@ -9,7 +9,7 @@ from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.data.ontology.top import Annotation
 from forte.processors.base.batch_processor import RequestPackingProcessor
-from ft.onto.base_ontology import EntityMention
+from ft.onto.base_ontology import EntityMention, Subword
 from transformers import (
     AutoConfig,
     AutoModelForTokenClassification,
@@ -217,10 +217,10 @@ class BioBERTNERPredictor(RequestPackingProcessor):
             entity_groups = self._compose_entities(entities, data_pack, tids)
             # Add NER tags and create EntityMention ontologies.
             for first_idx, last_idx in entity_groups:
-                first_token = data_pack.get_entry(tids[first_idx])
+                first_token: Subword = data_pack.get_entry(tids[first_idx])
                 begin = first_token.span.begin
 
-                last_token = data_pack.get_entry(tids[last_idx])
+                last_token: Subword = data_pack.get_entry(tids[last_idx])
                 end = last_token.span.end
                 entity = EntityMention(data_pack, begin, end)
                 entity.ner_type = self.ft_configs.ner_type
