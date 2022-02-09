@@ -196,9 +196,8 @@ class BioBERTNERPredictor(RequestPackingProcessor):
         context: Optional[Annotation] = None,
     ):
         """
-        Write the prediction results back to datapack. by writing the predicted
-        ner to the context and convert predictions to something that
-        makes sense in a word-by-word segmentation
+        Write the prediction results back to datapack by aggregating subwords
+        into named entity mentions.
         """
         if output_dict is None:
             return
