@@ -1,0 +1,10 @@
+row_id,icd9_code,short_title,long_title
+1,01716,Erythem nod tb-oth test,"Erythema nodosum with hypersensitivity reaction in tuberculosis, tubercle bacilli not found by bacteriological or histological examination, but tuberculosis confirmed by other methods [inoculation of animals]"
+378,0879,Relapsing fever NOS,"Relapsing fever, unspecified"
+379,0880,Bartonellosis,Bartonellosis
+380,08881,Lyme disease,Lyme Disease
+392,0905,Late congen syph symptom,"Other late congenital syphilis, symptomatic"
+420,09324,Syphil pulmonary valve,Syphilitic endocarditis of pulmonary valve
+434,09486,Syphil acoustic neuritis,Syphilitic acoustic neuritis
+463,09830,Chr gc upper gu NOS,"Chronic gonococcal infection of upper genitourinary tract, site unspecified"
+523,04521,Nonparalyt polio-type 1,"Acute nonparalytic poliomyelitis, poliovirus type I"

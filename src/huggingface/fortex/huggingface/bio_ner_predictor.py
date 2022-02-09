@@ -1,11 +1,13 @@
 # pylint: disable=logging-fstring-interpolation
 from typing import Dict, List, Optional, Tuple, Any, Set
-
+import logging
 import numpy as np
 import torch
+
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
+from forte.data.ontology.top import Annotation
 from forte.processors.base.batch_processor import RequestPackingProcessor
 from ft.onto.base_ontology import EntityMention, Subword
 from transformers import (
@@ -191,15 +193,16 @@ class BioBERTNERPredictor(RequestPackingProcessor):
         self,
         data_pack: DataPack,
         output_dict: Optional[Dict[str, Dict[str, List[Any]]]] = None,
+        context: Optional[Annotation] = None,
     ):
         """
-        Write the prediction results back to datapack. by writing the predicted
-        ner to the original subwords and convert predictions to something that
-        makes sense in a word-by-word segmentation
+        Write the prediction results back to datapack by aggregating subwords
+        into named entity mentions.
         """
-
         if output_dict is None:
             return
+        if context is not None:
+            logging.warning("context parameter is not used in pack() method.")
 
         for i in range(len(output_dict["Subword"]["tid"])):
             tids = output_dict["Subword"]["tid"][i]
@@ -211,7 +214,6 @@ class BioBERTNERPredictor(RequestPackingProcessor):
                 for idx, (label, tid) in enumerate(zip(labels, tids))
                 if label not in self.ft_configs.ignore_labels
             ]
-
             entity_groups = self._compose_entities(entities, data_pack, tids)
             # Add NER tags and create EntityMention ontologies.
             for first_idx, last_idx in entity_groups:
@@ -220,7 +222,6 @@ class BioBERTNERPredictor(RequestPackingProcessor):
 
                 last_token: Subword = data_pack.get_entry(tids[last_idx])
                 end = last_token.span.end
-
                 entity = EntityMention(data_pack, begin, end)
                 entity.ner_type = self.ft_configs.ner_type
 
