@@ -53,15 +53,19 @@ class TestBioNerPredictor(unittest.TestCase):
             "tokenizer_config.json",
             "vocab.txt",
         ]
-        
-        maybe_download(urls=urls, path="/resources/NCBI-disease", filenames=filenames)
+        model_path = os.path.abspath("resources/NCBI-disease")
+        config = yaml.safe_load(open(config_path, "r"))
+        config = Config(config, default_hparams=None)
+        config.BERTTokenizer.model_path = model_path
+        config.BioBERTNERPredictor.model_path = model_path
+        maybe_download(urls=urls, path=model_path, filenames=filenames)
         self.pl.set_reader(
             Mimic3DischargeNoteReader(), config={"max_num_notes": self.num_packs}
         )
         self.pl.add(NLTKSentenceSegmenter())
+        
 
-        config = yaml.safe_load(open(config_path, "r"))
-        config = Config(config, default_hparams=None)
+        
         self.pl.add(BERTTokenizer(), config=config.BERTTokenizer)
         self.pl.add(BioBERTNERPredictor(), config=config.BioBERTNERPredictor)
         self.pl.add(ElasticSearchPackIndexProcessor())
