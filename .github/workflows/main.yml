@@ -128,7 +128,7 @@ jobs:
           cd forte
           pip install --progress-bar off .
       - name: Start elastic server if test elastic search
-        if: ${{ matrix.test-details.dep == 'elastic' } || {includes(matrix.test-details.dep, 'elastic')} }
+        if: ${{ matrix.test-details.dep == 'elastic' }} || ${{includes(matrix.test-details.dep, 'elastic')} }
         run: |
           wget -q https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.4.2-linux-x86_64.tar.gz
           tar -zxf elasticsearch-7.4.2-linux-x86_64.tar.gz
