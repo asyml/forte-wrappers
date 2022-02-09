@@ -59,6 +59,7 @@ class TestBioNerPredictor(unittest.TestCase):
         config.BERTTokenizer.model_path = model_path
         config.BioBERTNERPredictor.model_path = model_path
         maybe_download(urls=urls, path=model_path, filenames=filenames)
+        self.assertTrue(os.path.exists(os.path.join(model_path, "pytorch_model.bin")))
         self.pl.set_reader(
             Mimic3DischargeNoteReader(), config={"max_num_notes": self.num_packs}
         )
