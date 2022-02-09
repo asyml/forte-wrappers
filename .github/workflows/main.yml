@@ -90,7 +90,7 @@ jobs:
           - { dep: elastic, testfile: tests/wrappers/elastic_indexers_test.py }
           - { dep: faiss, testfile: tests/wrappers/faiss_indexers_test.py }
           - { dep: "huggingface nltk", extra: "tensorflow>=2.5.0", testfile: tests/wrappers/huggingface }
-          - { dep: "huggingface elastic", testfile: tests/wrappers/bio_ner_predictor_test.py}
+          - { dep: "huggingface elastic nltk", testfile: tests/wrappers/bio_ner_predictor_test.py}
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
