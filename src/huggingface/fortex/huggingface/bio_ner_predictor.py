@@ -1,19 +1,15 @@
 # pylint: disable=logging-fstring-interpolation
 from typing import Dict, List, Optional, Tuple, Any, Set
-from urllib import request
-from forte.common.exception import ProcessorConfigError
-from forte.utils.utils import get_class
 
 import numpy as np
 import torch
 import logging
-from importlib import import_module
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.data.ontology.top import Annotation
 from forte.processors.base.batch_processor import RequestPackingProcessor
-from ft.onto.base_ontology import EntityMention, Subword, Token, Sentence
+from ft.onto.base_ontology import EntityMention
 from transformers import (
     AutoConfig,
     AutoModelForTokenClassification,
