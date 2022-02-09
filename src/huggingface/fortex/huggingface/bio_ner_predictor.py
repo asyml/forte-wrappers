@@ -1,9 +1,9 @@
 # pylint: disable=logging-fstring-interpolation
 from typing import Dict, List, Optional, Tuple, Any, Set
-
+import logging
 import numpy as np
 import torch
-import logging
+
 from forte.common.configuration import Config
 from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
@@ -201,7 +201,7 @@ class BioBERTNERPredictor(RequestPackingProcessor):
         makes sense in a word-by-word segmentation
         """
         if context is not None:
-            logging.warn("context parameter is not used in pack() method.")
+            logging.warning("context parameter is not used in pack() method.")
 
         for i in range(len(output_dict["Subword"]["tid"])):
             tids = output_dict["Subword"]["tid"][i]
