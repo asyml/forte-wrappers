@@ -54,7 +54,7 @@ class TestBioNerPredictor(unittest.TestCase):
             "vocab.txt",
         ]
 
-        maybe_download(urls=urls, path="resources/NCBI-disease", filenames=filenames)
+        maybe_download(urls=urls, path="bio_ner_predictor/resources/NCBI-disease", filenames=filenames)
 
         self.pl.set_reader(
             Mimic3DischargeNoteReader(), config={"max_num_notes": self.num_packs}
