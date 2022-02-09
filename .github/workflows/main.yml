@@ -113,6 +113,7 @@ jobs:
       - name: Install deep learning frameworks
         run: |
           pip install --progress-bar off torch==${{ matrix.torch-version }}
+          pip install numpy --upgrade
       - name: Install the project dependencies
         run: |
           # Install Wrappers
