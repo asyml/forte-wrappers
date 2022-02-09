@@ -113,7 +113,6 @@ jobs:
       - name: Install deep learning frameworks
         run: |
           pip install --progress-bar off torch==${{ matrix.torch-version }}
-          pip install numpy --upgrade
       - name: Install the project dependencies
         run: |
           # Install Wrappers
@@ -128,6 +127,7 @@ jobs:
           git clone https://github.com/asyml/forte.git
           cd forte
           pip install --progress-bar off .
+          pip install numpy --upgrade
       - name: Start elastic server if test elastic search
         if: ${{ matrix.test-details.dep == 'elastic' ||
                 contains(matrix.test-details.dep, 'elastic')
