@@ -21,9 +21,9 @@ from forte.common.configuration import Config
 from forte.data.data_pack import DataPack
 from forte.data.readers import StringReader
 from forte.pipeline import Pipeline
-from forte.hugginface.transformers_processor import BERTTokenizer
-from forte.hugginface.bio_ner_predictor import BioBERTNERPredictor
-from forte.nltk.nltk_processors import NLTKSentenceSegmenter
+from fortex.huggingface.transformers_processor import BERTTokenizer
+from fortex.huggingface.bio_ner_predictor import BioBERTNERPredictor
+from fortex.nltk.nltk_processors import NLTKSentenceSegmenter
 
 
 def main(config: Config):
