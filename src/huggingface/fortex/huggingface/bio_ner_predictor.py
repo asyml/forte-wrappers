@@ -68,7 +68,7 @@ class BioBERTNERPredictor(RequestPackingProcessor):
     @torch.no_grad()
     def predict(
         self, data_batch: Dict[str, Dict[str, List[str]]]
-    ) -> Dict[str, Dict[str, List[np.darray]]]:
+    ) -> Dict[str, Dict[str, List[np.typing.NDArray[np.int_]]]]:
         sentences = data_batch["context"]
         subwords = data_batch["Subword"]
 
