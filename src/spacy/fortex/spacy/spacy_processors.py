@@ -28,7 +28,7 @@ from forte.data.data_pack import DataPack
 from forte.data.ontology import Annotation
 from forte.processors.base import PackProcessor, FixedSizeBatchProcessor
 from ft.onto.base_ontology import EntityMention, Sentence, Token, Dependency
-from ftx.medical import MedicalEntityMention, UMLSConceptLink
+from ftx.onto.clinical import MedicalEntityMention, UMLSConceptLink
 
 __all__ = [
     "SpacyProcessor",
