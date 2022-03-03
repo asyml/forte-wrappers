@@ -25,11 +25,10 @@ from forte.common.resources import Resources
 from forte.data.base_pack import PackType
 from forte.data.batchers import ProcessingBatcher, FixedSizeDataPackBatcher
 from forte.data.data_pack import DataPack
-from forte.data.ontology import Annotation
+from forte.data.ontology import Annotation, Generics
 from forte.processors.base import PackProcessor, FixedSizeBatchProcessor
 from forte.utils import get_class
 from ft.onto.base_ontology import EntityMention, Sentence, Token, Dependency
-#from ftx.medical.clinical import MedicalEntityMention, UMLSConceptLink
 
 __all__ = [
     "SpacyProcessor",
@@ -95,6 +94,24 @@ def validate_spacy_configs(configs: Config):
             raise ProcessorConfigError(
                 "'sentence' is necessary in configs.processors for 'tokenize'."
             )
+
+    if "umls_link" in configs.processors:
+        if not (configs.medical_onto_type and configs.umls_onto_type):
+            raise ProcessorConfigError(
+                "Please specify medical and umls link ontology types!"
+            )
+
+        entry_type = get_class(configs.medical_onto_type)
+        if not isinstance(entry_type, Annotation) and not issubclass(
+            entry_type, Annotation
+        ):
+            raise ValueError("medical_onto_type must be an Annotation type.")
+
+        entry_type = get_class(configs.umls_onto_type)
+        if not isinstance(entry_type, Generics) and not issubclass(
+            entry_type, Generics
+        ):
+            raise ValueError("umls_onto_type must be a Generic type.")
 
 
 def set_up_pipe(nlp: Language, configs: Config):
@@ -272,6 +289,11 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
         Specify additional parameters for SpaCy processor.
 
         The available parameters are:
+        - `medical_onto_type`: defines which entry type in the input pack
+            that the medical entity mentions should be saved as output.
+
+        - `umls_onto_type`: defines which entry type in the input pack
+            that the UMLS concept links should be saved as part of output.
 
         - `batcher.batch_size`: max size of the batch (in terms of number of
            data packs).
@@ -311,8 +333,8 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
 
         """
         return {
-            "medical_onto_name": "ftx.onto.clinical.MedicalEntityMention",
-            "umls_onto_name": "ftx.onto.clinical.UMLSConceptLink",
+            "medical_onto_type": "ftx.onto.clinical.MedicalEntityMention",
+            "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
             "batcher": {
                 "batch_size": 1000,
             },
@@ -397,6 +419,12 @@ class SpacyProcessor(PackProcessor):
           Additional values for this list further includes:
           `ner` for named entity and `dep` for dependency parsing.
 
+        - `medical_onto_type`: defines which entry type in the input pack
+            that the medical entity mentions should be saved as output.
+
+        - `umls_onto_type`: defines which entry type in the input pack
+            that the UMLS concept links should be saved as part of output.
+
         - `lang`: language model, default is spaCy `en_core_web_sm` model.
           The pipeline support spaCy and ScispaCy models.
           A list of available spaCy models could be found at
@@ -421,8 +449,8 @@ class SpacyProcessor(PackProcessor):
         """
         return {
             "processors": ["sentence", "tokenize", "pos", "lemma"],
-            "medical_onto_name": "ftx.onto.clinical.MedicalEntityMention",
-            "umls_onto_name": "ftx.onto.clinical.UMLSConceptLink",
+            "medical_onto_type": "ftx.onto.clinical.MedicalEntityMention",
+            "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
             "lang": "en_core_web_sm",
             "require_gpu": False,
             "prefer_gpu": False,
@@ -457,7 +485,9 @@ class SpacyProcessor(PackProcessor):
         # Record medical entity linking results.
         if "umls_link" in self.configs.processors:
             linker = self.nlp.get_pipe("EntityLinker")
-            process_umls_entity_linking(linker, result, input_pack, self.configs)
+            process_umls_entity_linking(
+                linker, result, input_pack, self.configs
+            )
 
     def record(self, record_meta: Dict[str, Set[str]]):
         r"""Method to add output type record of current processor
@@ -485,8 +515,8 @@ def set_records(record_meta: Dict[str, Set[str]], configs: Config):
     if "dep" in configs.processors:
         record_meta["ft.onto.base_ontology.Dependency"] = {"dep_label"}
     if "umls_link" in configs.processors:
-        record_meta[configs.medical_onto_name] = {"ner_type", "umls_entities"}
-        record_meta[configs.umls_onto_name] = {
+        record_meta[configs.medical_onto_type] = {"ner_type", "umls_entities"}
+        record_meta[configs.umls_onto_type] = {
             "cui",
             "score",
             "name",
@@ -563,7 +593,9 @@ def process_ner(result, input_pack: DataPack):
         entity.ner_type = item.label_
 
 
-def process_umls_entity_linking(linker, result, input_pack: DataPack, config: Config):
+def process_umls_entity_linking(
+    linker, result, input_pack: DataPack, config: Config
+):
     """
     Perform UMLS medical entity linking with EntityLinker, and store medical
     entity mentions and UMLS concepts.
@@ -580,7 +612,7 @@ def process_umls_entity_linking(linker, result, input_pack: DataPack, config: Co
 
     # get medical entity mentions and UMLS concepts
     for item in medical_entities:
-        medical_entry_name = config.medical_onto_name
+        medical_entry_name = config.medical_onto_type
         medical_entry = get_class(medical_entry_name)
         entity = medical_entry(
             pack=input_pack,
@@ -590,7 +622,7 @@ def process_umls_entity_linking(linker, result, input_pack: DataPack, config: Co
 
         setattr(entity, "ner_type", item.label_)
         umls_entries = []
-        
+
         for umls_ent in item._.kb_ents:
             cui_entity = linker.kb.cui_to_entity[umls_ent[0]]
             umls = {}
@@ -601,7 +633,7 @@ def process_umls_entity_linking(linker, result, input_pack: DataPack, config: Co
             umls["tuis"] = cui_entity.types
             umls["aliases"] = cui_entity.aliases
 
-            umls_entry_name = get_class(config.umls_onto_name)
+            umls_entry_name = get_class(config.umls_onto_type)
             umls_entry = umls_entry_name(pack=input_pack)
 
             for attribute, _ in vars(umls_entry).items():
