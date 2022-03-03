@@ -29,7 +29,7 @@ from forte.data.ontology import Annotation
 from forte.processors.base import PackProcessor, FixedSizeBatchProcessor
 from forte.utils import get_class
 from ft.onto.base_ontology import EntityMention, Sentence, Token, Dependency
-from ftx.medical.clinical import MedicalEntityMention, UMLSConceptLink
+#from ftx.medical.clinical import MedicalEntityMention, UMLSConceptLink
 
 __all__ = [
     "SpacyProcessor",
@@ -311,9 +311,8 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
 
         """
         return {
-            "medical_onto_name": "ftx.medical.clinical.MedicalEntityMention",
-            "umls_onto_name": "ftx.medical.clinical.UMLSConceptLink",
-            "attribute_names": {"ftx.medical.clinical.MedicalEntityMention": ["ner_type", "umls_entities"], "ftx.medical.clinical.UMLSConceptLink": ["cui", "name", ]},
+            "medical_onto_name": "ftx.onto.clinical.MedicalEntityMention",
+            "umls_onto_name": "ftx.onto.clinical.UMLSConceptLink",
             "batcher": {
                 "batch_size": 1000,
             },
@@ -422,8 +421,8 @@ class SpacyProcessor(PackProcessor):
         """
         return {
             "processors": ["sentence", "tokenize", "pos", "lemma"],
-            "medical_onto_name": "ftx.medical.clinical.MedicalEntityMention",
-            "umls_onto_name": "ftx.medical.clinical.UMLSConceptLink",
+            "medical_onto_name": "ftx.onto.clinical.MedicalEntityMention",
+            "umls_onto_name": "ftx.onto.clinical.UMLSConceptLink",
             "lang": "en_core_web_sm",
             "require_gpu": False,
             "prefer_gpu": False,
@@ -486,8 +485,8 @@ def set_records(record_meta: Dict[str, Set[str]], configs: Config):
     if "dep" in configs.processors:
         record_meta["ft.onto.base_ontology.Dependency"] = {"dep_label"}
     if "umls_link" in configs.processors:
-        record_meta["onto.medical.MedicalEntityMention"] = {"ner_type"}
-        record_meta["onto.medical.UMLSConceptLink"] = {
+        record_meta[configs.medical_onto_name] = {"ner_type", "umls_entities"}
+        record_meta[configs.umls_onto_name] = {
             "cui",
             "score",
             "name",
@@ -582,15 +581,16 @@ def process_umls_entity_linking(linker, result, input_pack: DataPack, config: Co
     # get medical entity mentions and UMLS concepts
     for item in medical_entities:
         medical_entry_name = config.medical_onto_name
-        output_medical_entry = get_class(medical_entry_name)
-        entity = output_medical_entry(
+        medical_entry = get_class(medical_entry_name)
+        entity = medical_entry(
             pack=input_pack,
             begin=item.start_char,
             end=item.end_char,
         )
 
         setattr(entity, "ner_type", item.label_)
-
+        umls_entries = []
+        
         for umls_ent in item._.kb_ents:
             cui_entity = linker.kb.cui_to_entity[umls_ent[0]]
             umls = {}
@@ -604,11 +604,10 @@ def process_umls_entity_linking(linker, result, input_pack: DataPack, config: Co
             umls_entry_name = get_class(config.umls_onto_name)
             umls_entry = umls_entry_name(pack=input_pack)
 
-            for attribute, _ in vars(umls_entry):
+            for attribute, _ in vars(umls_entry).items():
                 if attribute in umls.keys():
                     setattr(umls_entry, attribute, umls[attribute])
 
-            umls = UMLSConceptLink(input_pack)
-            print ("********************** vars: ", vars(umls))
-            print ("***", vars(umls_entry))
-            setattr(entity, "umls_entities", umls_entry)
+            umls_entries.append(umls_entry)
+
+        setattr(entity, "umls_entities", umls_entries)
