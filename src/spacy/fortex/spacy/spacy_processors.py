@@ -27,8 +27,9 @@ from forte.data.batchers import ProcessingBatcher, FixedSizeDataPackBatcher
 from forte.data.data_pack import DataPack
 from forte.data.ontology import Annotation
 from forte.processors.base import PackProcessor, FixedSizeBatchProcessor
+from forte.utils import get_class
 from ft.onto.base_ontology import EntityMention, Sentence, Token, Dependency
-from ftx.medical import MedicalEntityMention, UMLSConceptLink
+from ftx.medical.clinical import MedicalEntityMention, UMLSConceptLink
 
 __all__ = [
     "SpacyProcessor",
@@ -252,7 +253,7 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
             # Record medical entity linking results.
             if "umls_link" in self.configs.processors:
                 linker = self.nlp.get_pipe("EntityLinker")  # type: ignore
-                process_umls_entity_linking(linker, result, pack)
+                process_umls_entity_linking(linker, result, pack, self.configs)
 
     def record(self, record_meta: Dict[str, Set[str]]):
         r"""Method to add output type record of current processor
@@ -310,6 +311,9 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
 
         """
         return {
+            "medical_onto_name": "ftx.medical.clinical.MedicalEntityMention",
+            "umls_onto_name": "ftx.medical.clinical.UMLSConceptLink",
+            "attribute_names": {"ftx.medical.clinical.MedicalEntityMention": ["ner_type", "umls_entities"], "ftx.medical.clinical.UMLSConceptLink": ["cui", "name", ]},
             "batcher": {
                 "batch_size": 1000,
             },
@@ -452,7 +456,7 @@ class SpacyProcessor(PackProcessor):
         # Record medical entity linking results.
         if "umls_link" in self.configs.processors:
             linker = self.nlp.get_pipe("EntityLinker")
-            process_umls_entity_linking(linker, result, input_pack)
+            process_umls_entity_linking(linker, result, input_pack, self.configs)
 
     def record(self, record_meta: Dict[str, Set[str]]):
         r"""Method to add output type record of current processor
@@ -558,7 +562,7 @@ def process_ner(result, input_pack: DataPack):
         entity.ner_type = item.label_
 
 
-def process_umls_entity_linking(linker, result, input_pack: DataPack):
+def process_umls_entity_linking(linker, result, input_pack: DataPack, config: Config):
     """
     Perform UMLS medical entity linking with EntityLinker, and store medical
     entity mentions and UMLS concepts.
@@ -575,23 +579,34 @@ def process_umls_entity_linking(linker, result, input_pack: DataPack):
 
     # get medical entity mentions and UMLS concepts
     for item in medical_entities:
-        entity = MedicalEntityMention(
-            input_pack, item.start_char, item.end_char
+        medical_entry_name = config.medical_entry_name
+        output_medical_entry = get_class(medical_entry_name)
+        entity = output_medical_entry(
+            pack=input_pack,
+            begin=item.start_char,
+            end=item.end_char,
         )
-        entity.ner_type = item.label_
+
+        setattr(entity, "ner_type", item.label_)
 
         for umls_ent in item._.kb_ents:
-            cui = umls_ent[0]
-            score = str(umls_ent[1])
+            cui_entity = linker.kb.cui_to_entity[umls_ent[0]]
+            umls = {}
+            umls["cui"] = umls_ent[0]
+            umls["score"] = str(umls_ent[1])
+            umls["name"] = cui_entity.canonical_name
+            umls["definition"] = cui_entity.definition
+            umls["tuis"] = cui_entity.types
+            umls["aliases"] = cui_entity.aliases
 
-            cui_entity = linker.kb.cui_to_entity[cui]
+            umls_entry_name = get_class(config.umls_entry_name)
+            umls_entry = umls_entry_name(pack=input_pack)
+
+            for attribute, _ in vars(umls_entry):
+                if attribute in umls.keys():
+                    setattr(umls_entry, attribute, umls[attribute])
 
             umls = UMLSConceptLink(input_pack)
-            umls.cui = cui
-            umls.score = score
-            umls.name = cui_entity.canonical_name
-            umls.definition = cui_entity.definition
-            umls.tuis = cui_entity.types
-            umls.aliases = cui_entity.aliases
-
-            entity.umls_entities.append(umls)
+            print ("********************** vars: ", vars(umls))
+            print ("***", vars(umls_entry))
+            setattr(entity, "umls_entities", umls_entry)
