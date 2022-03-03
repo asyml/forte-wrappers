@@ -422,6 +422,8 @@ class SpacyProcessor(PackProcessor):
         """
         return {
             "processors": ["sentence", "tokenize", "pos", "lemma"],
+            "medical_onto_name": "ftx.medical.clinical.MedicalEntityMention",
+            "umls_onto_name": "ftx.medical.clinical.UMLSConceptLink",
             "lang": "en_core_web_sm",
             "require_gpu": False,
             "prefer_gpu": False,
@@ -579,7 +581,7 @@ def process_umls_entity_linking(linker, result, input_pack: DataPack, config: Co
 
     # get medical entity mentions and UMLS concepts
     for item in medical_entities:
-        medical_entry_name = config.medical_entry_name
+        medical_entry_name = config.medical_onto_name
         output_medical_entry = get_class(medical_entry_name)
         entity = output_medical_entry(
             pack=input_pack,
@@ -599,7 +601,7 @@ def process_umls_entity_linking(linker, result, input_pack: DataPack, config: Co
             umls["tuis"] = cui_entity.types
             umls["aliases"] = cui_entity.aliases
 
-            umls_entry_name = get_class(config.umls_entry_name)
+            umls_entry_name = get_class(config.umls_onto_name)
             umls_entry = umls_entry_name(pack=input_pack)
 
             for attribute, _ in vars(umls_entry):
