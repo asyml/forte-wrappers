@@ -106,9 +106,7 @@ def validate_spacy_configs(configs: Config):
             entry_type, Annotation
         ):
             raise ValueError(
-                "Config parameter "
-                + configs.medical_onto_type
-                + " must be an Annotation type."
+                "Config parameter {} must be an Annotation type.".format(configs.medical_onto_type)
             )
 
         entry_type = get_class(configs.umls_onto_type)
@@ -116,9 +114,7 @@ def validate_spacy_configs(configs: Config):
             entry_type, Generics
         ):
             raise ValueError(
-                "Config parameter "
-                + configs.umls_onto_type
-                + " must be a Generic type."
+                "Config parameter {} must be a Generic type.".format(configs.umls_onto_type) 
             )
 
 
@@ -638,6 +634,7 @@ def process_umls_entity_linking(
         )
 
         setattr(medical_entity, "ner_type", item.label_)
+        umls_entity_name = get_class(umls_onto_type)
 
         for umls_ent in item._.kb_ents:
             cui_entity = linker.kb.cui_to_entity[umls_ent[0]]
@@ -649,7 +646,6 @@ def process_umls_entity_linking(
             umls["tuis"] = cui_entity.types
             umls["aliases"] = cui_entity.aliases
 
-            umls_entity_name = get_class(umls_onto_type)
             umls_entity = umls_entity_name(pack=input_pack)
 
             for attribute, _ in vars(umls_entity).items():
