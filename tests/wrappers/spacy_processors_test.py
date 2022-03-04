@@ -25,6 +25,7 @@ from forte.common import ProcessorConfigError
 from forte.data.data_pack import DataPack
 from forte.data.readers import StringReader
 from forte.pipeline import Pipeline
+from forte.utils import get_class
 from ft.onto.base_ontology import Token, EntityMention, Dependency
 
 from fortex.spacy import SpacyProcessor, SpacyBatchedProcessor
@@ -61,7 +62,7 @@ class TestSpacyProcessor(unittest.TestCase):
         document = document.replace(".", " .")
         self.assertEqual(tokens, document.split())
 
-    def check_results(self, processors, raw_results, data_pack):
+    def check_results(self, processors, raw_results, data_pack, config):
         forte_tokens: List[Token] = list(data_pack.get(Token))  # type: ignore
 
         if "tokenize" in processors:
@@ -128,6 +129,23 @@ class TestSpacyProcessor(unittest.TestCase):
             self.assertEqual(entities_text, exp_ent_text)
             self.assertEqual(entities_type, exp_ent_types)
 
+        if "umls_link" in processors:
+            med_entities = list(data_pack.get(get_class(config.medical_onto_type)))
+            med_entities_text = []
+            med_entities_umls = []
+            
+            for e in med_entities:
+                med_entities_umls.extend(e.umls_entities)
+                med_entities_text.append(e.text)
+
+            ents = raw_results.ents
+            exp_umls_ents_count = 0
+            exp_ent_text = [ent.text for ent in ents]
+            exp_umls_ents_count = sum([1 for ent in ents for _ in ent._.kb_ents ])
+           
+            self.assertEqual(len(med_entities_umls), exp_umls_ents_count)
+            self.assertEqual(med_entities_text, exp_ent_text)
+
     @data(
         ["sentence", "tokenize", "dep"],
         ["sentence", "tokenize", "pos"],
@@ -136,6 +154,7 @@ class TestSpacyProcessor(unittest.TestCase):
         ["sentence", "ner", "tokenize", "lemma", "pos"],
         ["ner"],
         ["sentence", "tokenize", "dep"],
+        ["umls_link"]
     )
     def test_spacy_batch_pipeline(self, value):
         pipeline = Pipeline[DataPack]()
@@ -161,7 +180,7 @@ class TestSpacyProcessor(unittest.TestCase):
         for raw_results, pack in zip(
             spacy_pipe.pipe(sentences), pipeline.process_dataset(sentences)
         ):
-            self.check_results(value, raw_results, pack)
+            self.check_results(value, raw_results, pack, config)
 
     @data(
         ["sentence", "tokenize"],
@@ -171,6 +190,7 @@ class TestSpacyProcessor(unittest.TestCase):
         ["sentence", "ner", "tokenize", "lemma", "pos"],
         ["ner"],
         ["sentence", "tokenize", "dep"],
+        ["umls_link"]
     )
     def test_spacy_variation_pipeline(self, value):
         pipeline = Pipeline[DataPack]()
@@ -196,7 +216,7 @@ class TestSpacyProcessor(unittest.TestCase):
         set_up_pipe(spacy_pipe, pipeline.component_configs[0])
         raw_results = spacy_pipe(document)
 
-        self.check_results(value, raw_results, pack)
+        self.check_results(value, raw_results, pack, config)
 
     @data(
         ["lemma"],  # tokenize is required for lemma
