@@ -68,7 +68,7 @@ class BioBERTNERPredictor(RequestPackingProcessor):
     @torch.no_grad()
     def predict(
         self, data_batch: Dict[str, Dict[str, List[str]]]
-    ) -> Dict[str, Dict[str, List]]: # numpy typing is removed due to
+    ) -> Dict[str, Dict[str, List]]:  # numpy typing is removed due to
         # incompatibility issues due to upgrading from numpy verions 1.19 to
         # 1.21
         sentences = data_batch["context"]
