@@ -208,6 +208,7 @@ class TestSpacyProcessor(unittest.TestCase):
             "This tool is called Forte.",
             "The goal of this project to help you build NLP pipelines.",
             "NLP has never been made this easy before.",
+            "Also, Head CT reveled no lesions."
         ]
         document = " ".join(sentences)
         pack: DataPack = pipeline.process(document)
