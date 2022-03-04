@@ -106,7 +106,9 @@ def validate_spacy_configs(configs: Config):
             entry_type, Annotation
         ):
             raise ValueError(
-                "Config parameter {} must be an Annotation type.".format(configs.medical_onto_type)
+                "Config parameter {} must be an Annotation type.".format(
+                    configs.medical_onto_type
+                )
             )
 
         entry_type = get_class(configs.umls_onto_type)
@@ -114,7 +116,9 @@ def validate_spacy_configs(configs: Config):
             entry_type, Generics
         ):
             raise ValueError(
-                "Config parameter {} must be a Generic type.".format(configs.umls_onto_type) 
+                "Config parameter {} must be a Generic type.".format(
+                    configs.umls_onto_type
+                )
             )
 
 
