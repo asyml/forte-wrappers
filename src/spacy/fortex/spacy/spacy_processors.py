@@ -105,13 +105,21 @@ def validate_spacy_configs(configs: Config):
         if not isinstance(entry_type, Annotation) and not issubclass(
             entry_type, Annotation
         ):
-            raise ValueError("medical_onto_type must be an Annotation type.")
+            raise ValueError(
+                "Config parameter "
+                + configs.medical_onto_type
+                + " must be an Annotation type."
+            )
 
         entry_type = get_class(configs.umls_onto_type)
         if not isinstance(entry_type, Generics) and not issubclass(
             entry_type, Generics
         ):
-            raise ValueError("umls_onto_type must be a Generic type.")
+            raise ValueError(
+                "Config parameter "
+                + configs.umls_onto_type
+                + " must be a Generic type."
+            )
 
 
 def set_up_pipe(nlp: Language, configs: Config):
@@ -270,7 +278,13 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
             # Record medical entity linking results.
             if "umls_link" in self.configs.processors:
                 linker = self.nlp.get_pipe("EntityLinker")  # type: ignore
-                process_umls_entity_linking(linker, result, pack, self.configs)
+                process_umls_entity_linking(
+                    linker,
+                    result,
+                    self.configs.medical_onto_type,
+                    self.configs.umls_onto_type,
+                    pack,
+                )
 
     def record(self, record_meta: Dict[str, Set[str]]):
         r"""Method to add output type record of current processor
@@ -486,7 +500,11 @@ class SpacyProcessor(PackProcessor):
         if "umls_link" in self.configs.processors:
             linker = self.nlp.get_pipe("EntityLinker")
             process_umls_entity_linking(
-                linker, result, input_pack, self.configs
+                linker,
+                result,
+                self.configs.medical_noto_type,
+                self.configs.umls_onto_type,
+                input_pack,
             )
 
     def record(self, record_meta: Dict[str, Set[str]]):
@@ -594,7 +612,7 @@ def process_ner(result, input_pack: DataPack):
 
 
 def process_umls_entity_linking(
-    linker, result, input_pack: DataPack, config: Config
+    linker, result, medical_onto_type, umls_onto_type, input_pack: DataPack
 ):
     """
     Perform UMLS medical entity linking with EntityLinker, and store medical
@@ -612,16 +630,14 @@ def process_umls_entity_linking(
 
     # get medical entity mentions and UMLS concepts
     for item in medical_entities:
-        medical_entry_name = config.medical_onto_type
-        medical_entry = get_class(medical_entry_name)
-        entity = medical_entry(
+        medical_entity_name = get_class(medical_onto_type)
+        medical_entity = medical_entity_name(
             pack=input_pack,
             begin=item.start_char,
             end=item.end_char,
         )
 
-        setattr(entity, "ner_type", item.label_)
-        umls_entries = []
+        setattr(medical_entity, "ner_type", item.label_)
 
         for umls_ent in item._.kb_ents:
             cui_entity = linker.kb.cui_to_entity[umls_ent[0]]
@@ -633,13 +649,11 @@ def process_umls_entity_linking(
             umls["tuis"] = cui_entity.types
             umls["aliases"] = cui_entity.aliases
 
-            umls_entry_name = get_class(config.umls_onto_type)
-            umls_entry = umls_entry_name(pack=input_pack)
+            umls_entity_name = get_class(umls_onto_type)
+            umls_entity = umls_entity_name(pack=input_pack)
 
-            for attribute, _ in vars(umls_entry).items():
+            for attribute, _ in vars(umls_entity).items():
                 if attribute in umls.keys():
-                    setattr(umls_entry, attribute, umls[attribute])
+                    setattr(umls_entity, attribute, umls[attribute])
 
-            umls_entries.append(umls_entry)
-
-        setattr(entity, "umls_entities", umls_entries)
+            getattr(medical_entity, "umls_entities").append(umls_entity)
