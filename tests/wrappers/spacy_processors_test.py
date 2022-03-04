@@ -80,9 +80,9 @@ class TestSpacyProcessor(unittest.TestCase):
                         )
 
             tokens_text = [x.text for x in forte_tokens]
-            self.assertEqual(
-                tokens_text, data_pack.text.replace(".", " .").split()
-            )
+            data_pack = data_pack.text.replace(".", " .")
+            data_pack = data_pack.text.replace(",", " ,")
+            self.assertEqual(tokens_text, data_pack.split())
 
             pos = [x.pos for x in forte_tokens]
             lemma = [x.lemma for x in forte_tokens]
@@ -165,6 +165,8 @@ class TestSpacyProcessor(unittest.TestCase):
         pipeline.set_reader(StringReader())
         config = {
             "processors": value,
+            "medical_onto_type": "ftx.onto.clinical.MedicalEntityMention",
+            "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
             "lang": "en_core_web_sm",
             # Language code for the language to build the Pipeline
             "batcher": {"batch_size": 2},
@@ -202,6 +204,8 @@ class TestSpacyProcessor(unittest.TestCase):
 
         config = {
             "processors": value,
+            "medical_onto_type": "ftx.onto.clinical.MedicalEntityMention",
+            "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
             "lang": "en_core_web_sm",
             # Language code for the language to build the Pipeline
         }
@@ -234,6 +238,8 @@ class TestSpacyProcessor(unittest.TestCase):
 
         config = {
             "processors": processor,
+            "medical_onto_type": "ftx.onto.clinical.MedicalEntityMention",
+            "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
             "lang": "en_core_web_sm",
             # Language code for the language to build the Pipeline
         }
