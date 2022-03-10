@@ -80,9 +80,9 @@ class TestSpacyProcessor(unittest.TestCase):
                         )
 
             tokens_text = [x.text for x in forte_tokens]
-            data_pack = data_pack.text.replace(".", " .")
-            data_pack = data_pack.replace(",", " ,")
-            self.assertEqual(tokens_text, data_pack.split())
+            self.assertEqual(
+                tokens_text, data_pack.text.replace(".", " .").split()
+            )
 
             pos = [x.pos for x in forte_tokens]
             lemma = [x.lemma for x in forte_tokens]
@@ -216,7 +216,7 @@ class TestSpacyProcessor(unittest.TestCase):
             "This tool is called Forte.",
             "The goal of this project to help you build NLP pipelines.",
             "NLP has never been made this easy before.",
-            "Also, Head CT reveled no lesions.",
+            "Head CT revealed no lesions.",
         ]
         document = " ".join(sentences)
         pack: DataPack = pipeline.process(document)
