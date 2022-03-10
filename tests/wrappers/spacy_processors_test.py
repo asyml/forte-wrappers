@@ -81,7 +81,7 @@ class TestSpacyProcessor(unittest.TestCase):
 
             tokens_text = [x.text for x in forte_tokens]
             data_pack = data_pack.text.replace(".", " .")
-            data_pack = data_pack.text.replace(",", " ,")
+            data_pack = data_pack.replace(",", " ,")
             self.assertEqual(tokens_text, data_pack.split())
 
             pos = [x.pos for x in forte_tokens]
