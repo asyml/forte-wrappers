@@ -158,7 +158,7 @@ class TestSpacyProcessor(unittest.TestCase):
         ["sentence", "ner", "tokenize", "lemma", "pos"],
         ["ner"],
         ["sentence", "tokenize", "dep"],
-        ["umls_link"],
+#        ["umls_link"],
     )
     def test_spacy_batch_pipeline(self, value):
         pipeline = Pipeline[DataPack]()
@@ -196,7 +196,7 @@ class TestSpacyProcessor(unittest.TestCase):
         ["sentence", "ner", "tokenize", "lemma", "pos"],
         ["ner"],
         ["sentence", "tokenize", "dep"],
-        ["umls_link"],
+ #       ["umls_link"],
     )
     def test_spacy_variation_pipeline(self, value):
         pipeline = Pipeline[DataPack]()
