@@ -504,7 +504,7 @@ class SpacyProcessor(PackProcessor):
             process_umls_entity_linking(
                 linker,
                 result,
-                self.configs.medical_noto_type,
+                self.configs.medical_onto_type,
                 self.configs.umls_onto_type,
                 input_pack,
             )
