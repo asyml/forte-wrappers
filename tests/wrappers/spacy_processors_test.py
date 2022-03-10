@@ -131,7 +131,7 @@ class TestSpacyProcessor(unittest.TestCase):
 
         if "umls_link" in processors:
             med_entities = list(
-                data_pack.get(get_class(config.medical_onto_type))
+                data_pack.get(get_class(config["medical_onto_type"]))
             )
             med_entities_text = []
             med_entities_umls = []
