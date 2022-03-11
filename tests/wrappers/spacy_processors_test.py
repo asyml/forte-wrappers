@@ -62,7 +62,7 @@ class TestSpacyProcessor(unittest.TestCase):
         document = document.replace(".", " .")
         self.assertEqual(tokens, document.split())
 
-    def check_results(self, processors, raw_results, data_pack, config):
+    def check_results(self, processors, raw_results, data_pack):
         forte_tokens: List[Token] = list(data_pack.get(Token))  # type: ignore
 
         if "tokenize" in processors:
@@ -164,7 +164,7 @@ class TestSpacyProcessor(unittest.TestCase):
         for raw_results, pack in zip(
             spacy_pipe.pipe(sentences), pipeline.process_dataset(sentences)
         ):
-            self.check_results(value, raw_results, pack, config)
+            self.check_results(value, raw_results, pack)
 
     @data(
         ["sentence", "tokenize"],
@@ -202,7 +202,7 @@ class TestSpacyProcessor(unittest.TestCase):
         set_up_pipe(spacy_pipe, pipeline.component_configs[0])
         raw_results = spacy_pipe(document)
 
-        self.check_results(value, raw_results, pack, config)
+        self.check_results(value, raw_results, pack)
 
     @data(
         ["lemma"],  # tokenize is required for lemma
