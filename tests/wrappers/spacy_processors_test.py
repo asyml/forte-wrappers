@@ -148,6 +148,7 @@ class TestSpacyProcessor(unittest.TestCase):
             "lang": "en_core_web_sm",
             # Language code for the language to build the Pipeline
             "batcher": {"batch_size": 2},
+            "testing": True,
         }
         pipeline.add(SpacyBatchedProcessor(), config)
         pipeline.initialize()
@@ -185,6 +186,7 @@ class TestSpacyProcessor(unittest.TestCase):
             "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
             "lang": "en_core_web_sm",
             # Language code for the language to build the Pipeline
+            "testing": True,
         }
         pipeline.add(SpacyProcessor(), config=config)
         pipeline.initialize()
@@ -219,6 +221,7 @@ class TestSpacyProcessor(unittest.TestCase):
             "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
             "lang": "en_core_web_sm",
             # Language code for the language to build the Pipeline
+            "testing": True,
         }
         pipeline.add(SpacyProcessor(), config=config)
 
@@ -237,8 +240,8 @@ class TestSpacyProcessor(unittest.TestCase):
             "medical_onto_type": "ftx.onto.clinical.MedicalEntityMention",
             "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
             "lang": "en_core_web_sm",
-            "testing": True,
             # Language code for the language to build the Pipeline
+            "testing": True,
         }
         pipeline.add(SpacyProcessor(), config=config)
 
