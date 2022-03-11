@@ -345,6 +345,9 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
         - `num_processes`: number of processes to run when using `spacy.pipe`.
           Default is 1. This will be passed directly to the `n_process` option.
 
+        - `testing`: states whether or not the processor is being used in a
+         test case.
+
         """
         return {
             "medical_onto_type": "ftx.medical.clinical_ontology."
@@ -460,6 +463,9 @@ class SpacyProcessor(PackProcessor):
 
         - `gpu_id`: the GPU device index to use when GPU is enabled. Default
           is 0.
+
+        - `testing`: states whether or not the processor is being used in a
+         test case.
 
         Returns: A dictionary with the default config for this processor.
         """
