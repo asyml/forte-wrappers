@@ -25,6 +25,7 @@ from forte.common import ProcessorConfigError
 from forte.data.data_pack import DataPack
 from forte.data.readers import StringReader
 from forte.pipeline import Pipeline
+from forte.utils import get_class
 from ft.onto.base_ontology import Token, EntityMention, Dependency
 
 from fortex.spacy import SpacyProcessor, SpacyBatchedProcessor
@@ -142,9 +143,12 @@ class TestSpacyProcessor(unittest.TestCase):
         pipeline.set_reader(StringReader())
         config = {
             "processors": value,
+            "medical_onto_type": "ftx.onto.clinical.MedicalEntityMention",
+            "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
             "lang": "en_core_web_sm",
             # Language code for the language to build the Pipeline
             "batcher": {"batch_size": 2},
+            "testing": True,
         }
         pipeline.add(SpacyBatchedProcessor(), config)
         pipeline.initialize()
@@ -178,8 +182,11 @@ class TestSpacyProcessor(unittest.TestCase):
 
         config = {
             "processors": value,
+            "medical_onto_type": "ftx.onto.clinical.MedicalEntityMention",
+            "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
             "lang": "en_core_web_sm",
             # Language code for the language to build the Pipeline
+            "testing": True,
         }
         pipeline.add(SpacyProcessor(), config=config)
         pipeline.initialize()
@@ -188,6 +195,7 @@ class TestSpacyProcessor(unittest.TestCase):
             "This tool is called Forte.",
             "The goal of this project to help you build NLP pipelines.",
             "NLP has never been made this easy before.",
+            "Head CT revealed no lesions.",
         ]
         document = " ".join(sentences)
         pack: DataPack = pipeline.process(document)
@@ -209,14 +217,38 @@ class TestSpacyProcessor(unittest.TestCase):
 
         config = {
             "processors": processor,
+            "medical_onto_type": "ftx.onto.clinical.MedicalEntityMention",
+            "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
             "lang": "en_core_web_sm",
             # Language code for the language to build the Pipeline
+            "testing": True,
         }
         pipeline.add(SpacyProcessor(), config=config)
 
         with self.assertRaises(ProcessorConfigError):
             pipeline.initialize()
 
+    @data(
+        ["umls_link"],
+    )
+    def test_spacy_processor_for_umls_link(self, processor):
+        pipeline = Pipeline[DataPack]()
+        pipeline.set_reader(StringReader())
+
+        config = {
+            "processors": processor,
+            "medical_onto_type": "ftx.onto.clinical.MedicalEntityMention",
+            "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
+            "lang": "en_core_web_sm",
+            # Language code for the language to build the Pipeline
+            "testing": True,
+        }
+        pipeline.add(SpacyProcessor(), config=config)
+
+        try:
+            pipeline.initialize()
+        except ProcessorConfigError:
+            self.fail("umls_link processor failing in Spacy, check config")
 
 if __name__ == "__main__":
     unittest.main()

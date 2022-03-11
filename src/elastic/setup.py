@@ -29,8 +29,8 @@ setuptools.setup(
     platforms="any",
     install_requires=[
         "forte==0.1.2",
-        "elasticsearch>=7.5.1; python_version<'3.9.0'",
-        "elasticsearch>=7.14.0; python_version>='3.9.0'",
+        "elasticsearch>=7.5.1, <8.0.0; python_version<'3.9.0'",
+        "elasticsearch>=7.14.0, <8.0.0; python_version>='3.9.0'",
     ],
     classifiers=[
         "Intended Audience :: Developers",
