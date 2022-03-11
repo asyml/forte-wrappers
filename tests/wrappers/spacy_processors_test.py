@@ -129,27 +129,6 @@ class TestSpacyProcessor(unittest.TestCase):
             self.assertEqual(entities_text, exp_ent_text)
             self.assertEqual(entities_type, exp_ent_types)
 
-        if "umls_link" in processors:
-            med_entities = list(
-                data_pack.get(get_class(config["medical_onto_type"]))
-            )
-            med_entities_text = []
-            med_entities_umls = []
-
-            for e in med_entities:
-                med_entities_umls.extend(e.umls_entities)
-                med_entities_text.append(e.text)
-
-            ents = raw_results.ents
-            exp_umls_ents_count = 0
-            exp_ent_text = [ent.text for ent in ents]
-            exp_umls_ents_count = sum(
-                [1 for ent in ents for _ in ent._.kb_ents]
-            )
-
-            self.assertEqual(len(med_entities_umls), exp_umls_ents_count)
-            self.assertEqual(med_entities_text, exp_ent_text)
-
     @data(
         ["sentence", "tokenize", "dep"],
         ["sentence", "tokenize", "pos"],
@@ -158,7 +137,6 @@ class TestSpacyProcessor(unittest.TestCase):
         ["sentence", "ner", "tokenize", "lemma", "pos"],
         ["ner"],
         ["sentence", "tokenize", "dep"],
-#        ["umls_link"],
     )
     def test_spacy_batch_pipeline(self, value):
         pipeline = Pipeline[DataPack]()
@@ -196,7 +174,6 @@ class TestSpacyProcessor(unittest.TestCase):
         ["sentence", "ner", "tokenize", "lemma", "pos"],
         ["ner"],
         ["sentence", "tokenize", "dep"],
- #       ["umls_link"],
     )
     def test_spacy_variation_pipeline(self, value):
         pipeline = Pipeline[DataPack]()
@@ -248,6 +225,26 @@ class TestSpacyProcessor(unittest.TestCase):
         with self.assertRaises(ProcessorConfigError):
             pipeline.initialize()
 
+    @data(
+        ["umls_link"],
+    )
+    def test_spacy_processor_for_umls_link(self, processor):
+        pipeline = Pipeline[DataPack]()
+        pipeline.set_reader(StringReader())
+
+        config = {
+            "processors": processor,
+            "medical_onto_type": "ftx.onto.clinical.MedicalEntityMention",
+            "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
+            "lang": "en_core_web_sm",
+            # Language code for the language to build the Pipeline
+        }
+        pipeline.add(SpacyProcessor(), config=config)
+
+        try:
+            pipeline.initialize()
+        except ProcessorConfigError:
+            self.fail("umls_link processor failing in Spacy, check config")
 
 if __name__ == "__main__":
     unittest.main()
