@@ -241,9 +241,10 @@ class TestSpacyProcessor(unittest.TestCase):
         }
         pipeline.add(SpacyProcessor(), config=config)
 
-        with not self.assertRaises(ProcessorConfigError):
+        try:
             pipeline.initialize()
-
+        except ProcessorConfigError:
+            self.fail("umls_link processor failing in Spacy, check config")
 
 if __name__ == "__main__":
     unittest.main()
