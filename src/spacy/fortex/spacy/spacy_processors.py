@@ -146,8 +146,8 @@ def set_up_pipe(nlp: Language, configs: Config):
         if "umls_link" in configs.processors:
             # pylint: disable=import-outside-toplevel
             from scispacy.linking import EntityLinker
-
-            linker = EntityLinker(resolve_abbreviations=True, name="mesh")
+            name = "mesh" if configs.testing is True else "umls"
+            linker = EntityLinker(resolve_abbreviations=True, name=name)
             nlp.add_pipe(linker)
 
     # Remove some components to save some time.
@@ -359,6 +359,7 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
             "prefer_gpu": False,
             "gpu_id": 0,
             "num_processes": 1,
+            "testing": False,
         }
 
 
@@ -471,6 +472,7 @@ class SpacyProcessor(PackProcessor):
             "require_gpu": False,
             "prefer_gpu": False,
             "gpu_id": 0,
+            "testing": False,
         }
 
     def _process(self, input_pack: DataPack):

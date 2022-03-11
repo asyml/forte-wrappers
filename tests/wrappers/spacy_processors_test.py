@@ -237,6 +237,7 @@ class TestSpacyProcessor(unittest.TestCase):
             "medical_onto_type": "ftx.onto.clinical.MedicalEntityMention",
             "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
             "lang": "en_core_web_sm",
+            "testing": True,
             # Language code for the language to build the Pipeline
         }
         pipeline.add(SpacyProcessor(), config=config)
