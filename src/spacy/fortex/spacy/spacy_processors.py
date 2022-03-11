@@ -147,7 +147,7 @@ def set_up_pipe(nlp: Language, configs: Config):
             # pylint: disable=import-outside-toplevel
             from scispacy.linking import EntityLinker
 
-            linker = EntityLinker(resolve_abbreviations=True, name="umls")
+            linker = EntityLinker(resolve_abbreviations=True, name="mesh")
             nlp.add_pipe(linker)
 
     # Remove some components to save some time.
