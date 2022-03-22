@@ -351,9 +351,9 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
 
         """
         return {
-            "medical_onto_type": "ftx.medical.clinical_ontology."
+            "medical_onto_type": "ftx.onto.clinical."
             + "MedicalEntityMention",
-            "umls_onto_type": "ftx.medical.clinical_ontology.UMLSConceptLink",
+            "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
             "batcher": {
                 "batch_size": 1000,
             },
@@ -472,9 +472,9 @@ class SpacyProcessor(PackProcessor):
         """
         return {
             "processors": ["sentence", "tokenize", "pos", "lemma"],
-            "medical_onto_type": "ftx.medical.clinical_ontology"
+            "medical_onto_type": "ftx.onto.clinical"
             + ".MedicalEntityMention",
-            "umls_onto_type": "ftx.medical.clinical_ontology.UMLSConceptLink",
+            "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
             "lang": "en_core_web_sm",
             "require_gpu": False,
             "prefer_gpu": False,
