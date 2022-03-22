@@ -170,7 +170,9 @@ def load_lang_model(lang_model) -> Language:
 
         download_url = CUSTOM_SPACYMODEL_URL[lang_model]
         command = [sys.executable, "-m", "pip", "install"] + [download_url]
-        subprocess.run(command, env=os.environ.copy(), encoding="utf8", check=False)
+        subprocess.run(
+            command, env=os.environ.copy(), encoding="utf8", check=False
+        )
         cls = importlib.import_module(lang_model)
         return cls.load()  # type: ignore
     else:
@@ -349,7 +351,8 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
 
         """
         return {
-            "medical_onto_type": "ftx.onto.clinical." + "MedicalEntityMention",
+            "medical_onto_type": "ftx.onto.clinical"
+            + ".MedicalEntityMention",
             "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
             "batcher": {
                 "batch_size": 1000,
@@ -469,7 +472,8 @@ class SpacyProcessor(PackProcessor):
         """
         return {
             "processors": ["sentence", "tokenize", "pos", "lemma"],
-            "medical_onto_type": "ftx.onto.clinical" + ".MedicalEntityMention",
+            "medical_onto_type": "ftx.onto.clinical"
+            + ".MedicalEntityMention",
             "umls_onto_type": "ftx.onto.clinical.UMLSConceptLink",
             "lang": "en_core_web_sm",
             "require_gpu": False,
@@ -551,7 +555,9 @@ def set_records(record_meta: Dict[str, Set[str]], configs: Config):
         }
 
 
-def process_tokens(processors, sentences, input_pack: DataPack) -> Dict[int, Token]:
+def process_tokens(
+    processors, sentences, input_pack: DataPack
+) -> Dict[int, Token]:
     """Basic tokenization and post tagging of the sentence.
 
     Args:
@@ -584,7 +590,9 @@ def process_tokens(processors, sentences, input_pack: DataPack) -> Dict[int, Tok
     return indexed_tokens
 
 
-def process_parse(result, input_pack: DataPack, indexed_tokens: Dict[int, Token]):
+def process_parse(
+    result, input_pack: DataPack, indexed_tokens: Dict[int, Token]
+):
     """
     Add dependency parses to the document.
 
