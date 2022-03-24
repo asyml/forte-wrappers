@@ -2,6 +2,8 @@ import sys
 import time
 import os
 import yaml
+import logging
+from requests import HTTPError
 from bio_ner_predictor.mimic3_note_reader import Mimic3DischargeNoteReader
 
 from fortex.elastic import ElasticSearchPackIndexProcessor
@@ -58,7 +60,20 @@ class TestBioNerPredictor(unittest.TestCase):
         config = Config(config, default_hparams=None)
         config.BERTTokenizer.model_path = model_path
         config.BioBERTNERPredictor.model_path = model_path
-        maybe_download(urls=urls, path=model_path, filenames=filenames)
+        try:
+            maybe_download(
+                urls=urls,
+                path=model_path,
+                filenames=filenames,
+                num_gdrive_retries=2
+            )
+        except HTTPError as e:
+            if e.response.status_code != 403:
+                raise e
+            logging.warning(
+                "Skipping HTTPError from %s", e.response.url, exc_info=True
+            )
+            return
         self.assertTrue(os.path.exists(os.path.join(model_path, "pytorch_model.bin")))
         self.pl.set_reader(
             Mimic3DischargeNoteReader(), config={"max_num_notes": self.num_packs}
