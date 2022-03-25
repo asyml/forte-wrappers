@@ -1,10 +1,13 @@
-sphinx>=3.4.3
+sphinx>=3.4.3,<4
 sphinx-rtd-theme >= 0.5.0
 Pygments >= 2.1.1
 funcsigs~=1.0.2
 myst-parser==0.14.0
 mypy_extensions~=0.4.1
 sphinxcontrib-spelling
+
+# newer version breaking some of the sphinx builds
+jinja2<=3.0.3
 
 pyyaml==5.4
 jsonpickle==1.4
