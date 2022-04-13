@@ -129,7 +129,7 @@ class TweetSearchProcessor(MultiPackProcessor):
         with open(self.configs.credential_file, "r", encoding="utf-8") as f:
             credentials = yaml.safe_load(f)
             credentials = Config(credentials, default_hparams=None)
-            api = tw.Client(bearer_token=credentials.bearer_token) # type: ignore
+            api=tw.Client(bearer_token=credentials.bearer_token) # type: ignore
             # Collect tweets
             tweets = api.search_recent_tweets(
                 query=query,
