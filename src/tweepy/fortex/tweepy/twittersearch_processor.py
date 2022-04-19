@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from typing import Dict, Any
 import yaml
 
@@ -103,22 +102,18 @@ class TweetSearchProcessor(MultiPackProcessor):
 
         query = query_pack.text
         tweets = self._query_tweets(query)
-
-        for idx, tweet in enumerate(tweets):
-            try:
-                text = tweet.retweeted_status.full_text
-
-            except AttributeError:  # Not a Retweet
-                text = tweet.full_text
-
+        for idx, tweet in enumerate(tweets.data):
+            if tweet.lang == self.configs.lang:
+                txt = tweet.text
+            else:
+                pass
+                # skip if the tweet in not in desired language
             pack: DataPack = input_pack.add_pack(
                 f"{self.configs.response_pack_name_prefix}_{idx}"
             )
             pack.pack_name = f"{self.configs.response_pack_name_prefix}_{idx}"
-
-            pack.set_text(text)
-
-            Document(pack=pack, begin=0, end=len(text))
+            pack.set_text(txt)
+            Document(pack=pack, begin=0, end=len(txt))
 
     def _query_tweets(self, query: str):
         """
@@ -133,24 +128,13 @@ class TweetSearchProcessor(MultiPackProcessor):
         with open(self.configs.credential_file, "r", encoding="utf-8") as f:
             credentials = yaml.safe_load(f)
             credentials = Config(credentials, default_hparams=None)
-
-            auth = tw.OAuthHandler(  # type: ignore
-                credentials.consumer_key, credentials.consumer_secret
+            api = tw.Client(  # type: ignore
+                bearer_token=credentials.bearer_token,
             )
-            auth.set_access_token(
-                credentials.access_token, credentials.access_token_secret
-            )
-
-            api = tw.API(auth, wait_on_rate_limit=True)  # type: ignore
-
             # Collect tweets
-            tweets = tw.Cursor(  # type: ignore
-                api.search,
-                q=query,
-                lang=self.configs.lang,
-                since=self.configs.date_since,
-                result_type=self.configs.result_type,
-                tweet_mode="extended",
-            ).items(self.configs.num_tweets_returned)
-
+            tweets = api.search_recent_tweets(
+                query=query,
+                tweet_fields=["context_annotations", "created_at", "lang"],
+                max_results=10,
+            )
             return tweets

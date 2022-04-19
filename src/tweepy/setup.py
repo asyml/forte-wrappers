@@ -29,7 +29,7 @@ setuptools.setup(
     platforms="any",
     install_requires=[
         "forte==0.1.2",
-        "tweepy==3.10.0",
+        "tweepy==4.0",
     ],
     classifiers=[
         "Intended Audience :: Developers",
