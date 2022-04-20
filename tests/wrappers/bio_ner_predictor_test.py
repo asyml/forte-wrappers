@@ -102,7 +102,7 @@ class TestBioNerPredictor(unittest.TestCase):
         self.set_up_succeed = True
 
     def test_predict(self):
-        if set_up_succeed:
+        if self.set_up_succeed:
             for idx, data_pack in enumerate(self.pl.process_dataset(self.input_path)):
                 ems = list(data_pack.get_data(EntityMention))
                 self.assertTrue(len(ems) > 0)
