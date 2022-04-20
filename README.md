@@ -22,7 +22,13 @@ This project is part of the [CASL Open Source](http://casl-project.ai/) family.
 
 - First, install the library along with the desired tools. Let's take AllenNLP
   as an example:
+  
+To install from PyPI:
+```shell
+pip install forte.allennlp
+```
 
+To install the latest from source
 ```shell
 git clone https://github.com/asyml/forte-wrappers.git
 cd forte-wrappers
