@@ -16,7 +16,7 @@ if sys.version_info < (3, 6):
 
 setuptools.setup(
     name="forte.gpt2",
-    version="0.0.2",
+    version="0.0.3",
     url="https://github.com/asyml/forte-wrappers/tree/main/src/gpt2",
     description="Provide Forte implementations of a fantastic collection of "
     "NLP tools.",
@@ -27,9 +27,7 @@ setuptools.setup(
     namespace_packages=["fortex"],
     include_package_data=True,
     platforms="any",
-    install_requires=[
-        "forte==0.1.2",
-    ],
+    install_requires=["forte==0.2.0", "texar-pytorch>=0.1.4"],
     classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: Education",
