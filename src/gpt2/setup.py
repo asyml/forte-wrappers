@@ -27,10 +27,7 @@ setuptools.setup(
     namespace_packages=["fortex"],
     include_package_data=True,
     platforms="any",
-    install_requires=[
-        "forte==0.2.0",
-        "texar-pytorch>=0.1.4"
-    ],
+    install_requires=["forte==0.2.0", "texar-pytorch>=0.1.4"],
     classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: Education",
