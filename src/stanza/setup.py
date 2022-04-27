@@ -16,7 +16,7 @@ if sys.version_info < (3, 6):
 
 setuptools.setup(
     name="forte.stanza",
-    version="0.0.2",
+    version="0.0.3",
     url="https://github.com/asyml/forte-wrappers/tree/main/src/stanza",
     description="Provide Forte implementations of a fantastic collection of "
     "NLP tools.",
@@ -28,7 +28,7 @@ setuptools.setup(
     include_package_data=True,
     platforms="any",
     install_requires=[
-        "forte==0.1.2",
+        "forte==0.2.0",
         "stanza==1.0.1",
     ],
     classifiers=[
