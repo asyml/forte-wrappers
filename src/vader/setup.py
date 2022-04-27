@@ -27,10 +27,7 @@ setuptools.setup(
     namespace_packages=["fortex"],
     include_package_data=True,
     platforms="any",
-    install_requires=[
-        "forte==0.2.0",
-        "vaderSentiment==3.2.1",
-    ],
+    install_requires=["forte==0.2.0", "vaderSentiment==3.2.1", "requests"],
     classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: Education",
