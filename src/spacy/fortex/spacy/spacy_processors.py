@@ -648,6 +648,8 @@ def process_umls_entity_linking(
 
         setattr(medical_entity, "ner_type", item.label_)
         umls_entity_name = get_class(umls_onto_type)
+        if len(item._.kb_ents) > 0:
+            setattr(medical_entity, "umls_link", item._.kb_ents[0][0])
 
         for umls_ent in item._.kb_ents:
             cui_entity = linker.kb.cui_to_entity[umls_ent[0]]
