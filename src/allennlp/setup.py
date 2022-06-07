@@ -34,6 +34,7 @@ setuptools.setup(
         "allennlp-models==1.2.0",
         "torch>=1.5.0",
         "pillow==8.2.0",
+        "protobuf<=3.20.1",
     ],
     classifiers=[
         "Intended Audience :: Developers",
