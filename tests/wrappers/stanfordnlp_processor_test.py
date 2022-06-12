@@ -96,6 +96,7 @@ class TestStanfordNLPProcessor(unittest.TestCase):
 
         target_texts = ['Forte', 'NLP']
         target_types = ['ORG','ORG']
+
         entities_text = [x.text for x in entities_entries]
         entities_type = [x.ner_type for x in entities_entries]
 
@@ -121,7 +122,6 @@ class TestStanfordBioNERProcessor(unittest.TestCase):
         ]
         document = " ".join(sentences)
 
-        print(document)
         pack = self.stanford_nlp.process(document)
 
         for idx, sentence in enumerate(pack.get(Sentence)):
@@ -132,9 +132,11 @@ class TestStanfordBioNERProcessor(unittest.TestCase):
 
         target_texts = ['appendicitis', 'gastroenteritis', 'the acute pancreatitis']
         target_types = ['PROBLEM', 'PROBLEM', 'PROBLEM']
+
         entities_text = [x.text for x in entities_entries]
         entities_type = [x.ner_type for x in entities_entries]
 
+        # bio ner assertation
         self.assertEqual(entities_text, target_texts)
         self.assertEqual(entities_type, target_types)
 
