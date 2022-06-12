@@ -94,14 +94,14 @@ class TestStanfordNLPProcessor(unittest.TestCase):
 
         entities_entries = list(pack.get(entry_type=EntityMention))
 
-        texts = ['Forte', 'NLP']
-        types = ['ORG','ORG']
+        target_texts = ['Forte', 'NLP']
+        target_types = ['ORG','ORG']
         entities_text = [x.text for x in entities_entries]
         entities_type = [x.ner_type for x in entities_entries]
 
         # ner assertation
-        self.assertEqual(entities_text, texts)
-        self.assertEqual(entities_type, types)
+        self.assertEqual(entities_text, target_texts)
+        self.assertEqual(entities_type, target_types)
 
         
 class TestStanfordBioNERProcessor(unittest.TestCase):
