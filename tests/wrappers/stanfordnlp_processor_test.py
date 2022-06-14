@@ -14,13 +14,14 @@
 """
 Unit tests for Stanford NLP processors.
 """
+import imp
 import os
 import unittest
 
 from forte.data.data_pack import DataPack
 from forte.pipeline import Pipeline
 from forte.data.readers import StringReader
-from fortex.stanza import StandfordNLPProcessor, StanfordNLPBioNERProcessor
+from fortex.stanza import StandfordNLPProcessor
 from ft.onto.base_ontology import Token, Sentence, EntityMention
 
 
@@ -29,7 +30,13 @@ class TestStanfordNLPProcessor(unittest.TestCase):
         self.stanford_nlp = Pipeline[DataPack]()
         self.stanford_nlp.set_reader(StringReader())
         config = {
-            "processors": "tokenize,pos,lemma,depparse,ner",
+            "processors":{
+               "tokenize":"default",
+               "pos":"defualt",
+               "lemma":"default",
+               "depparse":"default",
+               "ner":"i2b2"
+            },
             "lang": "en",
             # Language code for the language to build the Pipeline
             "use_gpu": False,
@@ -42,7 +49,6 @@ class TestStanfordNLPProcessor(unittest.TestCase):
             "This tool is called Forte.",
             "The goal of this project to help you build NLP " "pipelines.",
             "NLP has never been made this easy before."
-            # "I have to say I am suffering headache and acutebronchitis."
         ]
         document = " ".join(sentences)
         pack = self.stanford_nlp.process(document)
@@ -92,27 +98,6 @@ class TestStanfordNLPProcessor(unittest.TestCase):
                 self.assertEqual(token.text, tokens[i][j])
                 self.assertEqual(token.pos, pos[i][j])
 
-        entities_entries = list(pack.get(entry_type=EntityMention))
-
-        target_texts = ['Forte', 'NLP']
-        target_types = ['ORG','ORG']
-
-        entities_text = [x.text for x in entities_entries]
-        entities_type = [x.ner_type for x in entities_entries]
-
-        # ner assertation
-        self.assertEqual(entities_text, target_texts)
-        self.assertEqual(entities_type, target_types)
-
-        
-class TestStanfordBioNERProcessor(unittest.TestCase):
-    def setUp(self):
-        self.stanford_nlp = Pipeline[DataPack]()
-        self.stanford_nlp.set_reader(StringReader())
-        self.stanford_nlp.add(StanfordNLPBioNERProcessor())
-        self.stanford_nlp.initialize()
-
-    def test_stanford_processing(self):
         sentences = [
             "I lived in New York.",
             "Yesterday my stomach ached violently.",
@@ -124,10 +109,6 @@ class TestStanfordBioNERProcessor(unittest.TestCase):
 
         pack = self.stanford_nlp.process(document)
 
-        for idx, sentence in enumerate(pack.get(Sentence)):
-            # sentence assertation
-            self.assertEqual(sentence.text, sentences[idx])
-        
         entities_entries = list(pack.get(entry_type=EntityMention))
 
         target_texts = ['appendicitis', 'gastroenteritis', 'the acute pancreatitis']
