@@ -25,8 +25,7 @@ from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
 
 __all__ = [
-    "StandfordNLPProcessor",
-    "StandfordNLPBioNERProcessor"
+    "StandfordNLPProcessor"
 ]
 
 
@@ -34,11 +33,11 @@ class StandfordNLPProcessor(PackProcessor):
     def __init__(self):
         super().__init__()
         self.nlp = None
-        self.processors = set()
+        self.processors = dict()
 
     def set_up(self):
-        stanza.download(self.configs.lang, self.configs.dir)
-        self.processors = set(self.configs.processors.split(","))
+        stanza.download(self.configs.lang, self.configs.dir, processors = self.configs.processors.todict())
+        self.processors = dict(self.configs.processors)
 
     # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
@@ -47,6 +46,7 @@ class StandfordNLPProcessor(PackProcessor):
             "pos" in configs.processors
             or "lemma" in configs.processors
             or "depparse" in configs.processors
+            # or "ner" in configs.processors
             or "ner" in configs.processors
         ):
             if "tokenize" not in configs.processors:
@@ -60,7 +60,7 @@ class StandfordNLPProcessor(PackProcessor):
             lang=self.configs.lang,
             dir=self.configs.dir,
             use_gpu=self.configs.use_gpu,
-            processors=self.configs.processors,
+            processors=self.configs.processors.todict(),
         )
 
     @classmethod
@@ -69,14 +69,14 @@ class StandfordNLPProcessor(PackProcessor):
         This defines a basic config structure for StanfordNLP.
         """
         return {
-            "processors": "tokenize,pos,lemma,depparse,ner",
-            # "processors":{
-            #    "tokenize":"default",
-            #    "pos":"defualt",
-            #    "lemma":"default",
-            #    "depparse":"default",
-            #    "ner":"i2b2"
-            # },
+            # "processors": "tokenize,pos,lemma,depparse,ner",
+            "processors":{
+               'tokenize':'default',
+               'pos':'defualt',
+               'lemma':'default',
+               'depparse':'default',
+               'ner':'i2b2'
+            },
             "lang": "en",
             # Language code for the language to build the Pipeline
             "use_gpu": False,
@@ -167,52 +167,3 @@ class StandfordNLPProcessor(PackProcessor):
                 record_meta["ft.onto.base_ontology.Dependency"] = {"rel_type"}
             if "ner" in self.configs.processors:
                 record_meta["ft.onto.base_ontology.EntityMention"] = {"ner_type"}
-    
-
-class StanfordNLPBioNERProcessor(PackProcessor):
-    def __init__(self):
-        super().__init__()
-        self.nlp = None
-
-    def set_up(self):
-        stanza.download('en', package='mimic', processors={'ner': 'i2b2'})
-        
-
-    # pylint: disable=unused-argument
-    def initialize(self, resources: Resources, configs: Config):
-        super().initialize(resources, configs)
-        self.set_up()
-        self.nlp = stanza.Pipeline('en', package='mimic', processors={'ner': 'i2b2'})
-
-    def _process(self, input_pack: DataPack):
-        doc = input_pack.text
-
-        if len(doc) == 0:
-            logging.warning("Find empty text in doc.")
-
-        # sentence parsing
-        sentences = self.nlp(doc).sentences
-
-        # Iterating through stanfordnlp sentence objects
-        for sentence in sentences:
-            Sentence(
-                input_pack,
-                sentence.tokens[0].start_char,
-                sentence.tokens[-1].end_char,
-            )
-
-            for ent in sentence.entities:
-                entity = EntityMention(input_pack, ent.start_char, ent.end_char)
-                entity.ner_type = ent.type
-    
-    def record(self, record_meta: Dict[str, Set[str]]):
-        r"""Method to add output type record of current processor
-        to :attr:`forte.data.data_pack.Meta.record`.
-
-        Args:
-            record_meta: the field in the datapack for type record that need to
-                fill in for consistency checking.
-        """
-        record_meta["ft.onto.base_ontology.Sentence"] = set()
-        
-        record_meta["ft.onto.base_ontology.EntityMention"] = {"ner_type"}
