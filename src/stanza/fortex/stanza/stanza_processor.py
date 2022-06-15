@@ -36,8 +36,9 @@ class StandfordNLPProcessor(PackProcessor):
         self.processors = dict()
 
     def set_up(self):
-        stanza.download(self.configs.lang, self.configs.dir, processors = self.configs.processors.todict())
         self.processors = dict(self.configs.processors)
+        stanza.download(self.configs.lang, self.configs.dir, processors = self.processors)
+        
 
     # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
@@ -46,8 +47,6 @@ class StandfordNLPProcessor(PackProcessor):
             "pos" in configs.processors
             or "lemma" in configs.processors
             or "depparse" in configs.processors
-            # or "ner" in configs.processors
-            or "ner" in configs.processors
         ):
             if "tokenize" not in configs.processors:
                 raise ProcessorConfigError(
@@ -60,8 +59,9 @@ class StandfordNLPProcessor(PackProcessor):
             lang=self.configs.lang,
             dir=self.configs.dir,
             use_gpu=self.configs.use_gpu,
-            processors=self.configs.processors.todict(),
+            processors=self.processors,
         )
+        
 
     @classmethod
     def default_configs(cls) -> Dict[str, Any]:
