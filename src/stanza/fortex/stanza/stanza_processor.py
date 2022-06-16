@@ -33,12 +33,15 @@ class StandfordNLPProcessor(PackProcessor):
     def __init__(self):
         super().__init__()
         self.nlp = None
-        self.processors = dict()
+        self.processors = {}
 
     def set_up(self):
         self.processors = dict(self.configs.processors)
-        stanza.download(self.configs.lang, self.configs.dir, processors = self.processors)
-        
+        stanza.download(
+            self.configs.lang,
+            self.configs.dir,
+            processors=self.processors
+            )
 
     # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
@@ -61,7 +64,6 @@ class StandfordNLPProcessor(PackProcessor):
             use_gpu=self.configs.use_gpu,
             processors=self.processors,
         )
-        
 
     @classmethod
     def default_configs(cls) -> Dict[str, Any]:
@@ -140,12 +142,16 @@ class StandfordNLPProcessor(PackProcessor):
                     parent = tokens[word.head - 1]  # Head token
                     relation_entry = Dependency(input_pack, parent, child)
                     relation_entry.rel_type = word.deprel
-            
+
             # For each sentence, get the entity mentions
             if "ner" in self.processors:
                 # Iterating through all entities
                 for ent in sentence.entities:
-                    entity = EntityMention(input_pack, ent.start_char, ent.end_char)
+                    entity = EntityMention(
+                        input_pack,
+                        ent.start_char,
+                        ent.end_char
+                        )
                     entity.ner_type = ent.type
 
     def record(self, record_meta: Dict[str, Set[str]]):
@@ -164,6 +170,10 @@ class StandfordNLPProcessor(PackProcessor):
             if "lemma" in self.processors:
                 record_meta["ft.onto.base_ontology.Token"].add("lemma")
             if "depparse" in self.configs.processors:
-                record_meta["ft.onto.base_ontology.Dependency"] = {"rel_type"}
+                record_meta["ft.onto.base_ontology.Dependency"] = {
+                    "rel_type"
+                    }
             if "ner" in self.configs.processors:
-                record_meta["ft.onto.base_ontology.EntityMention"] = {"ner_type"}
+                record_meta["ft.onto.base_ontology.EntityMention"] = {
+                    "ner_type"
+                    }

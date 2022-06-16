@@ -26,6 +26,7 @@ from forte.data.readers import StringReader
 from fortex.stanza import StandfordNLPProcessor
 from ft.onto.base_ontology import Token, Sentence, EntityMention, Dependency
 
+
 @ddt
 class TestStanfordNLPProcessor(unittest.TestCase):
 
@@ -69,7 +70,7 @@ class TestStanfordNLPProcessor(unittest.TestCase):
         tokens = [x.text for x in pack.get(Token)]
         document = document.replace(".", " .")
         self.assertEqual(tokens, document.split())
-    
+
     @data(
         {
             "tokenize":"default",
@@ -77,23 +78,23 @@ class TestStanfordNLPProcessor(unittest.TestCase):
             "lemma":"default",
             "depparse":"default",
             "ner":"default"
-        }, # all the configurations are set as defualt
+        },  # all the configurations are set as defualt
         {
             "tokenize":"default",
             "pos":"defualt",
             "lemma":"default",
             "depparse":"default",
-            "ner":"i2b2"            
-        }, # get bio ner
+            "ner":"i2b2"
+        },  # get bio ner
         {
             "ner":"i2b2"
-        }, # test with ner only
+        },  # test with ner only
         # {
         #     "tokenize":"mimic",
         #     "pos":"mimic",
         #     "lemma":"mimic",
         #     "depparse":"mimic",
-        #     "ner":"i2b2"             
+        #     "ner":"i2b2"
         # } # test pipelie all based on mimic model
     )
     def test_stanza_pipeline(self, value):
@@ -136,30 +137,30 @@ class TestStanfordNLPProcessor(unittest.TestCase):
             if "pos" in value:
                 pos = [x.pos for x in forte_tokens]
                 exp_pos = [
-                    'DET', 'NOUN', 'AUX', 'VERB', 'PROPN', 'PUNCT', 
-                    'DET', 'NOUN', 'ADP', 'DET', 'NOUN', 'PART', 'VERB', 'PRON', 'VERB', 'NOUN', 'NOUN', 'PUNCT', 
-                    'NOUN', 'AUX', 'ADV', 'AUX', 'VERB', 'PRON', 'ADJ', 'ADV', 'PUNCT', 
-                    'PRON', 'VERB', 'ADP', 'PROPN', 'PROPN', 'PUNCT', 
-                    'NOUN', 'PRON', 'NOUN', 'VERB', 'ADV', 'PUNCT', 
-                    'PRON', 'VERB', 'PRON', 'AUX', 'AUX', 'NOUN', 'CCONJ', 'NOUN', 'PUNCT', 
+                    'DET', 'NOUN', 'AUX', 'VERB', 'PROPN', 'PUNCT',
+                    'DET', 'NOUN', 'ADP', 'DET', 'NOUN', 'PART', 'VERB', 'PRON', 'VERB', 'NOUN', 'NOUN', 'PUNCT',
+                    'NOUN', 'AUX', 'ADV', 'AUX', 'VERB', 'PRON', 'ADJ', 'ADV', 'PUNCT',
+                    'PRON', 'VERB', 'ADP', 'PROPN', 'PROPN', 'PUNCT',
+                    'NOUN', 'PRON', 'NOUN', 'VERB', 'ADV', 'PUNCT',
+                    'PRON', 'VERB', 'PRON', 'AUX', 'AUX', 'NOUN', 'CCONJ', 'NOUN', 'PUNCT',
                     'ADV', 'PRON', 'AUX', 'AUX', 'DET', 'ADJ', 'NOUN', 'PUNCT'
                     ]
                 self.assertListEqual(pos, exp_pos)
-            
+
             # check lemmatization
             if "lemma" in value:
                 lemma = [x.lemma for x in forte_tokens]
                 exp_lemma = [
-                    'this', 'tool', 'be', 'call', 'Forte', '.', 
-                    'the', 'goal', 'of', 'this', 'project', 'to', 'help', 'you', 'build', 'nlp', 'pipeline', '.', 
-                    'nlp', 'have', 'never', 'be', 'make', 'this', 'easy', 'before', '.', 
-                    'I', 'live', 'in', 'New', 'York', '.', 
-                    'yesterday', 'my', 'stomach', 'ach', 'violently', '.', 
-                    'I', 'think', 'it', 'may', 'be', 'appendicitis', 'or', 'gastroenteritis', '.', 
+                    'this', 'tool', 'be', 'call', 'Forte', '.',
+                    'the', 'goal', 'of', 'this', 'project', 'to', 'help', 'you', 'build', 'nlp', 'pipeline', '.',
+                    'nlp', 'have', 'never', 'be', 'make', 'this', 'easy', 'before', '.',
+                    'I', 'live', 'in', 'New', 'York', '.',
+                    'yesterday', 'my', 'stomach', 'ach', 'violently', '.',
+                    'I', 'think', 'it', 'may', 'be', 'appendicitis', 'or', 'gastroenteritis', '.',
                     'also', 'it', 'may', 'be', 'the', 'acute', 'pancreatitis', '.'
                     ]
                 self.assertListEqual(lemma, exp_lemma)
-            
+
             # Check dependency parsing
             if "depparse" in value:
                 dependencies = [
@@ -167,16 +168,16 @@ class TestStanfordNLPProcessor(unittest.TestCase):
                 for dep in pack.get(Dependency)
                 ]
                 exp_dependencies = [
-                    ('tool', 'This', 'det'), ('called', 'tool', 'nsubj:pass'), ('called', 'is', 'aux:pass'), ('.', 'called', 'root'), ('called', 'Forte', 'xcomp'), ('called', '.', 'punct'), 
-                    ('goal', 'The', 'det'), ('.', 'goal', 'root'), ('project', 'of', 'case'), ('project', 'this', 'det'), ('goal', 'project', 'nmod'), ('help', 'to', 'mark'), ('goal', 'help', 'acl'), ('help', 'you', 'obj'), ('help', 'build', 'xcomp'), ('pipelines', 'NLP', 'compound'), ('build', 'pipelines', 'obj'), ('goal', '.', 'punct'), 
-                    ('made', 'NLP', 'nsubj:pass'), ('made', 'has', 'aux'), ('made', 'never', 'advmod'), ('made', 'been', 'aux:pass'), ('.', 'made', 'root'), ('made', 'this', 'obj'), ('made', 'easy', 'xcomp'), ('made', 'before', 'advmod'), ('made', '.', 'punct'), 
-                    ('lived', 'I', 'nsubj'), ('.', 'lived', 'root'), ('York', 'in', 'case'), ('York', 'New', 'compound'), ('lived', 'York', 'obl'), ('lived', '.', 'punct'), 
-                    ('ached', 'Yesterday', 'obl:tmod'), ('stomach', 'my', 'nmod:poss'), ('ached', 'stomach', 'nsubj'), ('.', 'ached', 'root'), ('ached', 'violently', 'advmod'), ('ached', '.', 'punct'), 
-                    ('think', 'I', 'nsubj'), ('.', 'think', 'root'), ('appendicitis', 'it', 'nsubj'), ('appendicitis', 'may', 'aux'), ('appendicitis', 'be', 'cop'), ('think', 'appendicitis', 'ccomp'), ('gastroenteritis', 'or', 'cc'), ('appendicitis', 'gastroenteritis', 'conj'), ('think', '.', 'punct'), 
+                    ('tool', 'This', 'det'), ('called', 'tool', 'nsubj:pass'), ('called', 'is', 'aux:pass'), ('.', 'called', 'root'), ('called', 'Forte', 'xcomp'), ('called', '.', 'punct'),
+                    ('goal', 'The', 'det'), ('.', 'goal', 'root'), ('project', 'of', 'case'), ('project', 'this', 'det'), ('goal', 'project', 'nmod'), ('help', 'to', 'mark'), ('goal', 'help', 'acl'), ('help', 'you', 'obj'), ('help', 'build', 'xcomp'), ('pipelines', 'NLP', 'compound'), ('build', 'pipelines', 'obj'), ('goal', '.', 'punct'),
+                    ('made', 'NLP', 'nsubj:pass'), ('made', 'has', 'aux'), ('made', 'never', 'advmod'), ('made', 'been', 'aux:pass'), ('.', 'made', 'root'), ('made', 'this', 'obj'), ('made', 'easy', 'xcomp'), ('made', 'before', 'advmod'), ('made', '.', 'punct'),
+                    ('lived', 'I', 'nsubj'), ('.', 'lived', 'root'), ('York', 'in', 'case'), ('York', 'New', 'compound'), ('lived', 'York', 'obl'), ('lived', '.', 'punct'),
+                    ('ached', 'Yesterday', 'obl:tmod'), ('stomach', 'my', 'nmod:poss'), ('ached', 'stomach', 'nsubj'), ('.', 'ached', 'root'), ('ached', 'violently', 'advmod'), ('ached', '.', 'punct'),
+                    ('think', 'I', 'nsubj'), ('.', 'think', 'root'), ('appendicitis', 'it', 'nsubj'), ('appendicitis', 'may', 'aux'), ('appendicitis', 'be', 'cop'), ('think', 'appendicitis', 'ccomp'), ('gastroenteritis', 'or', 'cc'), ('appendicitis', 'gastroenteritis', 'conj'), ('think', '.', 'punct'),
                     ('pancreatitis', 'Also', 'advmod'), ('pancreatitis', 'it', 'nsubj'), ('pancreatitis', 'may', 'aux'), ('pancreatitis', 'be', 'cop'), ('pancreatitis', 'the', 'det'), ('pancreatitis', 'acute', 'amod'), ('.', 'pancreatitis', 'root'), ('pancreatitis', '.', 'punct')
-                    ]               
+                    ]
                 self.assertListEqual(dependencies, exp_dependencies)
-        
+
         # Check Bio NER
         if "ner" in value and value["ner"] == "i2b2":
             pack_ents: List[EntityMention] = list(pack.get(EntityMention))
@@ -189,7 +190,7 @@ class TestStanfordNLPProcessor(unittest.TestCase):
 
             self.assertEqual(entities_text, exp_entities_text)
             self.assertEqual(entities_type, exp_entities_type)
-        
+
         # Chech NER
         if "ner" in value and value["ner"] != "i2b2":
             pack_ents: List[EntityMention] = list(pack.get(EntityMention))
@@ -201,8 +202,8 @@ class TestStanfordNLPProcessor(unittest.TestCase):
             exp_entities_type = ['ORG', 'ORG', 'GPE', 'DATE']
 
             self.assertEqual(entities_text, exp_entities_text)
-            self.assertEqual(entities_type, exp_entities_type)    
+            self.assertEqual(entities_type, exp_entities_type)
 
-            
+
 if __name__ == "__main__":
     unittest.main()
