@@ -24,9 +24,7 @@ from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
 
-__all__ = [
-    "StandfordNLPProcessor"
-]
+__all__ = ["StandfordNLPProcessor"]
 
 
 class StandfordNLPProcessor(PackProcessor):
@@ -38,10 +36,8 @@ class StandfordNLPProcessor(PackProcessor):
     def set_up(self):
         self.processors = dict(self.configs.processors)
         stanza.download(
-            self.configs.lang,
-            self.configs.dir,
-            processors=self.processors
-            )
+            self.configs.lang, self.configs.dir, processors=self.processors
+        )
 
     # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
@@ -72,12 +68,12 @@ class StandfordNLPProcessor(PackProcessor):
         """
         return {
             # "processors": "tokenize,pos,lemma,depparse,ner",
-            "processors":{
-               'tokenize':'default',
-               'pos':'defualt',
-               'lemma':'default',
-               'depparse':'default',
-               'ner':'i2b2'
+            "processors": {
+                "tokenize": "default",
+                "pos": "defualt",
+                "lemma": "default",
+                "depparse": "default",
+                "ner": "i2b2",
             },
             "lang": "en",
             # Language code for the language to build the Pipeline
@@ -148,10 +144,8 @@ class StandfordNLPProcessor(PackProcessor):
                 # Iterating through all entities
                 for ent in sentence.entities:
                     entity = EntityMention(
-                        input_pack,
-                        ent.start_char,
-                        ent.end_char
-                        )
+                        input_pack, ent.start_char, ent.end_char
+                    )
                     entity.ner_type = ent.type
 
     def record(self, record_meta: Dict[str, Set[str]]):
@@ -170,10 +164,8 @@ class StandfordNLPProcessor(PackProcessor):
             if "lemma" in self.processors:
                 record_meta["ft.onto.base_ontology.Token"].add("lemma")
             if "depparse" in self.configs.processors:
-                record_meta["ft.onto.base_ontology.Dependency"] = {
-                    "rel_type"
-                    }
+                record_meta["ft.onto.base_ontology.Dependency"] = {"rel_type"}
             if "ner" in self.configs.processors:
                 record_meta["ft.onto.base_ontology.EntityMention"] = {
                     "ner_type"
-                    }
+                }
