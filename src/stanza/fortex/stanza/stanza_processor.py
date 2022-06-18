@@ -16,7 +16,7 @@ import logging
 from typing import List, Any, Dict, Set
 
 import stanza
-from ft.onto.base_ontology import Token, Sentence, Dependency
+from ft.onto.base_ontology import Token, Sentence, Dependency, EntityMention
 
 from forte.common import ProcessorConfigError
 from forte.common.configuration import Config
@@ -24,20 +24,20 @@ from forte.common.resources import Resources
 from forte.data.data_pack import DataPack
 from forte.processors.base import PackProcessor
 
-__all__ = [
-    "StandfordNLPProcessor",
-]
+__all__ = ["StandfordNLPProcessor"]
 
 
 class StandfordNLPProcessor(PackProcessor):
     def __init__(self):
         super().__init__()
         self.nlp = None
-        self.processors = set()
+        self.processors = {}
 
     def set_up(self):
-        stanza.download(self.configs.lang, self.configs.dir)
-        self.processors = set(self.configs.processors.split(","))
+        self.processors = dict(self.configs.processors)
+        stanza.download(
+            self.configs.lang, self.configs.dir, processors=self.processors
+        )
 
     # pylint: disable=unused-argument
     def initialize(self, resources: Resources, configs: Config):
@@ -51,14 +51,14 @@ class StandfordNLPProcessor(PackProcessor):
                 raise ProcessorConfigError(
                     "tokenize is necessary in "
                     "configs.processors for "
-                    "pos or lemma or depparse"
+                    "pos or lemma or depparse or ner"
                 )
         self.set_up()
         self.nlp = stanza.Pipeline(  # type: ignore
             lang=self.configs.lang,
             dir=self.configs.dir,
             use_gpu=self.configs.use_gpu,
-            processors=self.configs.processors,
+            processors=self.processors,
         )
 
     @classmethod
@@ -67,7 +67,14 @@ class StandfordNLPProcessor(PackProcessor):
         This defines a basic config structure for StanfordNLP.
         """
         return {
-            "processors": "tokenize,pos,lemma,depparse",
+            # "processors": "tokenize,pos,lemma,depparse,ner",
+            "processors": {
+                "tokenize": "default",
+                "pos": "defualt",
+                "lemma": "default",
+                "depparse": "default",
+                "ner": "i2b2",
+            },
             "lang": "en",
             # Language code for the language to build the Pipeline
             "use_gpu": False,
@@ -132,6 +139,15 @@ class StandfordNLPProcessor(PackProcessor):
                     relation_entry = Dependency(input_pack, parent, child)
                     relation_entry.rel_type = word.deprel
 
+            # For each sentence, get the entity mentions
+            if "ner" in self.processors:
+                # Iterating through all entities
+                for ent in sentence.entities:
+                    entity = EntityMention(
+                        input_pack, ent.start_char, ent.end_char
+                    )
+                    entity.ner_type = ent.type
+
     def record(self, record_meta: Dict[str, Set[str]]):
         r"""Method to add output type record of current processor
         to :attr:`forte.data.data_pack.Meta.record`.
@@ -149,3 +165,7 @@ class StandfordNLPProcessor(PackProcessor):
                 record_meta["ft.onto.base_ontology.Token"].add("lemma")
             if "depparse" in self.configs.processors:
                 record_meta["ft.onto.base_ontology.Dependency"] = {"rel_type"}
+            if "ner" in self.configs.processors:
+                record_meta["ft.onto.base_ontology.EntityMention"] = {
+                    "ner_type"
+                }
