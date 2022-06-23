@@ -95,17 +95,8 @@ class StandfordNLPProcessor(PackProcessor):
             if "tokenize" in self.processors:
                 # Iterating through stanfordnlp word objects
                 for word in sentence.words:
-                    misc = word.misc.split("|")
-
-                    t_start = -1
-                    t_end = -1
-                    for m in misc:
-                        k, v = m.split("=")
-                        if k == "start_char":
-                            t_start = int(v)
-                        elif k == "end_char":
-                            t_end = int(v)
-
+                    t_start = word.start_char
+                    t_end = word.end_char
                     if t_start < 0 or t_end < 0:
                         raise ValueError(
                             "Cannot determine word start or end for "
