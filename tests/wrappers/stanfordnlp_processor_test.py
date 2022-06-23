@@ -139,7 +139,7 @@ class TestStanfordNLPProcessor(unittest.TestCase):
                 exp_pos = [
                     'DET', 'NOUN', 'AUX', 'VERB', 'PROPN', 'PUNCT',
                     'DET', 'NOUN', 'ADP', 'DET', 'NOUN', 'PART', 'VERB', 'PRON', 'VERB', 'NOUN', 'NOUN', 'PUNCT',
-                    'NOUN', 'AUX', 'ADV', 'AUX', 'VERB', 'PRON', 'ADJ', 'ADV', 'PUNCT',
+                    'PROPN', 'AUX', 'ADV', 'AUX', 'VERB', 'PRON', 'ADJ', 'ADV', 'PUNCT',
                     'PRON', 'VERB', 'ADP', 'PROPN', 'PROPN', 'PUNCT',
                     'NOUN', 'PRON', 'NOUN', 'VERB', 'ADV', 'PUNCT',
                     'PRON', 'VERB', 'PRON', 'AUX', 'AUX', 'NOUN', 'CCONJ', 'NOUN', 'PUNCT',
@@ -153,7 +153,7 @@ class TestStanfordNLPProcessor(unittest.TestCase):
                 exp_lemma = [
                     'this', 'tool', 'be', 'call', 'Forte', '.',
                     'the', 'goal', 'of', 'this', 'project', 'to', 'help', 'you', 'build', 'nlp', 'pipeline', '.',
-                    'nlp', 'have', 'never', 'be', 'make', 'this', 'easy', 'before', '.',
+                    'NLP', 'have', 'never', 'be', 'make', 'this', 'easy', 'before', '.',
                     'I', 'live', 'in', 'New', 'York', '.',
                     'yesterday', 'my', 'stomach', 'ach', 'violently', '.',
                     'I', 'think', 'it', 'may', 'be', 'appendicitis', 'or', 'gastroenteritis', '.',
@@ -169,13 +169,13 @@ class TestStanfordNLPProcessor(unittest.TestCase):
                 ]
                 exp_dependencies = [
                     ('tool', 'This', 'det'), ('called', 'tool', 'nsubj:pass'), ('called', 'is', 'aux:pass'), ('.', 'called', 'root'), ('called', 'Forte', 'xcomp'), ('called', '.', 'punct'),
-                    ('goal', 'The', 'det'), ('.', 'goal', 'root'), ('project', 'of', 'case'), ('project', 'this', 'det'), ('goal', 'project', 'nmod'), ('help', 'to', 'mark'), ('goal', 'help', 'acl'), ('help', 'you', 'obj'), ('help', 'build', 'xcomp'), ('pipelines', 'NLP', 'compound'), ('build', 'pipelines', 'obj'), ('goal', '.', 'punct'),
+                    ('goal', 'The', 'det'), ('help', 'goal', 'nsubj'), ('project', 'of', 'case'), ('project', 'this', 'det'), ('goal', 'project', 'nmod'), ('help', 'to', 'mark'), ('.', 'help', 'root'), ('help', 'you', 'obj'), ('help', 'build', 'xcomp'), ('pipelines', 'NLP', 'compound'), ('build', 'pipelines', 'obj'), ('help', '.', 'punct'),
                     ('made', 'NLP', 'nsubj:pass'), ('made', 'has', 'aux'), ('made', 'never', 'advmod'), ('made', 'been', 'aux:pass'), ('.', 'made', 'root'), ('made', 'this', 'obj'), ('made', 'easy', 'xcomp'), ('made', 'before', 'advmod'), ('made', '.', 'punct'),
-                    ('lived', 'I', 'nsubj'), ('.', 'lived', 'root'), ('York', 'in', 'case'), ('York', 'New', 'compound'), ('lived', 'York', 'obl'), ('lived', '.', 'punct'),
+                    ('lived', 'I', 'nsubj'), ('.', 'lived', 'root'), ('New', 'in', 'case'), ('lived', 'New', 'obl'), ('New', 'York', 'flat'), ('lived', '.', 'punct'),
                     ('ached', 'Yesterday', 'obl:tmod'), ('stomach', 'my', 'nmod:poss'), ('ached', 'stomach', 'nsubj'), ('.', 'ached', 'root'), ('ached', 'violently', 'advmod'), ('ached', '.', 'punct'),
                     ('think', 'I', 'nsubj'), ('.', 'think', 'root'), ('appendicitis', 'it', 'nsubj'), ('appendicitis', 'may', 'aux'), ('appendicitis', 'be', 'cop'), ('think', 'appendicitis', 'ccomp'), ('gastroenteritis', 'or', 'cc'), ('appendicitis', 'gastroenteritis', 'conj'), ('think', '.', 'punct'),
                     ('pancreatitis', 'Also', 'advmod'), ('pancreatitis', 'it', 'nsubj'), ('pancreatitis', 'may', 'aux'), ('pancreatitis', 'be', 'cop'), ('pancreatitis', 'the', 'det'), ('pancreatitis', 'acute', 'amod'), ('.', 'pancreatitis', 'root'), ('pancreatitis', '.', 'punct')
-                    ]
+                ]
                 self.assertListEqual(dependencies, exp_dependencies)
 
         # Check Bio NER
