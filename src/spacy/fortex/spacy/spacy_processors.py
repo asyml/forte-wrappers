@@ -304,14 +304,15 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
         Specify additional parameters for SpaCy processor.
 
         The available parameters are:
+
         - `medical_onto_type`: defines which entry type in the input pack
-            that the medical entity mentions should be saved as output.
+          that the medical entity mentions should be saved as output.
 
         - `umls_onto_type`: defines which entry type in the input pack
-            that the UMLS concept links should be saved as part of output.
+          that the UMLS concept links should be saved as part of output.
 
         - `batcher.batch_size`: max size of the batch (in terms of number of
-           data packs).
+          data packs).
 
         - `processors`: List of strings that defines which components
           will be included and will be performed on the input pack,
@@ -347,7 +348,7 @@ class SpacyBatchedProcessor(FixedSizeBatchProcessor):
           Default is 1. This will be passed directly to the `n_process` option.
 
         - `testing`: states whether or not the processor is being used in a
-         test case.
+          test case.
 
         """
         return {
@@ -465,7 +466,7 @@ class SpacyProcessor(PackProcessor):
           is 0.
 
         - `testing`: states whether or not the processor is being used in a
-         test case.
+          test case.
 
         Returns: A dictionary with the default config for this processor.
         """

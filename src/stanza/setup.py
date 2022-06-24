@@ -29,7 +29,7 @@ setuptools.setup(
     platforms="any",
     install_requires=[
         "forte==0.2.0",
-        "stanza==1.0.1",
+        "stanza==1.4.0",
     ],
     classifiers=[
         "Intended Audience :: Developers",
