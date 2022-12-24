@@ -82,7 +82,17 @@ jobs:
           cd ..
           # Remove them to avoid confusing pytest.
           rm -rf texar-pytorch
+      - name: Install the project dependencies
+        run: |
+          # Install Wrappers
+          for d in ${{ matrix.test-details.dep }}; do pip install "src/"$d; done
+          # Install Extras
+          if [ ! -z ${{ matrix.test-details.extra }} ]
+          then
+              pip install ${{ matrix.test-details.extra }}
+          fi
       - name: Install linting tools
+        run: | 
           # Better run after other installations (e.g. tensorflow), since those packages may ask for different versions.
           pip install --progress-bar off pylint==2.15.8 flake8==5.0.4
           pip install --progress-bar off mypy==0.910 pytest==5.1.3
@@ -104,15 +114,6 @@ jobs:
             do
               mypy "src/"$dep
             done
-      - name: Install the project dependencies
-        run: |
-          # Install Wrappers
-          for d in ${{ matrix.test-details.dep }}; do pip install "src/"$d; done
-          # Install Extras
-          if [ ! -z ${{ matrix.test-details.extra }} ]
-          then
-              pip install ${{ matrix.test-details.extra }}
-          fi
       - name: Lint with pylint
         # pylint might run here since we install the extra project.
         run: |
