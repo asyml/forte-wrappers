@@ -30,6 +30,7 @@ setuptools.setup(
     include_package_data=True,
     platforms="any",
     install_requires=[
+        "numpy<1.21.0",
         "forte==0.2.0",
         f"spacy{supported_spacey_version}",
         "scispacy==0.3.0",

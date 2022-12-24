@@ -28,6 +28,7 @@ setuptools.setup(
     include_package_data=True,
     platforms="any",
     install_requires=[
+        "numpy<1.21.0",
         "forte==0.2.0",
         "protobuf<=3.20.0",
         "stanza==1.4.0",
