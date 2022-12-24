@@ -27,8 +27,7 @@ jobs:
         test-details:
 #          - { project: "allennlp", dep: "nltk allennlp", testfile: tests/wrappers/allennlp_processors_test.py}
 #          - { project: "stanza", dep: stanza, testfile: tests/wrappers/stanfordnlp_processor_test.py }
-
-          - { project: "spacy", dep: spacy, testfile: tests/wrappers/spacy_processors_test.py }
+#          - { project: "spacy", dep: spacy, testfile: tests/wrappers/spacy_processors_test.py }
 
 #          - { project: "nltk", dep: nltk, testfile: tests/wrappers/nltk_processors_test.py }
 #          - { project: "vader", dep: "vader nltk ", testfile: tests/wrappers/sentiment_processor_test.py }
