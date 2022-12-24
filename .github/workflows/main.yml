@@ -21,9 +21,22 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ 3.7, 3.8, 3.9 ]
+        python-version: [ 3.7 ]
         torch-version: [ 1.5.0 ]
         tensorflow-version: [ 1.15.0 ]
+        include:
+          - python-version: 3.8
+            torch-version: 1.7.1
+            tensorflow-version: 2.2.0
+          - python-version: 3.8
+            torch-version: 1.8.1
+            tensorflow-version: 2.2.0
+          - python-version: 3.9
+            torch-version: 1.7.1
+            tensorflow-version: 2.5.0
+          - python-version: 3.9
+            torch-version: 1.8.1
+            tensorflow-version: 2.5.0
         test-details:
           - { dep: "nltk allennlp", testfile: tests/wrappers/allennlp_processors_test.py }
           - { dep: nltk, testfile: tests/wrappers/nltk_processors_test.py }
