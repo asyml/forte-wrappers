@@ -25,16 +25,16 @@ jobs:
         torch-version: [ 1.5.0, 1.7.1, 1.8.1 ]
         tensorflow-version: [ 1.15.0, 2.2.0, 2.5.0]
         test-details:
-#          - { project: "allennlp", dep: "nltk allennlp", testfile: tests/wrappers/allennlp_processors_test.py}
+          - { project: "allennlp", dep: "nltk allennlp", testfile: tests/wrappers/allennlp_processors_test.py}
 #          - { project: "nltk", dep: nltk, testfile: tests/wrappers/nltk_processors_test.py }
 #          - { project: "vader", dep: "vader nltk ", testfile: tests/wrappers/sentiment_processor_test.py }
 
 #          - { project: "spacy", dep: spacy, testfile: tests/wrappers/spacy_processors_test.py }
 #          - { project: "stanza", dep: stanza, testfile: tests/wrappers/stanfordnlp_processor_test.py }
 
-          - { project: "gpt2", dep: "nltk gpt2", extra: "termcolor>=1.1.0", testfile: examples/gpt2_test.py }
-          - { project: "elastic", dep: elastic, testfile: tests/wrappers/elastic_indexers_test.py }
-          - { project: "faiss", dep: faiss, testfile: tests/wrappers/faiss_indexers_test.py }
+#          - { project: "gpt2", dep: "nltk gpt2", extra: "termcolor>=1.1.0", testfile: examples/gpt2_test.py }
+#          - { project: "elastic", dep: elastic, testfile: tests/wrappers/elastic_indexers_test.py }
+#          - { project: "faiss", dep: faiss, testfile: tests/wrappers/faiss_indexers_test.py }
 
 #          - { project: "huggingface", dep: "huggingface nltk", extra: "'tensorflow>=2.5.0,<2.8.0'", testfile: tests/wrappers/huggingface }
 #          - { dep: "huggingface elastic nltk", testfile: tests/wrappers/bio_ner_predictor_test.py}
@@ -59,6 +59,8 @@ jobs:
             tensorflow-version: 1.15.0
           - python-version: 3.9
             tensorflow-version: 2.2.0
+          - python-version: 3.9
+            test-details.project: allennlp
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
