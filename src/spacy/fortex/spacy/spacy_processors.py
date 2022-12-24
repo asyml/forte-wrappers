@@ -663,7 +663,7 @@ def process_umls_entity_linking(
             umls_entity = umls_entity_name(pack=input_pack)
 
             for attribute, _ in vars(umls_entity).items():
-                if attribute in umls.keys():
+                if attribute in umls:
                     setattr(umls_entity, attribute, umls[attribute])
 
             getattr(medical_entity, "umls_entities").append(umls_entity)

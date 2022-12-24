@@ -38,15 +38,15 @@ jobs:
             torch-version: 1.8.1
             tensorflow-version: 2.5.0
         test-details:
-          - { dep: "nltk allennlp", testfile: tests/wrappers/allennlp_processors_test.py }
-          - { dep: nltk, testfile: tests/wrappers/nltk_processors_test.py }
-          - { dep: "vader nltk ", testfile: tests/wrappers/sentiment_processor_test.py }
-          - { dep: spacy, testfile: tests/wrappers/spacy_processors_test.py }
-          - { dep: stanza, testfile: tests/wrappers/stanfordnlp_processor_test.py }
-          - { dep: "nltk gpt2", extra: "termcolor>=1.1.0", testfile: examples/gpt2_test.py }
-          - { dep: elastic, testfile: tests/wrappers/elastic_indexers_test.py }
-          - { dep: faiss, testfile: tests/wrappers/faiss_indexers_test.py }
-          - { dep: "huggingface nltk", extra: "'tensorflow>=2.5.0,<2.8.0'", testfile: tests/wrappers/huggingface }
+          - { project: "allennlp", ep: "nltk allennlp", testfile: tests/wrappers/allennlp_processors_test.py}
+          - { project: "nltk", dep: nltk, testfile: tests/wrappers/nltk_processors_test.py }
+          - { project: "vader", dep: "vader nltk ", testfile: tests/wrappers/sentiment_processor_test.py }
+          - { project: "spacy", dep: spacy, testfile: tests/wrappers/spacy_processors_test.py }
+          - { project: "stanza", dep: stanza, testfile: tests/wrappers/stanfordnlp_processor_test.py }
+          - { project: "gpt2", dep: "nltk gpt2", extra: "termcolor>=1.1.0", testfile: examples/gpt2_test.py }
+          - { project: "elastic", dep: elastic, testfile: tests/wrappers/elastic_indexers_test.py }
+          - { project: "faiss", dep: faiss, testfile: tests/wrappers/faiss_indexers_test.py }
+          - { project: "huggingface", dep: "huggingface nltk", extra: "'tensorflow>=2.5.0,<2.8.0'", testfile: tests/wrappers/huggingface }
           - { dep: "huggingface elastic nltk", testfile: tests/wrappers/bio_ner_predictor_test.py}
     steps:
       - uses: actions/checkout@v2
@@ -109,15 +109,19 @@ jobs:
           # The GitHub editor is 127 chars wide
           flake8 src/ --count --max-complexity=10 --max-line-length=127 --statistics
       - name: Lint with mypy
+        # Lint only the project that is being installed and tested.
         run: |
-          for dep in allennlp elastic faiss gpt2 huggingface nltk spacy stanza tweepy vader
-            do
-              mypy "src/"$dep
-            done
+          if [ ! -z ${{ matrix.test-details.project }} ]
+          then
+              mypy "src/"${{ matrix.test-details.project }}"/fortex"
+          fi
       - name: Lint with pylint
-        # pylint might run here since we install the extra project.
+        # Lint only the project that is being installed and tested.
         run: |
-          pylint src/
+          if [ ! -z ${{ matrix.test-details.project }} ]
+          then
+              mypy "src/"${{ matrix.test-details.project }}"/fortex"
+          fi
       - name: Install Forte from source to test the latest version.
         run: |
           git clone https://github.com/asyml/forte.git
