@@ -162,7 +162,7 @@ jobs:
           cd ..
 
   dispatch:
-    needs: [ build, pytest, docs ]
+    needs: [ build, docs ]
     runs-on: ubuntu-latest
     if: github.repository == 'asyml/forte-wrappers' && github.ref == 'refs/heads/main'
     steps:
