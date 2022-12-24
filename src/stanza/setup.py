@@ -29,6 +29,7 @@ setuptools.setup(
     platforms="any",
     install_requires=[
         "forte==0.2.0",
+        "protobuf<=3.20.0",
         "stanza==1.4.0",
     ],
     classifiers=[
