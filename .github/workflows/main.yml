@@ -127,6 +127,9 @@ jobs:
           git clone https://github.com/asyml/forte.git
           cd forte
           pip install --progress-bar off .
+          cd ..
+          # Remove forte source to avoid pytest collecting its test files.
+          rm -rf forte/
       - name: Start elastic server if test elastic search
         if: ${{ matrix.test-details.dep == 'elastic' ||
                 contains(matrix.test-details.dep, 'elastic')
