@@ -9,38 +9,76 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      tmate_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ 3.6, 3.7 ]
-        torch-version: [ 1.5.0 ]
-        tensorflow-version: [ 1.15.0 ]
-
+        python-version: [ 3.7, 3.8 ]
+        torch-version: [ 1.5.0, 1.7.1, 1.8.1 ]
+        tensorflow-version: [ 1.15.0, 2.2.0, 2.5.0]
+        test-details:
+          - { dep: "huggingface elastic nltk", testfile: tests/wrappers/bio_ner_predictor_test.py}
+          - { project: "stanza", dep: stanza, testfile: tests/wrappers/stanfordnlp_processor_test.py }
+          - { project: "spacy", dep: spacy, testfile: tests/wrappers/spacy_processors_test.py }
+          - { project: "allennlp", dep: "nltk allennlp", testfile: tests/wrappers/allennlp_processors_test.py}
+          - { project: "nltk", dep: nltk, testfile: tests/wrappers/nltk_processors_test.py }
+          - { project: "vader", dep: "vader nltk ", testfile: tests/wrappers/sentiment_processor_test.py }
+          - { project: "gpt2", dep: "nltk gpt2", extra: "termcolor>=1.1.0", testfile: examples/gpt2_test.py }
+          - { project: "elastic", dep: elastic, testfile: tests/wrappers/elastic_indexers_test.py }
+          - { project: "faiss", dep: faiss, testfile: tests/wrappers/faiss_indexers_test.py }
+          - { project: "huggingface", dep: "huggingface nltk", extra: "'tensorflow>=2.5.0,<2.8.0'", testfile: tests/wrappers/huggingface }
+        exclude:
+          - python-version: 3.7
+            torch-version: 1.7.1
+          - python-version: 3.7
+            torch-version: 1.8.1
+          - python-version: 3.7
+            tensorflow-version: 2.2.0
+          - python-version: 3.7
+            tensorflow-version: 2.5.0
+          - python-version: 3.8
+            torch-version: 1.5.0
+          - python-version: 3.8
+            tensorflow-version: 1.15.0
+          - python-version: 3.8
+            tensorflow-version: 2.5.0
+# To add 3.9 tests, will need to figure out the right versions for allennlp.
+#          - python-version: 3.9
+#            torch-version: 1.5.0
+#          - python-version: 3.9
+#            tensorflow-version: 1.15.0
+#          - python-version: 3.9
+#            tensorflow-version: 2.2.0
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Cache pip
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}
           restore-keys: |
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
+      - name: Format check with Black
+        run: |
+          pip install --progress-bar off black==22.3.0
+          black --line-length 80 --check src/
       - name: Install dependencies
         run: |
           python -m pip install --progress-bar off --upgrade pip
           pip install --progress-bar off Django django-guardian
-          pip install --progress-bar off pylint==2.10.2 flake8==3.8.2
-          pip install --progress-bar off mypy==0.910 pytest==5.1.3 black==22.3.0
-          pip install --progress-bar off coverage codecov ddt
-          pip install types-termcolor types-PyYAML
       - name: Install deep learning frameworks
         run: |
           pip install --progress-bar off torch==${{ matrix.torch-version }}
@@ -53,66 +91,10 @@ jobs:
           cd ..
           # Remove them to avoid confusing pytest.
           rm -rf texar-pytorch
-      - name: Lint with flake8
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 src/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Lint with pylint
-        run: |
-          pylint src/
-      - name: Format check with Black
-        run: |
-          black --line-length 80 --check src/
-      - name: Lint with mypy
-        run: |
-          for dep in allennlp elastic faiss gpt2 huggingface nltk spacy stanza tweepy vader
-            do
-              mypy "src/"$dep
-            done
-
-  pytest:
-    needs: [ build ]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [ 3.6, 3.7 ]
-        torch-version: [ 1.5.0 ]
-        tensorflow-version: [ 1.15.0 ]
-        test-details:
-          - { dep: "nltk allennlp", testfile: tests/wrappers/allennlp_processors_test.py }
-          - { dep: nltk, testfile: tests/wrappers/nltk_processors_test.py }
-          - { dep: "vader nltk ", testfile: tests/wrappers/sentiment_processor_test.py }
-          - { dep: spacy, testfile: tests/wrappers/spacy_processors_test.py }
-          - { dep: stanza, testfile: tests/wrappers/stanfordnlp_processor_test.py }
-          - { dep: "nltk gpt2", extra: "termcolor>=1.1.0", testfile: examples/gpt2_test.py }
-          - { dep: elastic, testfile: tests/wrappers/elastic_indexers_test.py }
-          - { dep: faiss, testfile: tests/wrappers/faiss_indexers_test.py }
-          - { dep: "huggingface nltk", extra: "'tensorflow>=2.5.0,<2.8.0'", testfile: tests/wrappers/huggingface }
-          - { dep: "huggingface elastic nltk", testfile: tests/wrappers/bio_ner_predictor_test.py}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Cache pip
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            ${{ runner.os }}-
-      - name: Install dependencies
-        run: |
-          python -m pip install --progress-bar off --upgrade pip
-          pip install --progress-bar off pytest==5.1.3
-          pip install --progress-bar off coverage ddt
-      - name: Install deep learning frameworks
-        run: |
-          pip install --progress-bar off torch==${{ matrix.torch-version }}
+      - name: Setup tmate session
+        # Add a tmate step before the project installation.
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.tmate_enabled }}
       - name: Install the project dependencies
         run: |
           # Install Wrappers
@@ -122,11 +104,45 @@ jobs:
           then
               pip install ${{ matrix.test-details.extra }}
           fi
+      - name: Install linting tools
+        run: | 
+          # Better run after other installations (e.g. tensorflow), since those packages may ask for different versions.
+          pip install --progress-bar off pylint==2.15.8 flake8==5.0.4
+          pip install --progress-bar off mypy==0.910 pytest==5.1.3
+          pip install --progress-bar off coverage codecov ddt
+          pip install types-termcolor types-PyYAML
+      - name: Setup tmate session
+        # Add a tmate step after most of the installation.
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.tmate_enabled }}
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          # The GitHub editor is 127 chars wide
+          flake8 src/ --count --max-complexity=10 --max-line-length=127 --statistics
+      - name: Lint with mypy
+        # Lint only the project that is being installed and tested.
+        run: |
+          if [ ! -z ${{ matrix.test-details.project }} ]
+          then
+              mypy "src/"${{ matrix.test-details.project }}"/fortex"
+          fi
+      - name: Lint with pylint
+        # Lint only the project that is being installed and tested.
+        run: |
+          if [ ! -z ${{ matrix.test-details.project }} ]
+          then
+              mypy "src/"${{ matrix.test-details.project }}"/fortex"
+          fi
       - name: Install Forte from source to test the latest version.
         run: |
           git clone https://github.com/asyml/forte.git
           cd forte
           pip install --progress-bar off .
+          cd ..
+          # Remove forte source to avoid pytest collecting its test files.
+          rm -rf forte/
       - name: Start elastic server if test elastic search
         if: ${{ matrix.test-details.dep == 'elastic' ||
                 contains(matrix.test-details.dep, 'elastic')
@@ -143,7 +159,7 @@ jobs:
           coverage run -m pytest ${{ matrix.test-details.testfile}}
 
   docs:
-    needs: [ build, pytest ]
+    needs: [ build ]
     runs-on: ubuntu-latest
     env:
       python-version: 3.7
@@ -183,7 +199,7 @@ jobs:
           cd ..
 
   dispatch:
-    needs: [ build, pytest, docs ]
+    needs: [ build, docs ]
     runs-on: ubuntu-latest
     if: github.repository == 'asyml/forte-wrappers' && github.ref == 'refs/heads/main'
     steps:

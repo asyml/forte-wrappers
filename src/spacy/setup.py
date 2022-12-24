@@ -5,7 +5,7 @@ import setuptools
 
 readme = Path("README.md")
 if readme.exists():
-    long_description = (Path("README.md")).read_text()
+    long_description = (Path("README.md")).read_text(encoding="utf-8")
 else:
     long_description = (
         "Provide Forte implementations of a fantastic collection of NLP tools."
@@ -30,6 +30,7 @@ setuptools.setup(
     include_package_data=True,
     platforms="any",
     install_requires=[
+        "numpy<1.21.0",
         "forte==0.2.0",
         f"spacy{supported_spacey_version}",
         "scispacy==0.3.0",

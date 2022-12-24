@@ -106,9 +106,8 @@ def validate_spacy_configs(configs: Config):
             entry_type, Annotation
         ):
             raise ProcessorConfigError(
-                "Config parameter {} must be an Annotation type.".format(
-                    configs.medical_onto_type
-                )
+                f"Config parameter {configs.medical_onto_type} "
+                f"must be an Annotation type."
             )
 
         entry_type = get_class(configs.umls_onto_type)
@@ -116,9 +115,8 @@ def validate_spacy_configs(configs: Config):
             entry_type, Generics
         ):
             raise ProcessorConfigError(
-                "Config parameter {} must be a Generic type.".format(
-                    configs.umls_onto_type
-                )
+                f"Config parameter {configs.umls_onto_type} "
+                f"must be a Generic type."
             )
 
 
@@ -665,7 +663,7 @@ def process_umls_entity_linking(
             umls_entity = umls_entity_name(pack=input_pack)
 
             for attribute, _ in vars(umls_entity).items():
-                if attribute in umls.keys():
+                if attribute in umls:
                     setattr(umls_entity, attribute, umls[attribute])
 
             getattr(medical_entity, "umls_entities").append(umls_entity)

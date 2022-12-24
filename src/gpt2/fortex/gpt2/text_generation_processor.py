@@ -197,7 +197,7 @@ class TextGenerationProcessor(PackingBatchProcessor[MultiPack]):
             self.word_processor.map_text_to_token(sent) for sent in data
         ]
 
-        batch_length = max([len(d) for d in batch_tokens])
+        batch_length = max(len(d) for d in batch_tokens)
         wid_inputs = np.empty([batch_size, batch_length], dtype=np.int64)
         lengths = np.empty(batch_size, dtype=np.int64)
 

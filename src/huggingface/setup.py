@@ -5,7 +5,7 @@ import setuptools
 
 readme = Path("README.md")
 if readme.exists():
-    long_description = (Path("README.md")).read_text()
+    long_description = (Path("README.md")).read_text(encoding="utf-8")
 else:
     long_description = (
         "Provide Forte implementations of a fantastic collection of NLP tools."
@@ -30,8 +30,9 @@ setuptools.setup(
     install_requires=[
         "forte==0.2.0",
         "more-itertools>=8.0.0",
-        "transformers == 4.2.2",
-        "numpy == 1.19.5",
+        "protobuf<=3.20.0",
+        "transformers==4.2.2",
+        "numpy==1.19.5",
         "sentencepiece>=0.1.96",
     ],
     classifiers=[
