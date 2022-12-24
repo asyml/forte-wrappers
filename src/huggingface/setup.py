@@ -30,8 +30,9 @@ setuptools.setup(
     install_requires=[
         "forte==0.2.0",
         "more-itertools>=8.0.0",
-        "transformers == 4.2.2",
-        "numpy == 1.19.5",
+        "protobuf<=3.20.0",
+        "transformers==4.2.2",
+        "numpy==1.19.5",
         "sentencepiece>=0.1.96",
     ],
     classifiers=[

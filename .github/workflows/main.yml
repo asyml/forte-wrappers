@@ -25,10 +25,9 @@ jobs:
         torch-version: [ 1.5.0, 1.7.1, 1.8.1 ]
         tensorflow-version: [ 1.15.0, 2.2.0, 2.5.0]
         test-details:
-          - { project: "stanza", dep: stanza, testfile: tests/wrappers/stanfordnlp_processor_test.py }
+          - { dep: "huggingface elastic nltk", testfile: tests/wrappers/bio_ner_predictor_test.py}
 
-#          - { dep: "huggingface elastic nltk", testfile: tests/wrappers/bio_ner_predictor_test.py}
-
+#          - { project: "stanza", dep: stanza, testfile: tests/wrappers/stanfordnlp_processor_test.py }
 #          - { project: "spacy", dep: spacy, testfile: tests/wrappers/spacy_processors_test.py }
 #          - { project: "allennlp", dep: "nltk allennlp", testfile: tests/wrappers/allennlp_processors_test.py}
 #          - { project: "nltk", dep: nltk, testfile: tests/wrappers/nltk_processors_test.py }
