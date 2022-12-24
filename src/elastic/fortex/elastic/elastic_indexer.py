@@ -18,7 +18,7 @@ from typing import Optional, Dict, Union, Any, Iterable
 
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
-from elasticsearch import logger as es_logger
+from elasticsearch import logger as es_logger  # type: ignore
 
 __all__ = ["ElasticSearchIndexer"]
 
@@ -90,7 +90,7 @@ class ElasticSearchIndexer(Configurable):
                 for more information on "refresh"
         """
         index_name = index_name if index_name else self._configs.index_name
-        self.elasticsearch.index(  # pylint: disable=unexpected-keyword-arg
+        self.elasticsearch.index(  # type: ignore # pylint: disable=unexpected-keyword-arg
             index=index_name, body=document, refresh=refresh
         )
 
@@ -135,7 +135,7 @@ class ElasticSearchIndexer(Configurable):
                 )
                 yield new_document
 
-        bulk(self.elasticsearch, actions(), **kwargs)
+        bulk(self.elasticsearch, actions(), **kwargs)  # type: ignore
 
     def search(
         self,
@@ -168,7 +168,7 @@ class ElasticSearchIndexer(Configurable):
             raise ValueError(
                 "The query to the elastic indexer need to be a dictionary."
             )
-        return self.elasticsearch.search(index=index_name, body=query, **kwargs)
+        return self.elasticsearch.search(index=index_name, body=query, **kwargs)  # type: ignore
 
     @property
     def hparams(self):
