@@ -193,22 +193,22 @@ class BioBERTNERPredictor(RequestPackingProcessor):
 
     def pack(
         self,
-        data_pack: DataPack,
-        output_dict: Optional[Dict[str, Dict[str, List[Any]]]] = None,
+        pack: DataPack,
+        predict_results: Optional[Dict[str, Dict[str, List[Any]]]] = None,
         context: Optional[Annotation] = None,
     ):
         """
         Write the prediction results back to datapack by aggregating subwords
         into named entity mentions.
         """
-        if output_dict is None:
+        if predict_results is None:
             return
         if context is not None:
             logging.warning("context parameter is not used in pack() method.")
 
-        for i in range(len(output_dict["Subword"]["tid"])):
-            tids = output_dict["Subword"]["tid"][i]
-            labels = output_dict["Subword"]["ner"][i]
+        for i in range(len(predict_results["Subword"]["tid"])):
+            tids = predict_results["Subword"]["tid"][i]
+            labels = predict_results["Subword"]["ner"][i]
 
             # Filter to labels not in `self.ft_configs.ignore_labels`
             entities = [
@@ -216,15 +216,15 @@ class BioBERTNERPredictor(RequestPackingProcessor):
                 for idx, (label, tid) in enumerate(zip(labels, tids))
                 if label not in self.ft_configs.ignore_labels
             ]
-            entity_groups = self._compose_entities(entities, data_pack, tids)
+            entity_groups = self._compose_entities(entities, pack, tids)
             # Add NER tags and create EntityMention ontologies.
             for first_idx, last_idx in entity_groups:
-                first_token: Subword = data_pack.get_entry(tids[first_idx])
+                first_token: Subword = pack.get_entry(tids[first_idx])
                 begin = first_token.span.begin
 
-                last_token: Subword = data_pack.get_entry(tids[last_idx])
+                last_token: Subword = pack.get_entry(tids[last_idx])
                 end = last_token.span.end
-                entity = EntityMention(data_pack, begin, end)
+                entity = EntityMention(pack, begin, end)
                 entity.ner_type = self.ft_configs.ner_type
 
     @classmethod
