@@ -96,9 +96,6 @@ jobs:
           flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
           # The GitHub editor is 127 chars wide
           flake8 src/ --count --max-complexity=10 --max-line-length=127 --statistics
-      - name: Lint with pylint
-        run: |
-          pylint src/
       - name: Lint with mypy
         run: |
           for dep in allennlp elastic faiss gpt2 huggingface nltk spacy stanza tweepy vader
@@ -114,6 +111,10 @@ jobs:
           then
               pip install ${{ matrix.test-details.extra }}
           fi
+      - name: Lint with pylint
+        # pylint might run here since we install the extra project.
+        run: |
+          pylint src/
       - name: Install Forte from source to test the latest version.
         run: |
           git clone https://github.com/asyml/forte.git
