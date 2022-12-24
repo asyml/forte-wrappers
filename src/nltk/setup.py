@@ -31,6 +31,7 @@ setuptools.setup(
         "forte==0.2.0",
         "more-itertools>=8.0.0",
         "nltk==3.4.5",
+        "numpy<=1.21.6"
     ],
     classifiers=[
         "Intended Audience :: Developers",
