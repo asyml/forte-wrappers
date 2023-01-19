@@ -28,7 +28,7 @@ setuptools.setup(
     include_package_data=True,
     platforms="any",
     install_requires=[
-        "forte==0.2.0",
+        "forte>=0.2.0",
         "more-itertools>=8.0.0",
         "nltk==3.4.5",
         "numpy<=1.21.6",
